@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #050608;
+    --bg-surface: #090C13;
+    --bg-surface-elevated: #101522;
+    --border-subtle: rgba(255, 107, 0, 0.16);
+    --border-hover: rgba(255, 107, 0, 0.45);
+    --accent-orange: #FF6B00;
+  }
+
+  body {
+    @apply bg-[#050608] text-slate-100 antialiased selection:bg-orange-500 selection:text-black font-sans;
+    background-image: 
+      radial-gradient(ellipse 90% 60% at 50% -15%, rgba(255, 107, 0, 0.12), transparent 70%),
+      radial-gradient(circle at 10% 90%, rgba(255, 107, 0, 0.03) 0%, transparent 40%);
+    min-height: 100vh;
+  }
+}
+
+/* Modern SaaS card surfaces - Tactical Orange Cyber */
+.cyber-card {
+  background: #090C13;
+  border: 1px solid rgba(255, 107, 0, 0.16);
+  border-radius: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cyber-card:hover {
+  border-color: rgba(255, 107, 0, 0.45);
+  box-shadow: 0 0 20px rgba(255, 107, 0, 0.08);
+}
+
+.cyber-card-elevated {
+  background: #101522;
+  border: 1px solid rgba(255, 107, 0, 0.28);
+  border-radius: 0.875rem;
+}
+
+/* Glassmorphism panel */
+.glass-panel {
+  background: rgba(9, 12, 19, 0.90);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 107, 0, 0.18);
+  border-radius: 0.875rem;
+}
+
+.glass-panel-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-panel-hover:hover {
+  background: rgba(14, 19, 30, 0.95);
+  border-color: rgba(255, 107, 0, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px -10px rgba(255, 107, 0, 0.15);
+}
+
+/* Sleek tactical scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #050608;
+}
+::-webkit-scrollbar-thumb {
+  background: #1C2230;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FF6B00;
+}

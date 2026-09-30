@@ -1,0 +1,218 @@
+{
+  "trained_at": "2026-09-16T06:31:05.460787Z",
+  "total_samples": 3168,
+  "train_samples": 2534,
+  "test_samples": 634,
+  "features_count": 34,
+  "feature_names": [
+    "url_length",
+    "domain_length",
+    "path_length",
+    "query_length",
+    "num_dots",
+    "num_hyphens",
+    "num_underscores",
+    "num_slashes",
+    "num_digits",
+    "num_special_chars",
+    "special_char_ratio",
+    "digit_ratio",
+    "num_subdirs",
+    "num_query_params",
+    "has_https",
+    "is_ip_address",
+    "has_suspicious_port",
+    "is_shortener",
+    "has_punycode",
+    "has_suspicious_tld",
+    "subdomain_count",
+    "has_excessive_subdomains",
+    "has_at_symbol",
+    "has_double_slash_redirect",
+    "num_percent_encoded",
+    "url_entropy",
+    "domain_entropy",
+    "num_keywords",
+    "has_login_keyword",
+    "has_verify_keyword",
+    "has_banking_keyword",
+    "has_account_keyword",
+    "brand_impersonation_detected",
+    "brand_score"
+  ],
+  "best_model": "Random Forest",
+  "models": {
+    "random_forest": {
+      "model_name": "Random Forest",
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "confusion_matrix": [
+        [
+          314,
+          0
+        ],
+        [
+          0,
+          320
+        ]
+      ]
+    },
+    "logistic_regression": {
+      "model_name": "Logistic Regression",
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "confusion_matrix": [
+        [
+          314,
+          0
+        ],
+        [
+          0,
+          320
+        ]
+      ]
+    }
+  },
+  "top_features": [
+    {
+      "feature": "num_keywords",
+      "importance": 0.2077
+    },
+    {
+      "feature": "has_suspicious_tld",
+      "importance": 0.1502
+    },
+    {
+      "feature": "subdomain_count",
+      "importance": 0.0894
+    },
+    {
+      "feature": "digit_ratio",
+      "importance": 0.0774
+    },
+    {
+      "feature": "domain_length",
+      "importance": 0.0732
+    },
+    {
+      "feature": "has_https",
+      "importance": 0.0676
+    },
+    {
+      "feature": "domain_entropy",
+      "importance": 0.0489
+    },
+    {
+      "feature": "brand_score",
+      "importance": 0.0483
+    },
+    {
+      "feature": "num_digits",
+      "importance": 0.0463
+    },
+    {
+      "feature": "has_verify_keyword",
+      "importance": 0.032
+    },
+    {
+      "feature": "is_ip_address",
+      "importance": 0.03
+    },
+    {
+      "feature": "brand_impersonation_detected",
+      "importance": 0.0192
+    },
+    {
+      "feature": "num_hyphens",
+      "importance": 0.0164
+    },
+    {
+      "feature": "has_suspicious_port",
+      "importance": 0.0147
+    },
+    {
+      "feature": "url_entropy",
+      "importance": 0.0136
+    },
+    {
+      "feature": "num_dots",
+      "importance": 0.0108
+    },
+    {
+      "feature": "has_login_keyword",
+      "importance": 0.0107
+    },
+    {
+      "feature": "num_special_chars",
+      "importance": 0.0096
+    },
+    {
+      "feature": "path_length",
+      "importance": 0.0065
+    },
+    {
+      "feature": "special_char_ratio",
+      "importance": 0.0059
+    },
+    {
+      "feature": "has_excessive_subdomains",
+      "importance": 0.0056
+    },
+    {
+      "feature": "has_account_keyword",
+      "importance": 0.0043
+    },
+    {
+      "feature": "url_length",
+      "importance": 0.0031
+    },
+    {
+      "feature": "num_slashes",
+      "importance": 0.0021
+    },
+    {
+      "feature": "num_underscores",
+      "importance": 0.0016
+    },
+    {
+      "feature": "query_length",
+      "importance": 0.0011
+    },
+    {
+      "feature": "has_punycode",
+      "importance": 0.0009
+    },
+    {
+      "feature": "num_query_params",
+      "importance": 0.0009
+    },
+    {
+      "feature": "num_subdirs",
+      "importance": 0.0007
+    },
+    {
+      "feature": "has_banking_keyword",
+      "importance": 0.0006
+    },
+    {
+      "feature": "is_shortener",
+      "importance": 0.0004
+    },
+    {
+      "feature": "has_at_symbol",
+      "importance": 0.0002
+    },
+    {
+      "feature": "has_double_slash_redirect",
+      "importance": 0.0
+    },
+    {
+      "feature": "num_percent_encoded",
+      "importance": 0.0
+    }
+  ]
+}

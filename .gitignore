@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Production build artifacts
+dist/
+frontend/dist/
+build/
+
+# Vercel deployment metadata
+.vercel/
+frontend/.vercel/
+
+# Python cache & virtual environments
+__pycache__/
+backend/**/__pycache__/
+ml/**/__pycache__/
+*.py[cod]
+*$py.class
+env/
+venv/
+.venv/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Operating System & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Internal agent skills / cache
+.agents/
+andrej-karpathy-skills-main/
