@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   ShieldAlert, Home as HomeIcon, Search, History as ClockIcon, 
   Crosshair, BarChart2, BookOpen, Settings, ChevronLeft, ChevronRight, 
-  LayoutGrid, User, Shield, Lock, ExternalLink
+  LayoutGrid, User, Shield, Lock, ExternalLink, Sun, Moon 
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -11,7 +11,9 @@ export default function Sidebar({
   isCollapsed, 
   setIsCollapsed, 
   isMobileOpen, 
-  setIsMobileOpen 
+  setIsMobileOpen,
+  theme,
+  toggleTheme 
 }) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: HomeIcon, badge: null },
@@ -123,6 +125,27 @@ export default function Sidebar({
             >
               <LayoutGrid className="w-4 h-4 shrink-0 text-slate-400" />
               {!isCollapsed && <span>Landing / Overview</span>}
+            </button>
+
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="w-full mt-2 flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-mono transition-all cursor-pointer bg-[#06080E] border border-[#1C2230] hover:border-slate-600 text-slate-300"
+              title={theme === 'light' ? 'Switch to Dark Mode (Tactical Cyber)' : 'Switch to Light Mode (Blue & White)'}
+            >
+              <div className="flex items-center gap-2.5">
+                {theme === 'light' ? (
+                  <Moon className="w-4 h-4 text-blue-500 shrink-0" />
+                ) : (
+                  <Sun className="w-4 h-4 text-orange-400 shrink-0" />
+                )}
+                {!isCollapsed && <span>{theme === 'light' ? 'Light Theme' : 'Dark Theme'}</span>}
+              </div>
+              {!isCollapsed && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/40 text-slate-400 font-mono">
+                  {theme === 'light' ? 'BLUE' : 'CYBER'}
+                </span>
+              )}
             </button>
           </div>
         </div>

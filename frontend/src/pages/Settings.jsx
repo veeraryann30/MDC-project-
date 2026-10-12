@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 
-export default function Settings() {
+export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
   const [activeTab, setActiveTab] = useState('scan');
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [clearStatus, setClearStatus] = useState('');
@@ -448,38 +448,52 @@ export default function Settings() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Option 1: Dark Mode - Tactical Cyber Orange */}
               <div 
-                onClick={() => handleChange('theme', 'tactical-orange')}
+                onClick={() => {
+                  handleChange('theme', 'dark');
+                  if (setTheme) setTheme('dark');
+                }}
                 className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                  settings.theme === 'tactical-orange' 
+                  (theme === 'dark' || settings.theme === 'dark' || settings.theme === 'tactical-orange') 
                     ? 'bg-[#06080E] border-orange-500 ring-1 ring-orange-500' 
                     : 'bg-[#090C13] border-[#1C2230] hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-white">Tactical Cyber Orange (Active)</span>
-                  <span className="w-3 h-3 rounded-full bg-[#FF6B00] shadow-[0_0_8px_rgba(255,107,0,0.6)]" />
+                  <span className="text-xs font-bold text-white">Dark Mode (Tactical Cyber)</span>
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#FF6B00] shadow-[0_0_8px_rgba(255,107,0,0.6)]" />
                 </div>
-                <p className="text-[11px] text-slate-400">
-                  Electric orange radar theme with high contrast dark HUD surfaces and glowing indicators.
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Deep dark canvas (#050608), tactical orange radar dome HUD, and high-contrast security indicators.
                 </p>
+                <div className="mt-3 flex items-center gap-1.5 text-[10px] font-mono text-orange-400">
+                  <span>● Active by Default</span>
+                </div>
               </div>
 
+              {/* Option 2: Light Mode - Cyber Blue & White */}
               <div 
-                onClick={() => handleChange('theme', 'midnight')}
+                onClick={() => {
+                  handleChange('theme', 'light');
+                  if (setTheme) setTheme('light');
+                }}
                 className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                  settings.theme === 'midnight' 
-                    ? 'bg-[#06080E] border-orange-500 ring-1 ring-orange-500' 
+                  (theme === 'light' || settings.theme === 'light') 
+                    ? 'bg-[#06080E] border-blue-500 ring-1 ring-blue-500' 
                     : 'bg-[#090C13] border-[#1C2230] hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-white">Midnight Dark</span>
-                  <span className="w-3 h-3 rounded-full bg-[#050608] border border-[#1C2230]" />
+                  <span className="text-xs font-bold text-white">Light Mode (Cyber Blue & White)</span>
+                  <span className="w-3.5 h-3.5 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]" />
                 </div>
-                <p className="text-[11px] text-slate-400">
-                  Minimal dark canvas with subtle borders and lowered ambient light.
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Clean white and soft slate canvas, royal cyber blue accents (#2563EB), and high-readability telemetry cards.
                 </p>
+                <div className="mt-3 flex items-center gap-1.5 text-[10px] font-mono text-blue-500">
+                  <span>● Daytime & High-Light Workstations</span>
+                </div>
               </div>
             </div>
           </div>

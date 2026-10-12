@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Menu, Bell, Search, ShieldAlert, CheckCircle2, 
-  ExternalLink, Sparkles, Terminal, X, ArrowRight, Shield, Sun 
+  ExternalLink, Sparkles, Terminal, X, ArrowRight, Shield, Sun, Moon 
 } from 'lucide-react';
 import { api } from '../../services/api';
 
@@ -10,7 +10,9 @@ export default function TopNavbar({
   setActivePage, 
   isCollapsed, 
   setIsMobileOpen,
-  onQuickScan 
+  onQuickScan,
+  theme,
+  toggleTheme
 }) {
   const [isBackendOnline, setIsBackendOnline] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -147,10 +149,20 @@ export default function TopNavbar({
           <span>Zero-Execution Guard</span>
         </div>
 
-        {/* Tactical Icon (Sun/Theme Indicator) */}
-        <div className="hidden sm:flex p-2 text-orange-400/80 hover:text-orange-400 cursor-pointer">
-          <Sun className="w-4 h-4" />
-        </div>
+        {/* Interactive Theme Toggle Button (Dark Tactical Orange <-> Light Cyber Blue & White) */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/70 border border-transparent hover:border-[#1C2230] transition-all cursor-pointer flex items-center justify-center group relative"
+          title={theme === 'light' ? 'Switch to Dark Mode (Tactical Cyber)' : 'Switch to Light Mode (Blue & White)'}
+          aria-label="Toggle color theme"
+        >
+          {theme === 'light' ? (
+            <Moon className="w-4 h-4 text-blue-600 group-hover:-rotate-12 transition-transform" />
+          ) : (
+            <Sun className="w-4 h-4 text-orange-400 group-hover:rotate-45 transition-transform" />
+          )}
+          <span className="sr-only">Toggle theme</span>
+        </button>
 
         {/* Notifications Dropdown */}
         <div className="relative" ref={notificationRef}>

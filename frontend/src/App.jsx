@@ -24,6 +24,25 @@ export default function App() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState('');
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('catch_the_phish_theme') || 'dark';
+  });
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    } else {
+      root.classList.remove('light');
+      root.classList.add('dark');
+    }
+    localStorage.setItem('catch_the_phish_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   const handleQuickScan = async (url) => {
     if (!url || !url.trim()) return;
@@ -58,7 +77,7 @@ export default function App() {
       case 'learn':
         return <Learn />;
       case 'settings':
-        return <Settings />;
+        return <Settings theme={theme} setTheme={setTheme} toggleTheme={toggleTheme} />;
       case 'home':
         return <Home setActivePage={setActivePage} setScanResult={setScanResult} />;
       case 'about':
@@ -69,7 +88,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050608] text-slate-100 flex flex-col font-sans selection:bg-[#FF6B00] selection:text-black antialiased">
+    <div className="min-h-screen bg-[#050608] text-slate-100 flex flex-col font-sans selection:bg-[#FF6B00] selection:text-black antialiased transition-colors duration-300">
       {/* Sidebar Navigation */}
       <Sidebar
         activePage={activePage}
@@ -78,6 +97,8 @@ export default function App() {
         setIsCollapsed={setIsCollapsed}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
+        theme={theme}
+        toggleTheme={toggleTheme}
       />
 
       {/* Main Layout Area */}
@@ -93,6 +114,8 @@ export default function App() {
           isCollapsed={isCollapsed}
           setIsMobileOpen={setIsMobileOpen}
           onQuickScan={handleQuickScan}
+          theme={theme}
+          toggleTheme={toggleTheme}
         />
 
         {/* Global Quick Scan Status Indicator Banner */}
