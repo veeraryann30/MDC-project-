@@ -75,7 +75,7 @@ export default function Analytics() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 scroll-reveal">
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/60 border border-orange-500/40 text-orange-400 text-xs font-mono mb-2">
             <BarChart3 className="w-3.5 h-3.5" />
@@ -100,13 +100,13 @@ export default function Analytics() {
 
       {/* KPI Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-1">
+        <div className="p-5 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-1 scroll-reveal scroll-stagger-1">
           <div className="text-[11px] font-mono text-slate-400 uppercase font-semibold">Total Scanned URLs</div>
           <div className="text-3xl font-black font-mono text-white">{stats?.total_scans ?? 0}</div>
           <div className="text-[11px] text-orange-400 font-mono">100% Zero-Execution</div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#090C13] border border-rose-950/80 space-y-1">
+        <div className="p-5 rounded-2xl bg-[#090C13] border border-rose-950/80 space-y-1 scroll-reveal scroll-stagger-2">
           <div className="text-[11px] font-mono text-rose-400 uppercase font-semibold flex items-center justify-between">
             <span>Threat Detection Rate</span>
             <ShieldAlert className="w-4 h-4 text-rose-400" />
@@ -115,7 +115,7 @@ export default function Analytics() {
           <div className="text-[11px] text-slate-400 font-mono">Suspicious + Phishing</div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#090C13] border border-orange-950/80 space-y-1">
+        <div className="p-5 rounded-2xl bg-[#090C13] border border-orange-950/80 space-y-1 scroll-reveal scroll-stagger-3">
           <div className="text-[11px] font-mono text-orange-400 uppercase font-semibold">Average Risk Score</div>
           <div className="text-3xl font-black font-mono text-white">
             {stats?.avg_risk_score ?? 0}
@@ -124,7 +124,7 @@ export default function Analytics() {
           <div className="text-[11px] text-slate-400 font-mono">Fleet Mean Risk</div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#090C13] border border-emerald-950/80 space-y-1">
+        <div className="p-5 rounded-2xl bg-[#090C13] border border-emerald-950/80 space-y-1 scroll-reveal scroll-stagger-4">
           <div className="text-[11px] font-mono text-emerald-400 uppercase font-semibold flex items-center justify-between">
             <span>ML Model F1-Score</span>
             <Cpu className="w-4 h-4 text-emerald-400" />
@@ -139,7 +139,7 @@ export default function Analytics() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Risk Level Distribution Donut */}
-        <div className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-4">
+        <div className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-4 scroll-reveal scroll-reveal-left">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2">
               <PieIcon className="w-4 h-4 text-orange-400" />
@@ -187,7 +187,7 @@ export default function Analytics() {
         </div>
 
         {/* Threat Trends Over Time */}
-        <div className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-4">
+        <div className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-4 scroll-reveal scroll-reveal-right">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-orange-400" />
@@ -218,7 +218,7 @@ export default function Analytics() {
       </div>
 
       {/* Top Threat Indicators Frequency Bar */}
-      <div className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-4">
+      <div className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-4 scroll-reveal">
         <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2">
           <Activity className="w-4 h-4 text-orange-400" />
           <span>Most Frequently Triggered Threat Signatures</span>

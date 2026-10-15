@@ -312,7 +312,7 @@ export default function Dashboard({ setActivePage, setScanResult }) {
       </section>
 
       {/* 2. SECURITY FLEET TELEMETRY HEADER & 4 KPI CARDS */}
-      <section className="space-y-4">
+      <section className="space-y-4 scroll-reveal">
         {/* Telemetry Header */}
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
@@ -342,7 +342,7 @@ export default function Dashboard({ setActivePage, setScanResult }) {
           {/* Card 1: URLS SCANNED */}
           <div 
             onClick={() => setActivePage('history')}
-            className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] hover:border-orange-500/60 relative overflow-hidden transition-all group cursor-pointer hover:shadow-[0_0_15px_rgba(255,107,0,0.12)]"
+            className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] hover:border-orange-500/60 relative overflow-hidden transition-all group cursor-pointer hover:shadow-[0_0_15px_rgba(255,107,0,0.12)] scroll-reveal scroll-stagger-1"
             title="Click to view all Scanned URLs"
           >
             <div className="flex items-center justify-between mb-2">
@@ -384,7 +384,7 @@ export default function Dashboard({ setActivePage, setScanResult }) {
           {/* Card 2: THREATS DETECTED */}
           <div 
             onClick={() => setActivePage('history')}
-            className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] hover:border-rose-500/60 relative overflow-hidden transition-all group cursor-pointer hover:shadow-[0_0_15px_rgba(239,68,68,0.15)]"
+            className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] hover:border-rose-500/60 relative overflow-hidden transition-all group cursor-pointer hover:shadow-[0_0_15px_rgba(239,68,68,0.15)] scroll-reveal scroll-stagger-2"
             title="Click to view Phishing Threats in History"
           >
             <div className="flex items-center justify-between mb-2">
@@ -426,7 +426,7 @@ export default function Dashboard({ setActivePage, setScanResult }) {
           {/* Card 3: SUSPICIOUS URLS */}
           <div 
             onClick={() => setActivePage('history')}
-            className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] hover:border-amber-500/60 relative overflow-hidden transition-all group cursor-pointer hover:shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+            className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] hover:border-amber-500/60 relative overflow-hidden transition-all group cursor-pointer hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] scroll-reveal scroll-stagger-3"
             title="Click to view Suspicious URLs in History"
           >
             <div className="flex items-center justify-between mb-2">
@@ -468,7 +468,7 @@ export default function Dashboard({ setActivePage, setScanResult }) {
           {/* Card 4: SAFE URLS */}
           <div 
             onClick={() => setActivePage('history')}
-            className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] hover:border-emerald-500/60 relative overflow-hidden transition-all group cursor-pointer hover:shadow-[0_0_15px_rgba(16,185,129,0.15)]"
+            className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] hover:border-emerald-500/60 relative overflow-hidden transition-all group cursor-pointer hover:shadow-[0_0_15px_rgba(16,185,129,0.15)] scroll-reveal scroll-stagger-4"
             title="Click to view Safe URLs in History"
           >
             <div className="flex items-center justify-between mb-2">
@@ -510,7 +510,7 @@ export default function Dashboard({ setActivePage, setScanResult }) {
       </section>
 
       {/* 3. CHARTS ROW: RISK CLASSIFICATION RATIO & TOP THREAT INDICATORS */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-reveal">
         {/* Left Card: RISK CLASSIFICATION RATIO */}
         <div className="p-5 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-4">
           <div className="flex items-center justify-between border-b border-[#1C2230] pb-3">
@@ -696,7 +696,7 @@ export default function Dashboard({ setActivePage, setScanResult }) {
 
       {/* 4. RECENT SCANS TABLE */}
       {historyItems.length > 0 && (
-        <section className="p-5 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-4">
+        <section className="p-5 rounded-2xl bg-[#090C13] border border-[#1C2230] space-y-4 scroll-reveal">
           <div className="flex items-center justify-between border-b border-[#1C2230] pb-3">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-orange-400" />

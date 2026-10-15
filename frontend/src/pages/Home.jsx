@@ -129,7 +129,7 @@ export default function Home({ setActivePage, setScanResult }) {
       </section>
 
       {/* How It Works Section */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 scroll-reveal">
         <div className="text-center space-y-2 mb-12">
           <h2 className="text-xs font-mono uppercase tracking-widest text-orange-400 font-bold">
             Workflow Architecture
@@ -146,7 +146,7 @@ export default function Home({ setActivePage, setScanResult }) {
           {steps.map((step, idx) => (
             <div
               key={idx}
-              className={`p-6 rounded-2xl bg-[#090C13] border ${step.border} relative overflow-hidden group hover:border-orange-500 transition-all`}
+              className={`p-6 rounded-2xl bg-[#090C13] border ${step.border} relative overflow-hidden group hover:border-orange-500 transition-all scroll-reveal scroll-stagger-${idx + 1}`}
             >
               <div className="text-3xl font-black font-mono text-slate-700/60 mb-3 group-hover:text-orange-400/40 transition-colors">
                 {step.num}
@@ -163,7 +163,7 @@ export default function Home({ setActivePage, setScanResult }) {
       </section>
 
       {/* Product Highlights */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 scroll-reveal">
         <div className="text-center space-y-2 mb-12">
           <h2 className="text-xs font-mono uppercase tracking-widest text-orange-400 font-bold">
             Core Capabilities
@@ -179,7 +179,7 @@ export default function Home({ setActivePage, setScanResult }) {
             return (
               <div
                 key={idx}
-                className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] flex gap-4 items-start hover:border-orange-500/40 transition-all"
+                className={`p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] flex gap-4 items-start hover:border-orange-500/40 transition-all scroll-reveal scroll-stagger-${(idx % 2) + 1}`}
               >
                 <div className="p-3 rounded-xl bg-orange-950/40 border border-orange-500/30 shrink-0">
                   <Icon className="w-6 h-6 text-orange-400" />
@@ -199,7 +199,7 @@ export default function Home({ setActivePage, setScanResult }) {
       </section>
 
       {/* Academy CTA Banner */}
-      <section className="max-w-5xl mx-auto px-4">
+      <section className="max-w-5xl mx-auto px-4 scroll-reveal">
         <div className="p-8 sm:p-10 rounded-3xl bg-[#090C13] border border-orange-500/40 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-1.5 text-xs font-mono text-orange-400 font-semibold uppercase">

@@ -149,7 +149,7 @@ export default function History({ setActivePage, setScanResult }) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 scroll-reveal">
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/60 border border-orange-500/40 text-orange-400 text-xs font-mono mb-2">
             <HistoryIcon className="w-3.5 h-3.5" />
@@ -176,7 +176,7 @@ export default function History({ setActivePage, setScanResult }) {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+      <div className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm scroll-reveal">
         {/* Search */}
         <form onSubmit={handleSearchSubmit} className="relative w-full md:w-96">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -248,7 +248,7 @@ export default function History({ setActivePage, setScanResult }) {
       </div>
 
       {/* History Table */}
-      <div className="rounded-2xl bg-[#090C13] border border-[#1C2230] overflow-hidden shadow-sm">
+      <div className="rounded-2xl bg-[#090C13] border border-[#1C2230] overflow-hidden shadow-sm scroll-reveal">
         {loading ? (
           <div className="py-16 text-center text-xs font-mono text-orange-400">
             Querying audit records from SQLite database...

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import TopNavbar from './components/layout/TopNavbar';
 import Footer from './components/layout/Footer';
+import ScrollController from './components/layout/ScrollController';
 
 // Pages
 import Dashboard from './pages/Dashboard';
@@ -117,6 +118,9 @@ export default function App() {
           theme={theme}
           toggleTheme={toggleTheme}
         />
+
+        {/* Scroll-Driven Telemetry Controller (Progress Tracker & Back to Top HUD) */}
+        <ScrollController activePage={activePage} theme={theme} />
 
         {/* Global Quick Scan Status Indicator Banner */}
         {isScanning && (

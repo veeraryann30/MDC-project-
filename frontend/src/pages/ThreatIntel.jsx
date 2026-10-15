@@ -47,7 +47,7 @@ export default function ThreatIntel() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 scroll-reveal">
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/60 border border-orange-500/40 text-orange-400 text-xs font-mono mb-2">
             <Shield className="w-3.5 h-3.5" />
@@ -69,7 +69,7 @@ export default function ThreatIntel() {
       </div>
 
       {/* API Adapters Status Card */}
-      <div className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] shadow-sm space-y-4">
+      <div className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] shadow-sm space-y-4 scroll-reveal">
         <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2">
           <Server className="w-4 h-4 text-orange-400" />
           <span>Threat Intelligence Integrations</span>
@@ -150,7 +150,7 @@ export default function ThreatIntel() {
 
       {/* TAB 1: Monitored Brands */}
       {filter === 'brands' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 scroll-reveal">
           {monitoredBrands.map((b, idx) => (
             <div key={idx} className="p-4 rounded-xl bg-[#090C13] border border-[#1C2230] hover:border-orange-500/40 transition-all space-y-2">
               <div className="flex items-center justify-between">
@@ -171,7 +171,7 @@ export default function ThreatIntel() {
 
       {/* TAB 2: High-Abuse TLDs */}
       {filter === 'tlds' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 scroll-reveal">
           {highAbuseTLDs.map((t, idx) => (
             <div key={idx} className="p-4 rounded-xl bg-[#090C13] border border-[#1C2230] hover:border-orange-500/40 transition-all space-y-2">
               <div className="flex items-center justify-between">
@@ -191,7 +191,7 @@ export default function ThreatIntel() {
 
       {/* TAB 3: Credential Keywords */}
       {filter === 'keywords' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 scroll-reveal">
           {keywordSignatures.map((k, idx) => (
             <div key={idx} className="p-4 rounded-xl bg-[#090C13] border border-[#1C2230] hover:border-orange-500/40 transition-all space-y-1.5">
               <div className="flex items-center justify-between">

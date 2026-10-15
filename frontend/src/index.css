@@ -357,3 +357,86 @@ html.light div.bg-\[\#0B0F17\] {
 html.light tbody tr:hover {
   background-color: #F8FAFC !important;
 }
+
+/* ==========================================================================
+   SCROLL-DRIVEN ANIMATIONS
+   GPU-accelerated, responsive, 60fps view-driven reveals & parallax effects
+   ========================================================================== */
+
+/* Base scroll reveal entrance */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px) scale(0.99);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.in-view {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Horizontal reveals */
+.scroll-reveal-left {
+  opacity: 0;
+  transform: translateX(-24px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal-left.in-view {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scroll-reveal-right {
+  opacity: 0;
+  transform: translateX(24px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal-right.in-view {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Stagger delays for grid items & cards */
+.scroll-stagger-1 { transition-delay: 0.05s; }
+.scroll-stagger-2 { transition-delay: 0.12s; }
+.scroll-stagger-3 { transition-delay: 0.19s; }
+.scroll-stagger-4 { transition-delay: 0.26s; }
+
+/* Native CSS Scroll-Driven Animation (Hardware timeline) */
+@supports (animation-timeline: view()) {
+  .scroll-driven {
+    animation: scrollRevealTimeline 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 30%;
+  }
+
+  @keyframes scrollRevealTimeline {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
+/* Accessibility: Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal,
+  .scroll-reveal-left,
+  .scroll-reveal-right,
+  .scroll-driven {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
