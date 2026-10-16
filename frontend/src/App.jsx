@@ -25,6 +25,8 @@ export default function App() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState('');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [navProgress, setNavProgress] = useState(0);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('catch_the_phish_theme') || 'dark';
   });
@@ -45,6 +47,35 @@ export default function App() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
+  // Smooth Page Redirection Controller
+  const navigateToPage = (newPage) => {
+    if (newPage === activePage) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // 1. Initiate smooth exit & top tactile progress beam
+    setIsTransitioning(true);
+    setNavProgress(40);
+
+    // 2. Midway switch: swap active page and reset scroll without jump
+    setTimeout(() => {
+      setNavProgress(80);
+      setActivePage(newPage);
+      window.scrollTo(0, 0);
+
+      // 3. Smooth entrance reveal
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setNavProgress(100);
+
+        setTimeout(() => {
+          setNavProgress(0);
+        }, 160);
+      }, 40);
+    }, 120);
+  };
+
   const handleQuickScan = async (url) => {
     if (!url || !url.trim()) return;
     setIsScanning(true);
@@ -52,10 +83,10 @@ export default function App() {
     try {
       const data = await api.scanUrl(url.trim());
       setScanResult(data);
-      setActivePage('results');
+      navigateToPage('results');
     } catch (err) {
       setScanError(err.message || 'Quick scan failed. Please check the URL format.');
-      setActivePage('scanner');
+      navigateToPage('scanner');
     } finally {
       setIsScanning(false);
     }
@@ -64,15 +95,15 @@ export default function App() {
   const renderPage = () => {
     switch (activePage) {
       case 'home':
-        return <Home setActivePage={setActivePage} setScanResult={setScanResult} />;
+        return <Home setActivePage={navigateToPage} setScanResult={setScanResult} />;
       case 'dashboard':
-        return <Dashboard setActivePage={setActivePage} setScanResult={setScanResult} />;
+        return <Dashboard setActivePage={navigateToPage} setScanResult={setScanResult} />;
       case 'scanner':
-        return <Scanner setActivePage={setActivePage} setScanResult={setScanResult} />;
+        return <Scanner setActivePage={navigateToPage} setScanResult={setScanResult} />;
       case 'results':
-        return <Results result={scanResult} setActivePage={setActivePage} />;
+        return <Results result={scanResult} setActivePage={navigateToPage} />;
       case 'history':
-        return <History setActivePage={setActivePage} setScanResult={setScanResult} />;
+        return <History setActivePage={navigateToPage} setScanResult={setScanResult} />;
       case 'threat-intel':
         return <ThreatIntel />;
       case 'analytics':
@@ -84,27 +115,47 @@ export default function App() {
       case 'about':
         return <About />;
       default:
-        return <Home setActivePage={setActivePage} setScanResult={setScanResult} />;
+        return <Home setActivePage={navigateToPage} setScanResult={setScanResult} />;
     }
   };
+
+  // Top Redirection Progress Beam
+  const redirectionBeam = navProgress > 0 && (
+    <div 
+      className="fixed top-0 left-0 right-0 z-[100] h-[2.5px] pointer-events-none bg-transparent"
+      aria-hidden="true"
+    >
+      <div 
+        className={`h-full shadow-[0_0_12px_rgba(255,107,53,0.85)] transition-all duration-150 ease-out ${
+          theme === 'light' ? 'bg-[#2563EB]' : 'bg-gradient-to-r from-[#FF6B35] to-[#FFA043]'
+        }`}
+        style={{ width: `${navProgress}%` }}
+      />
+    </div>
+  );
 
   // Dedicated full-width SHADOW UI Landing Page
   if (activePage === 'home') {
     return (
-      <div className="min-h-screen bg-[#0B0B0C] text-[#F5F5F5] font-sans selection:bg-[#FF6B35]/30 selection:text-white antialiased">
+      <div className="min-h-screen bg-[#0B0B0C] text-[#F5F5F5] font-sans selection:bg-[#FF6B35]/30 selection:text-white antialiased relative">
+        {redirectionBeam}
         <ScrollController activePage={activePage} theme={theme} />
-        <Home setActivePage={setActivePage} setScanResult={setScanResult} />
+        <div className={`page-view-wrapper ${isTransitioning ? 'page-view-exit' : 'page-view-enter'}`}>
+          <Home setActivePage={navigateToPage} setScanResult={setScanResult} />
+        </div>
       </div>
     );
   }
 
   // Security Operations Console Layout (Dashboard, Scanner, Results, Records, Intelligence, etc.)
   return (
-    <div className="min-h-screen bg-[#0B0B0C] text-[#F5F5F5] flex flex-col font-sans selection:bg-[#FF6B35]/30 selection:text-white antialiased">
+    <div className="min-h-screen bg-[#0B0B0C] text-[#F5F5F5] flex flex-col font-sans selection:bg-[#FF6B35]/30 selection:text-white antialiased relative">
+      {redirectionBeam}
+
       {/* Sidebar Navigation */}
       <Sidebar
         activePage={activePage}
-        setActivePage={setActivePage}
+        setActivePage={navigateToPage}
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
         isMobileOpen={isMobileOpen}
@@ -122,7 +173,7 @@ export default function App() {
         {/* Top Navbar */}
         <TopNavbar
           activePage={activePage}
-          setActivePage={setActivePage}
+          setActivePage={navigateToPage}
           isCollapsed={isCollapsed}
           setIsMobileOpen={setIsMobileOpen}
           onQuickScan={handleQuickScan}
@@ -153,13 +204,15 @@ export default function App() {
           </div>
         )}
 
-        {/* Dynamic Page Content */}
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Dynamic Page Content with Smooth Transition */}
+        <main className={`flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 page-view-wrapper ${
+          isTransitioning ? 'page-view-exit' : 'page-view-enter'
+        }`}>
           {renderPage()}
         </main>
 
         {/* Footer */}
-        <Footer setActivePage={setActivePage} />
+        <Footer setActivePage={navigateToPage} />
       </div>
     </div>
   );

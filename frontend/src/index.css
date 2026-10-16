@@ -540,4 +540,24 @@ html.light .card-apple:hover {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ==========================================================================
+   SMOOTH PAGE REDIRECTION TRANSITION
+   ========================================================================== */
+.page-view-wrapper {
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.page-view-enter {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.page-view-exit {
+  opacity: 0;
+  transform: translateY(6px) scale(0.995);
+  pointer-events: none;
+}
+
 
