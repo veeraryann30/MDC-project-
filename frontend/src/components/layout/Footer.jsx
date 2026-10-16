@@ -1,109 +1,121 @@
 import React from 'react';
-import { Shield, Lock, Terminal, Cpu, Heart } from 'lucide-react';
+import { Lock, Terminal } from 'lucide-react';
+import Logo from '../common/Logo';
+
+function GitHubIcon({ className = "w-3.5 h-3.5" }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+    </svg>
+  );
+}
 
 export default function Footer({ setActivePage }) {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-[#1C2230] bg-[#05070B] text-slate-400 text-sm mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="border-t border-[#29292D] bg-[#0B0B0C] text-[#92929A] text-xs mt-16 select-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Col */}
-          <div className="space-y-4 md:col-span-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-orange-950/40 border border-orange-500/40 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-orange-400" />
-              </div>
-              <span className="font-bold text-white text-base tracking-wider">
-                CATCH THE <span className="text-[#FF6B00]">PHISH</span>
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 leading-relaxed font-sans">
-              Next-generation Explainable Phishing Detection System. Combining real-time lexical inspection, brand lookalike recognition, and machine learning.
+          <div className="space-y-3 md:col-span-1">
+            <Logo size="sm" withWordmark={true} withTagline={false} />
+            <p className="text-xs text-[#92929A] leading-relaxed">
+              Explainable phishing URL detection powered by lexical inspection, brand lookalike verification, and machine learning inference.
             </p>
-            <div className="flex items-center gap-2 text-[11px] font-mono text-orange-400/90 bg-black/60 px-2.5 py-1.5 rounded border border-orange-500/30 w-fit">
-              <Terminal className="w-3.5 h-3.5" />
-              <span>Safe Static Analysis Engine</span>
+            <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#92929A] bg-[#151517] px-2.5 py-1 rounded-[6px] border border-[#29292D] w-fit">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#35C98A]" />
+              <span>Zero-Execution Protocol</span>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-4 font-mono">
-              Navigation
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#F5F5F5] mb-3 font-mono">
+              Console
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => setActivePage('home')} className="hover:text-orange-400 transition-colors">
-                  Home & Overview
+                <button onClick={() => setActivePage('home')} className="hover:text-[#F5F5F5] transition-colors cursor-pointer">
+                  Landing Page
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('scanner')} className="hover:text-orange-400 transition-colors">
-                  URL Scanner Workstation
+                <button onClick={() => setActivePage('dashboard')} className="hover:text-[#F5F5F5] transition-colors cursor-pointer">
+                  Overview Console
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('dashboard')} className="hover:text-orange-400 transition-colors">
-                  SOC Analytics Dashboard
+                <button onClick={() => setActivePage('scanner')} className="hover:text-[#F5F5F5] transition-colors cursor-pointer">
+                  URL Scanner
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('history')} className="hover:text-orange-400 transition-colors">
-                  Audit Scan History
+                <button onClick={() => setActivePage('history')} className="hover:text-[#F5F5F5] transition-colors cursor-pointer">
+                  Audit History
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Educational Modules */}
+          {/* Intelligence Modules */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-4 font-mono">
-              Phishing Academy
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#F5F5F5] mb-3 font-mono">
+              Intelligence
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => setActivePage('learn')} className="hover:text-orange-400 transition-colors">
-                  Lookalike Domains & Homoglyphs
+                <button onClick={() => setActivePage('threat-intel')} className="hover:text-[#F5F5F5] transition-colors cursor-pointer">
+                  Adversary Watchlists
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('learn')} className="hover:text-orange-400 transition-colors">
-                  Punycode Attacks & IDN
+                <button onClick={() => setActivePage('analytics')} className="hover:text-[#F5F5F5] transition-colors cursor-pointer">
+                  Detection Telemetry
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('learn')} className="hover:text-orange-400 transition-colors">
-                  Fake Payment & Banking Portals
+                <button onClick={() => setActivePage('learn')} className="hover:text-[#F5F5F5] transition-colors cursor-pointer">
+                  Threat Guide Academy
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('learn')} className="hover:text-orange-400 transition-colors">
-                  Interactive Phishing IQ Quiz
+                <button onClick={() => setActivePage('about')} className="hover:text-[#F5F5F5] transition-colors cursor-pointer">
+                  Model Architecture
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Security & Ethics Notice */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-emerald-400" />
-              Zero-Execution Principle
+          {/* Safety & Protocol */}
+          <div className="space-y-2">
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#F5F5F5] font-mono flex items-center gap-1.5">
+              <Lock className="w-3 h-3 text-[#35C98A]" />
+              <span>Zero-Execution Protocol</span>
             </h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Catch the Phish parses URLs purely as untrusted data strings. It <span className="text-slate-200 font-medium">never connects to, renders, or executes scripts</span> from target domains.
+            <p className="text-xs text-[#92929A] leading-relaxed">
+              Target links are parsed strictly as untrusted text vectors. No requests are dispatched to destination web servers.
             </p>
-            <p className="text-[11px] text-slate-500 italic">
-              Developed as a Cybersecurity & Machine Learning Engineering demonstration.
-            </p>
+            <div className="pt-1">
+              <a 
+                href="https://github.com/veeraryann30/MDC-project-" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-[#F5F5F5] hover:text-[#FF6B35] font-mono text-[11px] transition-colors"
+              >
+                <GitHubIcon className="w-3.5 h-3.5" />
+                <span>github.com/veeraryann30/MDC-project-</span>
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-[#1C2230] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} Catch the Phish. “Don’t Click. Check First.”</p>
-          <div className="flex items-center gap-4 text-xs font-mono">
-            <span className="flex items-center gap-1 text-slate-400">
-              <Cpu className="w-3.5 h-3.5 text-orange-400" /> Scikit-Learn + FastAPI + React
-            </span>
+        <div className="pt-6 mt-8 border-t border-[#29292D] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#686870]">
+          <div>
+            © {currentYear} Catch the Phish. All rights reserved.
+          </div>
+          <div className="font-mono">
+            SHADOW UI
           </div>
         </div>
       </div>

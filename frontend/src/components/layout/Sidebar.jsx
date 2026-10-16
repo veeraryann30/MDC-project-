@@ -1,9 +1,9 @@
 import React from 'react';
 import { 
-  ShieldAlert, Home as HomeIcon, Search, History as ClockIcon, 
-  Crosshair, BarChart2, BookOpen, Settings, ChevronLeft, ChevronRight, 
-  LayoutGrid, User, Shield, Lock, ExternalLink, Sun, Moon 
+  LayoutGrid, Search, Clock, BarChart2, Crosshair, 
+  BookOpen, Settings, ChevronLeft, ChevronRight, Globe, ArrowLeft
 } from 'lucide-react';
+import Logo from '../common/Logo';
 
 export default function Sidebar({ 
   activePage, 
@@ -11,18 +11,16 @@ export default function Sidebar({
   isCollapsed, 
   setIsCollapsed, 
   isMobileOpen, 
-  setIsMobileOpen,
-  theme,
-  toggleTheme 
+  setIsMobileOpen 
 }) {
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: HomeIcon, badge: null },
-    { id: 'scanner', label: 'URL Scanner', icon: Search, badge: null },
-    { id: 'history', label: 'Scan History', icon: ClockIcon, badge: null },
-    { id: 'threat-intel', label: 'Threat Intelligence', icon: Crosshair, badge: 'LIVE' },
-    { id: 'analytics', label: 'Analytics', icon: BarChart2, badge: null },
-    { id: 'learn', label: 'Education / Learn', icon: BookOpen, badge: null },
-    { id: 'settings', label: 'Settings', icon: Settings, badge: null },
+    { id: 'dashboard', label: 'Overview', icon: LayoutGrid },
+    { id: 'scanner', label: 'Scanner', icon: Search },
+    { id: 'history', label: 'History', icon: Clock },
+    { id: 'analytics', label: 'Insights', icon: BarChart2 },
+    { id: 'threat-intel', label: 'Threat Intel', icon: Crosshair },
+    { id: 'learn', label: 'Threat Guide', icon: BookOpen },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   const handleNavClick = (id) => {
@@ -42,44 +40,37 @@ export default function Sidebar({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#07090E] border-r border-[#1C2230] transition-all duration-300 ease-in-out
-          ${isCollapsed ? 'w-20' : 'w-64'}
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#101012] border-r border-[#29292D] transition-all duration-200 ease-in-out select-none
+          ${isCollapsed ? 'w-16' : 'w-60'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Brand Header */}
-        <div className="h-16 px-4 flex items-center justify-between border-b border-[#1C2230]">
+        <div className="h-16 px-4 flex items-center justify-between border-b border-[#29292D]">
           <div 
-            onClick={() => handleNavClick('dashboard')}
-            className="flex items-center gap-3 cursor-pointer group overflow-hidden"
+            onClick={() => handleNavClick('home')}
+            className="cursor-pointer flex items-center overflow-hidden"
+            title="Return to Homepage"
           >
-            <div className="w-9 h-9 rounded-xl bg-orange-950/40 border border-orange-500/50 flex items-center justify-center shrink-0 group-hover:border-orange-400 group-hover:shadow-[0_0_15px_rgba(255,107,0,0.3)] transition-all">
-              <ShieldAlert className="w-5 h-5 text-[#FF6B00] group-hover:scale-105 transition-transform" />
-            </div>
-            {!isCollapsed && (
-              <div className="flex flex-col">
-                <span className="font-extrabold text-sm tracking-wider text-white">
-                  CATCH THE <span className="text-[#FF6B00]">PHISH</span>
-                </span>
-                <span className="text-[10px] text-slate-400 font-mono tracking-tight">
-                  Security Operations
-                </span>
-              </div>
+            {isCollapsed ? (
+              <Logo size="sm" withWordmark={false} />
+            ) : (
+              <Logo size="sm" withWordmark={true} />
             )}
           </div>
 
           {/* Desktop Collapse Toggle */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+            className="hidden lg:flex p-1.5 rounded-[8px] text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517] transition-colors"
             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {isCollapsed ? <ChevronRight className="w-4 h-4 text-orange-400" /> : <ChevronLeft className="w-4 h-4 text-slate-400" />}
+            {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
           </button>
         </div>
 
-        {/* Navigation Section */}
-        <div className="flex-1 py-4 px-3 space-y-1.5 overflow-y-auto">
+        {/* Primary Navigation */}
+        <div className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activePage === item.id;
@@ -87,93 +78,32 @@ export default function Sidebar({
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all group relative cursor-pointer ${
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-[10px] text-xs font-medium transition-all duration-150 cursor-pointer ${
                   isActive
-                    ? 'bg-[#FF6B00]/10 text-[#FFA043] border border-[#FF6B00] font-semibold shadow-[0_0_15px_rgba(255,107,0,0.18)]'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/40 border border-transparent'
+                    ? 'bg-[#151517] text-[#F5F5F5] font-semibold border-l-2 border-[#FF6B35]'
+                    : 'text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517]/60'
                 }`}
                 title={isCollapsed ? item.label : undefined}
               >
-                <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-[#FF6B00]' : 'text-slate-400 group-hover:text-slate-200'}`} />
+                <Icon className={`w-4 h-4 shrink-0 stroke-[1.8] ${isActive ? 'text-[#FF6B35]' : 'text-[#92929A]'}`} />
                 {!isCollapsed && (
-                  <span className="flex-1 text-left truncate">{item.label}</span>
-                )}
-                {!isCollapsed && item.badge && (
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-orange-950/80 text-orange-400 border border-orange-800/60">
-                    {item.badge}
-                  </span>
-                )}
-
-                {/* Collapsed Indicator */}
-                {isCollapsed && isActive && (
-                  <div className="absolute right-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#FF6B00]" />
+                  <span className="truncate">{item.label}</span>
                 )}
               </button>
             );
           })}
-
-          {/* Quick link to Landing Page / Overview */}
-          <div className="pt-3 mt-3 border-t border-[#1C2230]">
-            <button
-              onClick={() => handleNavClick('home')}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
-                activePage === 'home'
-                  ? 'bg-[#FF6B00]/10 text-[#FFA043] border border-[#FF6B00] font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent'
-              }`}
-              title="Landing / Overview"
-            >
-              <LayoutGrid className="w-4 h-4 shrink-0 text-slate-400" />
-              {!isCollapsed && <span>Landing / Overview</span>}
-            </button>
-
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="w-full mt-2 flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-mono transition-all cursor-pointer bg-[#06080E] border border-[#1C2230] hover:border-slate-600 text-slate-300"
-              title={theme === 'light' ? 'Switch to Dark Mode (Tactical Cyber)' : 'Switch to Light Mode (Blue & White)'}
-            >
-              <div className="flex items-center gap-2.5">
-                {theme === 'light' ? (
-                  <Moon className="w-4 h-4 text-blue-500 shrink-0" />
-                ) : (
-                  <Sun className="w-4 h-4 text-orange-400 shrink-0" />
-                )}
-                {!isCollapsed && <span>{theme === 'light' ? 'Light Theme' : 'Dark Theme'}</span>}
-              </div>
-              {!isCollapsed && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/40 text-slate-400 font-mono">
-                  {theme === 'light' ? 'BLUE' : 'CYBER'}
-                </span>
-              )}
-            </button>
-          </div>
         </div>
 
-        {/* User Profile & Platform Info */}
-        <div className="p-3 border-t border-[#1C2230] bg-[#05070B]">
-          <div className={`p-2.5 rounded-xl bg-[#090C13] border border-[#1C2230] ${isCollapsed ? 'flex justify-center' : ''}`}>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-orange-950/70 border border-orange-500/50 flex items-center justify-center shrink-0">
-                <User className="w-4 h-4 text-orange-400" />
-              </div>
-              {!isCollapsed && (
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-semibold text-white truncate">Security Operator</div>
-                  <div className="text-[11px] text-orange-400 font-mono">
-                    SOC Level 1
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {!isCollapsed && (
-              <div className="mt-2.5 p-1.5 rounded-lg bg-black/60 border border-orange-500/30 flex items-center justify-center gap-1.5 text-[11px] font-mono text-orange-400">
-                <Shield className="w-3.5 h-3.5 text-orange-400" />
-                <span>Zero-Execution</span>
-              </div>
-            )}
-          </div>
+        {/* Bottom Return to Landing Page */}
+        <div className="p-3 border-t border-[#29292D]">
+          <button
+            onClick={() => handleNavClick('home')}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-xs font-mono text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517] transition-colors cursor-pointer"
+            title="Return to Landing Page"
+          >
+            <Globe className="w-4 h-4 shrink-0 text-[#686870]" />
+            {!isCollapsed && <span className="truncate">Landing Page</span>}
+          </button>
         </div>
       </aside>
     </>

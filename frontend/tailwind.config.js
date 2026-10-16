@@ -7,21 +7,39 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Geist', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['"Geist Mono"', '"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+      },
       colors: {
+        shadow: {
+          bg: '#0B0B0C',
+          surface: '#101012',
+          card: '#151517',
+          elevated: '#1B1B1F',
+          border: '#29292D',
+          primary: '#F5F5F5',
+          secondary: '#92929A',
+          muted: '#686870',
+          orange: '#FF6B35',
+          safe: '#35C98A',
+          warning: '#F2B84B',
+          danger: '#FF5C5C',
+        },
         cyber: {
-          dark: '#050608',
-          surface: '#090C13',
-          card: '#0B0F17',
-          cardHover: '#121722',
-          border: 'rgba(255, 107, 0, 0.18)',
-          borderHover: 'rgba(255, 107, 0, 0.45)',
-          accent: '#FF6B00',
+          dark: '#0B0B0C',
+          surface: '#101012',
+          card: '#151517',
+          cardHover: '#1B1B1F',
+          border: '#29292D',
+          borderHover: 'rgba(255, 107, 53, 0.4)',
+          accent: '#FF6B35',
           accentLight: '#FFA043',
-          accentGlow: 'rgba(255, 107, 0, 0.35)',
-          safe: '#10b981',
-          warning: '#f59e0b',
-          danger: '#ef4444',
-          textMuted: '#94a3b8'
+          accentGlow: 'rgba(255, 107, 53, 0.25)',
+          safe: '#35C98A',
+          warning: '#F2B84B',
+          danger: '#FF5C5C',
+          textMuted: '#92929A'
         }
       },
       animation: {

@@ -45,87 +45,87 @@ export default function ThreatIntel() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8 select-none">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 scroll-reveal">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/60 border border-orange-500/40 text-orange-400 text-xs font-mono mb-2">
-            <Shield className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] bg-[#151517] border border-[#29292D] text-[#92929A] text-xs font-mono uppercase tracking-wider mb-2">
+            <Shield className="w-3.5 h-3.5 text-[#FF6B35]" />
             <span>Adversary Signatures & Watchlists</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F5F5] tracking-tight">
             Threat Intelligence
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#92929A] mt-1">
             Signatures, monitored brand catalogs, high-abuse TLDs, and external API connectors.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1.5 rounded-xl bg-[#090C13] border border-[#1C2230] text-slate-300 text-xs font-mono">
-            Feed Status: <strong className="text-emerald-400">Synchronized</strong>
+          <span className="px-3 py-1.5 rounded-[10px] bg-[#151517] border border-[#29292D] text-[#92929A] text-xs font-mono">
+            Feed Status: <strong className="text-[#35C98A]">Synchronized</strong>
           </span>
         </div>
       </div>
 
       {/* API Adapters Status Card */}
-      <div className="p-6 rounded-2xl bg-[#090C13] border border-[#1C2230] shadow-sm space-y-4 scroll-reveal">
-        <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2">
-          <Server className="w-4 h-4 text-orange-400" />
+      <div className="p-6 rounded-[16px] bg-[#151517] border border-[#29292D] space-y-4">
+        <h3 className="text-xs font-semibold text-[#F5F5F5] font-mono uppercase tracking-wider flex items-center gap-2">
+          <Server className="w-4 h-4 text-[#FF6B35]" />
           <span>Threat Intelligence Integrations</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
           {/* Local Heuristics */}
-          <div className="p-4 rounded-xl bg-[#06080E] border border-[#1C2230] space-y-2">
+          <div className="p-4 rounded-[12px] bg-[#101012] border border-[#29292D] space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-white">Local Heuristic Engine</span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-800">
+              <span className="font-semibold text-[#F5F5F5]">Local Heuristic Engine</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#101F18] text-[#35C98A] border border-[#35C98A]/30">
                 ACTIVE
               </span>
             </div>
-            <p className="text-slate-400 text-[11px] leading-relaxed">
+            <p className="text-[#92929A] text-[11px] leading-relaxed">
               34-feature lexical parser, Shannon entropy calculator, and Levenshtein brand distance analyzer.
             </p>
-            <div className="text-[10px] font-mono text-orange-400">Zero-Execution Static Sandbox</div>
+            <div className="text-[10px] font-mono text-[#FF6B35]">Zero-Execution Static Sandbox</div>
           </div>
 
           {/* VirusTotal API */}
-          <div className="p-4 rounded-xl bg-[#06080E] border border-[#1C2230] space-y-2">
+          <div className="p-4 rounded-[12px] bg-[#101012] border border-[#29292D] space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-white">VirusTotal v3 API</span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#090C13] text-slate-400 border border-[#1C2230]">
+              <span className="font-semibold text-[#F5F5F5]">VirusTotal v3 API</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono text-[#686870] border border-[#29292D]">
                 OPTIONAL PLUG-IN
               </span>
             </div>
-            <p className="text-slate-400 text-[11px] leading-relaxed">
+            <p className="text-[#92929A] text-[11px] leading-relaxed">
               Multi-engine antivirus domain reputation check. Configured via <code>VIRUSTOTAL_API_KEY</code>.
             </p>
-            <div className="text-[10px] font-mono text-slate-400">Offline Simulation Fallback Active</div>
+            <div className="text-[10px] font-mono text-[#686870]">Offline Simulation Fallback Active</div>
           </div>
 
           {/* Google Safe Browsing */}
-          <div className="p-4 rounded-xl bg-[#06080E] border border-[#1C2230] space-y-2">
+          <div className="p-4 rounded-[12px] bg-[#101012] border border-[#29292D] space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-white">Google Safe Browsing</span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#090C13] text-slate-400 border border-[#1C2230]">
+              <span className="font-semibold text-[#F5F5F5]">Google Safe Browsing</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono text-[#686870] border border-[#29292D]">
                 OPTIONAL PLUG-IN
               </span>
             </div>
-            <p className="text-slate-400 text-[11px] leading-relaxed">
+            <p className="text-[#92929A] text-[11px] leading-relaxed">
               Google threat intelligence lookup feed. Configured via <code>GOOGLE_SAFE_BROWSING_API_KEY</code>.
             </p>
-            <div className="text-[10px] font-mono text-slate-400">Offline Simulation Fallback Active</div>
+            <div className="text-[10px] font-mono text-[#686870]">Offline Simulation Fallback Active</div>
           </div>
         </div>
       </div>
 
       {/* Tabs for Watchlists */}
-      <div className="flex border-b border-[#1C2230] gap-4 text-xs font-mono">
+      <div className="flex border-b border-[#29292D] gap-4 text-xs font-mono">
         <button
           onClick={() => setFilter('brands')}
           className={`pb-3 font-semibold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
-            filter === 'brands' ? 'border-orange-500 text-orange-400' : 'border-transparent text-slate-400 hover:text-white'
+            filter === 'brands' ? 'border-[#FF6B35] text-[#F5F5F5]' : 'border-transparent text-[#92929A] hover:text-[#F5F5F5]'
           }`}
         >
           <span>Monitored Brand Targets ({monitoredBrands.length})</span>
@@ -133,7 +133,7 @@ export default function ThreatIntel() {
         <button
           onClick={() => setFilter('tlds')}
           className={`pb-3 font-semibold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
-            filter === 'tlds' ? 'border-orange-500 text-orange-400' : 'border-transparent text-slate-400 hover:text-white'
+            filter === 'tlds' ? 'border-[#FF6B35] text-[#F5F5F5]' : 'border-transparent text-[#92929A] hover:text-[#F5F5F5]'
           }`}
         >
           <span>High-Abuse TLDs ({highAbuseTLDs.length})</span>
@@ -141,7 +141,7 @@ export default function ThreatIntel() {
         <button
           onClick={() => setFilter('keywords')}
           className={`pb-3 font-semibold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
-            filter === 'keywords' ? 'border-orange-500 text-orange-400' : 'border-transparent text-slate-400 hover:text-white'
+            filter === 'keywords' ? 'border-[#FF6B35] text-[#F5F5F5]' : 'border-transparent text-[#92929A] hover:text-[#F5F5F5]'
           }`}
         >
           <span>Credential Keywords ({keywordSignatures.length})</span>
@@ -150,19 +150,19 @@ export default function ThreatIntel() {
 
       {/* TAB 1: Monitored Brands */}
       {filter === 'brands' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 scroll-reveal">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {monitoredBrands.map((b, idx) => (
-            <div key={idx} className="p-4 rounded-xl bg-[#090C13] border border-[#1C2230] hover:border-orange-500/40 transition-all space-y-2">
+            <div key={idx} className="p-4 rounded-[12px] bg-[#151517] border border-[#29292D] hover:border-[#38383E] transition-colors space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-white text-sm">{b.name}</span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-950/80 text-rose-300 border border-rose-800">
+                <span className="font-semibold text-[#F5F5F5] text-xs sm:text-sm">{b.name}</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#241315] text-[#FF5C5C] border border-[#FF5C5C]/30">
                   {b.riskLevel}
                 </span>
               </div>
-              <div className="text-xs text-slate-400">{b.category}</div>
-              <div className="pt-2 border-t border-[#1C2230] flex items-center justify-between text-[11px] font-mono">
-                <span className="text-slate-400">Legitimate:</span>
-                <span className="text-orange-400 font-semibold">{b.official}</span>
+              <div className="text-xs text-[#92929A]">{b.category}</div>
+              <div className="pt-2 border-t border-[#29292D] flex items-center justify-between text-[11px] font-mono">
+                <span className="text-[#686870]">Official Host:</span>
+                <span className="text-[#FF6B35] font-semibold">{b.official}</span>
               </div>
             </div>
           ))}
@@ -171,18 +171,18 @@ export default function ThreatIntel() {
 
       {/* TAB 2: High-Abuse TLDs */}
       {filter === 'tlds' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 scroll-reveal">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {highAbuseTLDs.map((t, idx) => (
-            <div key={idx} className="p-4 rounded-xl bg-[#090C13] border border-[#1C2230] hover:border-orange-500/40 transition-all space-y-2">
+            <div key={idx} className="p-4 rounded-[12px] bg-[#151517] border border-[#29292D] hover:border-[#38383E] transition-colors space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-black text-orange-400 text-lg font-mono">{t.tld}</span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-950/80 text-amber-300 border border-amber-800">
+                <span className="font-bold text-[#FF6B35] text-base font-mono">{t.tld}</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#221B10] text-[#F2B84B] border border-[#F2B84B]/30">
                   {t.reputation}
                 </span>
               </div>
-              <div className="text-xs text-slate-300 leading-snug">{t.primaryUse}</div>
-              <div className="pt-2 border-t border-[#1C2230] text-[10px] font-mono text-slate-400">
-                Avg Registration Cost: {t.cost}
+              <div className="text-xs text-[#92929A] leading-snug">{t.primaryUse}</div>
+              <div className="pt-2 border-t border-[#29292D] text-[10px] font-mono text-[#686870]">
+                Avg Cost: {t.cost}
               </div>
             </div>
           ))}
@@ -191,18 +191,18 @@ export default function ThreatIntel() {
 
       {/* TAB 3: Credential Keywords */}
       {filter === 'keywords' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 scroll-reveal">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {keywordSignatures.map((k, idx) => (
-            <div key={idx} className="p-4 rounded-xl bg-[#090C13] border border-[#1C2230] hover:border-orange-500/40 transition-all space-y-1.5">
+            <div key={idx} className="p-4 rounded-[12px] bg-[#151517] border border-[#29292D] hover:border-[#38383E] transition-colors space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-white font-mono text-sm">{k.word}</span>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                  k.severity === 'Critical' ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-amber-950 text-amber-300 border border-amber-800'
+                <span className="font-semibold text-[#F5F5F5] font-mono text-xs">{k.word}</span>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold ${
+                  k.severity === 'Critical' ? 'bg-[#241315] text-[#FF5C5C] border border-[#FF5C5C]/30' : 'bg-[#221B10] text-[#F2B84B] border border-[#F2B84B]/30'
                 }`}>
                   {k.severity}
                 </span>
               </div>
-              <div className="text-xs text-slate-400">{k.category}</div>
+              <div className="text-xs text-[#92929A]">{k.category}</div>
             </div>
           ))}
         </div>

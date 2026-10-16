@@ -4,76 +4,108 @@
 
 @layer base {
   :root {
-    --bg-primary: #050608;
-    --bg-surface: #090C13;
-    --bg-surface-elevated: #101522;
-    --border-subtle: rgba(255, 107, 0, 0.16);
-    --border-hover: rgba(255, 107, 0, 0.45);
-    --accent-orange: #FF6B00;
+    --bg-main: #0B0B0C;
+    --bg-secondary: #101012;
+    --bg-card: #151517;
+    --bg-elevated: #1B1B1F;
+    --border-subtle: #29292D;
+    --text-primary: #F5F5F5;
+    --text-secondary: #92929A;
+    --text-muted: #686870;
+    --accent-orange: #FF6B35;
+    --status-safe: #35C98A;
+    --status-warning: #F2B84B;
+    --status-danger: #FF5C5C;
   }
 
   body {
-    @apply bg-[#050608] text-slate-100 antialiased selection:bg-orange-500 selection:text-black font-sans;
-    background-image: 
-      radial-gradient(ellipse 90% 60% at 50% -15%, rgba(255, 107, 0, 0.12), transparent 70%),
-      radial-gradient(circle at 10% 90%, rgba(255, 107, 0, 0.03) 0%, transparent 40%);
+    @apply bg-[#0B0B0C] text-[#F5F5F5] antialiased selection:bg-[#FF6B35]/30 selection:text-white font-sans;
     min-height: 100vh;
   }
 }
 
-/* Modern SaaS card surfaces - Tactical Orange Cyber (Dark Default) */
+/* SHADOW UI Surfaces & Components */
+.shadow-card {
+  background: #151517;
+  border: 1px solid #29292D;
+  border-radius: 14px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.shadow-card:hover {
+  border-color: #38383E;
+}
+
+.shadow-elevated {
+  background: #1B1B1F;
+  border: 1px solid #29292D;
+  border-radius: 14px;
+}
+
+.shadow-input {
+  background: #151517;
+  border: 1px solid #29292D;
+  border-radius: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shadow-input:focus {
+  border-color: #FF6B35;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.35);
+}
+
+.shadow-button {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.shadow-container {
+  border-radius: 18px;
+}
+
+/* Legacy utility compatibility */
 .cyber-card {
-  background: #090C13;
-  border: 1px solid rgba(255, 107, 0, 0.16);
-  border-radius: 0.875rem;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #151517;
+  border: 1px solid #29292D;
+  border-radius: 14px;
+  transition: border-color 0.2s ease;
 }
 
 .cyber-card:hover {
-  border-color: rgba(255, 107, 0, 0.45);
-  box-shadow: 0 0 20px rgba(255, 107, 0, 0.08);
+  border-color: #38383E;
 }
 
 .cyber-card-elevated {
-  background: #101522;
-  border: 1px solid rgba(255, 107, 0, 0.28);
-  border-radius: 0.875rem;
+  background: #1B1B1F;
+  border: 1px solid #29292D;
+  border-radius: 14px;
 }
 
-/* Glassmorphism panel */
+/* Minimal glass panel */
 .glass-panel {
-  background: rgba(9, 12, 19, 0.90);
+  background: rgba(16, 16, 18, 0.90);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 107, 0, 0.18);
-  border-radius: 0.875rem;
+  border: 1px solid #29292D;
+  border-radius: 14px;
 }
 
-.glass-panel-hover {
-  transition: all 0.2s ease-in-out;
-}
-
-.glass-panel-hover:hover {
-  background: rgba(14, 19, 30, 0.95);
-  border-color: rgba(255, 107, 0, 0.45);
-  transform: translateY(-1px);
-  box-shadow: 0 10px 30px -10px rgba(255, 107, 0, 0.15);
-}
-
-/* Sleek tactical scrollbars */
+/* Minimal subtle scrollbars */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #050608;
+  background: #0B0B0C;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1C2230;
+  background: #29292D;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #FF6B00;
+  background: #38383E;
 }
 
 /* ==========================================================================

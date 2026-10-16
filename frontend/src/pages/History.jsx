@@ -53,7 +53,7 @@ export default function History({ setActivePage, setScanResult }) {
 
   const handleDeleteItem = async (id, e) => {
     e.stopPropagation();
-    if (!window.confirm('Delete this audit entry?')) return;
+    if (!window.confirm('Delete this audit entry from SQLite records?')) return;
     try {
       await api.deleteHistoryItem(id);
       setHistoryItems(prev => prev.filter(i => i.id !== id));
@@ -112,29 +112,28 @@ export default function History({ setActivePage, setScanResult }) {
     const norm = (classification || 'SAFE').toUpperCase();
     if (norm === 'PHISHING' || norm === 'DANGEROUS') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-mono uppercase bg-rose-950/80 text-rose-300 border border-rose-800">
-          <XCircle className="w-3 h-3 text-rose-400" />
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold font-mono uppercase bg-[#241315] text-[#FF5C5C] border border-[#FF5C5C]/30">
+          <XCircle className="w-3 h-3 text-[#FF5C5C]" />
           <span>PHISHING</span>
         </span>
       );
     }
     if (norm === 'SUSPICIOUS') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-mono uppercase bg-amber-950/80 text-amber-300 border border-amber-800">
-          <AlertTriangle className="w-3 h-3 text-amber-400" />
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold font-mono uppercase bg-[#221B10] text-[#F2B84B] border border-[#F2B84B]/30">
+          <AlertTriangle className="w-3 h-3 text-[#F2B84B]" />
           <span>SUSPICIOUS</span>
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-mono uppercase bg-emerald-950/80 text-emerald-300 border border-emerald-800">
-        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold font-mono uppercase bg-[#101F18] text-[#35C98A] border border-[#35C98A]/30">
+        <CheckCircle2 className="w-3 h-3 text-[#35C98A]" />
         <span>SAFE</span>
       </span>
     );
   };
 
-  // Client-side sorting for current page items
   const sortedItems = [...historyItems].sort((a, b) => {
     if (sortField === 'score') {
       return sortDirection === 'desc' ? b.risk_score - a.risk_score : a.risk_score - b.risk_score;
@@ -147,18 +146,18 @@ export default function History({ setActivePage, setScanResult }) {
   const totalPages = Math.ceil(total / pageSize) || 1;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 select-none">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 scroll-reveal">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/60 border border-orange-500/40 text-orange-400 text-xs font-mono mb-2">
-            <HistoryIcon className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] bg-[#151517] border border-[#29292D] text-[#92929A] text-xs font-mono uppercase tracking-wider mb-2">
+            <HistoryIcon className="w-3.5 h-3.5 text-[#FF6B35]" />
             <span>Persistent Audit Trail</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F5F5] tracking-tight">
             Scan History
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#92929A] mt-1">
             Search, filter, and inspect previously analyzed URLs stored in the SQLite database.
           </p>
         </div>
@@ -167,31 +166,31 @@ export default function History({ setActivePage, setScanResult }) {
           <button
             onClick={handleClearAll}
             disabled={deleteLoading}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-rose-950/40 border border-rose-800/80 hover:bg-rose-900/60 text-rose-300 text-xs font-semibold transition-all cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-[#151517] border border-[#29292D] hover:border-[#FF5C5C]/50 text-[#92929A] hover:text-[#FF5C5C] text-xs font-mono transition-colors cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span>Clear All History</span>
+            <span>Clear History</span>
           </button>
         )}
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-[#090C13] border border-[#1C2230] flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm scroll-reveal">
+      <div className="p-3 sm:p-4 rounded-[14px] bg-[#151517] border border-[#29292D] flex flex-col md:flex-row items-center justify-between gap-3 shadow-sm">
         {/* Search */}
-        <form onSubmit={handleSearchSubmit} className="relative w-full md:w-96">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+        <form onSubmit={handleSearchSubmit} className="relative w-full md:w-80">
+          <Search className="w-4 h-4 text-[#686870] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search by URL or domain..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 bg-[#06080E] border border-[#1C2230] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-all font-mono"
+            className="w-full pl-9 pr-8 py-2 bg-[#101012] border border-[#29292D] rounded-[10px] text-xs text-[#F5F5F5] placeholder-[#686870] focus:outline-none focus:border-[#FF6B35] transition-all font-mono"
           />
           {search && (
             <button
               type="button"
               onClick={() => { setSearch(''); fetchHistory(); }}
-              className="absolute right-2.5 top-2.5 text-slate-400 hover:text-white"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#686870] hover:text-[#F5F5F5]"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -200,7 +199,7 @@ export default function History({ setActivePage, setScanResult }) {
 
         {/* Classification Filters & Sort */}
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-          <span className="text-xs text-slate-400 font-mono mr-1">Status:</span>
+          <span className="text-xs text-[#686870] font-mono mr-1">Status:</span>
           {[
             { label: 'ALL', val: '' },
             { label: 'SAFE', val: 'SAFE' },
@@ -213,10 +212,10 @@ export default function History({ setActivePage, setScanResult }) {
                 setFilterClass(cat.val);
                 setCurrentPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
+              className={`px-2.5 py-1 rounded-[8px] text-xs font-mono transition-colors cursor-pointer ${
                 filterClass === cat.val
-                  ? 'bg-orange-500/20 text-orange-300 border border-orange-500/40 font-bold'
-                  : 'bg-[#06080E] text-slate-400 hover:text-white border border-[#1C2230]'
+                  ? 'bg-[#101012] text-[#F5F5F5] border border-[#FF6B35] font-semibold'
+                  : 'bg-[#101012] text-[#92929A] hover:text-[#F5F5F5] border border-[#29292D]'
               }`}
             >
               {cat.label}
@@ -226,10 +225,10 @@ export default function History({ setActivePage, setScanResult }) {
           {/* Sort Toggle */}
           <button
             onClick={() => handleSortToggle('score')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-mono border transition-all ${
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-[8px] text-xs font-mono border transition-colors cursor-pointer ${
               sortField === 'score'
-                ? 'bg-orange-950/60 text-orange-300 border-orange-500/50'
-                : 'bg-[#06080E] text-slate-400 border border-[#1C2230] hover:text-white'
+                ? 'bg-[#101012] text-[#FF6B35] border-[#FF6B35]'
+                : 'bg-[#101012] text-[#92929A] border-[#29292D] hover:text-[#F5F5F5]'
             }`}
             title="Sort by risk score"
           >
@@ -239,68 +238,68 @@ export default function History({ setActivePage, setScanResult }) {
 
           <button
             onClick={fetchHistory}
-            className="p-2 rounded-lg bg-[#06080E] border border-[#1C2230] text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-[8px] bg-[#101012] border border-[#29292D] text-[#92929A] hover:text-[#F5F5F5] transition-colors cursor-pointer"
             title="Refresh"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#FF6B35]' : ''}`} />
           </button>
         </div>
       </div>
 
       {/* History Table */}
-      <div className="rounded-2xl bg-[#090C13] border border-[#1C2230] overflow-hidden shadow-sm scroll-reveal">
+      <div className="rounded-[16px] bg-[#151517] border border-[#29292D] overflow-hidden shadow-sm">
         {loading ? (
-          <div className="py-16 text-center text-xs font-mono text-orange-400">
+          <div className="py-16 text-center text-xs font-mono text-[#92929A]">
             Querying audit records from SQLite database...
           </div>
         ) : sortedItems.length === 0 ? (
-          <div className="py-16 text-center space-y-3">
-            <AlertCircle className="w-8 h-8 text-slate-500 mx-auto" />
-            <div className="text-sm font-semibold text-slate-300">No scan records found</div>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Scan a URL using the scanner to record your first audit log entry.
+          <div className="py-16 text-center space-y-2">
+            <AlertCircle className="w-7 h-7 text-[#686870] mx-auto" />
+            <div className="text-sm font-semibold text-[#F5F5F5]">No scan records found</div>
+            <p className="text-xs text-[#92929A] max-w-sm mx-auto">
+              {search || filterClass ? 'Try clearing your filters or search terms.' : 'Submit any link in the URL scanner to generate audit records.'}
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#06080E] border-b border-[#1C2230] text-slate-400 font-mono uppercase text-[11px]">
-                <tr>
-                  <th className="py-3.5 px-4">Target URL</th>
-                  <th className="py-3.5 px-4 cursor-pointer select-none" onClick={() => handleSortToggle('score')}>
+            <table className="w-full text-left text-xs font-mono">
+              <thead>
+                <tr className="text-[#686870] border-b border-[#29292D] text-[10px] uppercase">
+                  <th className="py-3 px-4">URL / Hostname</th>
+                  <th className="py-3 px-4 cursor-pointer select-none" onClick={() => handleSortToggle('score')}>
                     <span className="flex items-center gap-1">
                       Risk Score
                       <ArrowUpDown className="w-3 h-3" />
                     </span>
                   </th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 cursor-pointer select-none" onClick={() => handleSortToggle('date')}>
+                  <th className="py-3 px-4">Verdict</th>
+                  <th className="py-3 px-4 cursor-pointer select-none" onClick={() => handleSortToggle('date')}>
                     <span className="flex items-center gap-1">
                       Date
                       <ArrowUpDown className="w-3 h-3" />
                     </span>
                   </th>
-                  <th className="py-3.5 px-4 text-right">Details</th>
+                  <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1C2230]/60 font-mono">
+              <tbody className="divide-y divide-[#29292D]/60 font-mono">
                 {sortedItems.map((item) => (
                   <tr
                     key={item.id}
                     onClick={() => handleViewDetail(item)}
-                    className="hover:bg-white/[0.02] transition-colors cursor-pointer group"
+                    className="hover:bg-[#1B1B1F] transition-colors cursor-pointer group"
                   >
                     <td className="py-3.5 px-4 max-w-xs sm:max-w-md">
-                      <div className="text-white font-semibold truncate group-hover:text-orange-400 transition-colors">
+                      <div className="text-[#F5F5F5] font-semibold truncate group-hover:text-[#FF6B35] transition-colors">
                         {item.domain}
                       </div>
-                      <div className="text-slate-400 text-[11px] truncate max-w-sm">
+                      <div className="text-[#686870] text-[11px] truncate max-w-sm">
                         {item.url}
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
                       <span className={`font-bold ${
-                        item.risk_score >= 61 ? 'text-rose-400' : item.risk_score >= 31 ? 'text-amber-400' : 'text-emerald-400'
+                        item.risk_score >= 61 ? 'text-[#FF5C5C]' : item.risk_score >= 31 ? 'text-[#F2B84B]' : 'text-[#35C98A]'
                       }`}>
                         {Math.round(item.risk_score)}/100
                       </span>
@@ -308,20 +307,20 @@ export default function History({ setActivePage, setScanResult }) {
                     <td className="py-3.5 px-4">
                       {getStatusBadge(item.classification)}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-400 text-[11px]">
+                    <td className="py-3.5 px-4 text-[#92929A] text-[11px]">
                       {new Date(item.created_at).toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => handleViewDetail(item)}
-                          className="px-2.5 py-1 rounded-lg bg-[#06080E] border border-[#1C2230] hover:border-orange-500/50 text-slate-300 hover:text-white transition-colors"
+                          className="px-2.5 py-1 rounded-[6px] bg-[#101012] border border-[#29292D] hover:border-[#38383E] text-[#92929A] hover:text-[#F5F5F5] transition-colors"
                         >
-                          View Report
+                          Inspect
                         </button>
                         <button
                           onClick={(e) => handleDeleteItem(item.id, e)}
-                          className="p-1.5 rounded-lg hover:bg-rose-950 text-slate-400 hover:text-rose-400 transition-colors"
+                          className="p-1.5 rounded-[6px] hover:bg-[#241315] text-[#686870] hover:text-[#FF5C5C] transition-colors"
                           title="Delete Record"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -337,7 +336,7 @@ export default function History({ setActivePage, setScanResult }) {
 
         {/* Pagination Bar */}
         {total > pageSize && (
-          <div className="p-4 bg-[#06080E] border-t border-[#1C2230] flex items-center justify-between text-xs font-mono text-slate-400">
+          <div className="p-3.5 bg-[#101012] border-t border-[#29292D] flex items-center justify-between text-xs font-mono text-[#92929A]">
             <div>
               Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, total)} of {total} records
             </div>
@@ -345,7 +344,7 @@ export default function History({ setActivePage, setScanResult }) {
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="p-1.5 rounded-lg bg-[#090C13] border border-[#1C2230] disabled:opacity-40 hover:text-white"
+                className="p-1 rounded-[6px] bg-[#151517] border border-[#29292D] disabled:opacity-40 hover:text-[#F5F5F5] cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -353,7 +352,7 @@ export default function History({ setActivePage, setScanResult }) {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg bg-[#090C13] border border-[#1C2230] disabled:opacity-40 hover:text-white"
+                className="p-1 rounded-[6px] bg-[#151517] border border-[#29292D] disabled:opacity-40 hover:text-[#F5F5F5] cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
