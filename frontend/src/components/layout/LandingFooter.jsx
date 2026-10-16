@@ -37,10 +37,7 @@ export default function LandingFooter({ setActivePage }) {
             <ul className="space-y-2">
               <li>
                 <button 
-                  onClick={() => {
-                    const el = document.getElementById('hero-scanner');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }} 
+                  onClick={() => setActivePage('scanner')} 
                   className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
                 >
                   URL Scanner

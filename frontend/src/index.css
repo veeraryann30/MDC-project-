@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   :root {
     --bg-main: #0B0B0C;
     --bg-secondary: #101012;
@@ -16,6 +20,8 @@
     --status-safe: #35C98A;
     --status-warning: #F2B84B;
     --status-danger: #FF5C5C;
+    --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-cinematic: cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   body {
@@ -464,11 +470,74 @@ html.light tbody tr:hover {
   .scroll-reveal,
   .scroll-reveal-left,
   .scroll-reveal-right,
-  .scroll-driven {
+  .scroll-driven,
+  .cinematic-tilt,
+  .parallax-item {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   MICRO-INTERACTIONS & APPLE-LIKE EASING
+   ========================================================================== */
+
+/* Apple-like fluid easing button */
+.btn-apple {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease,
+              border-color 0.2s ease;
+}
+.btn-apple:hover {
+  transform: translateY(-2px);
+}
+.btn-apple:active {
+  transform: scale(0.96) translateY(0);
+}
+
+/* Subtle glowing micro-interaction */
+.btn-apple-glow:hover {
+  box-shadow: 0 0 24px -2px rgba(255, 107, 53, 0.45);
+}
+
+/* Apple-like fluid card micro-interaction */
+.card-apple {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease,
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.card-apple:hover {
+  transform: translateY(-4px);
+  border-color: #38383E;
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Light mode card micro-interaction */
+html.light .card-apple:hover {
+  box-shadow: 0 16px 36px -12px rgba(37, 99, 235, 0.12);
+  border-color: #CBD5E1;
+}
+
+/* Cinematic 3D viewport frame */
+.cinematic-viewport {
+  perspective: 1200px;
+  perspective-origin: center 30%;
+}
+
+.cinematic-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* Scrollytelling progressive step */
+.story-indicator-node {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 

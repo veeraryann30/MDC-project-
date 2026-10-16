@@ -12,12 +12,7 @@ export default function LandingNavbar({
   const handleNavClick = (target) => {
     setMobileMenuOpen(false);
     if (target === 'scanner') {
-      if (onSectionNavigate) {
-        onSectionNavigate('scanner');
-      } else {
-        const el = document.getElementById('hero-scanner');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }
+      setActivePage('scanner');
     } else if (target === 'how-it-works') {
       const el = document.getElementById('how-it-works');
       if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -33,13 +28,18 @@ export default function LandingNavbar({
     }
   };
 
+  const handleLogoClick = () => {
+    setMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <header className="sticky top-0 z-50 h-[72px] bg-[#0B0B0C]/90 backdrop-blur-md border-b border-[#29292D] transition-colors">
       <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Left: Brand Logo & Wordmark */}
         <div 
-          onClick={() => handleNavClick('scanner')}
-          className="cursor-pointer group flex items-center"
+          onClick={handleLogoClick}
+          className="cursor-pointer group flex items-center transition-transform duration-200 active:scale-95"
         >
           <Logo size="md" withWordmark={true} />
         </div>
@@ -87,10 +87,10 @@ export default function LandingNavbar({
         {/* Far Right: Compact Orange CTA Button */}
         <div className="hidden sm:flex items-center gap-3">
           <button
-            onClick={onScanButtonClick || (() => handleNavClick('scanner'))}
-            className="px-4 py-2 bg-[#FF6B35] hover:bg-[#ff7b49] text-white text-xs font-semibold rounded-[10px] transition-all duration-150 cursor-pointer shadow-sm hover:shadow-[0_0_12px_rgba(255,107,53,0.3)] flex items-center gap-1.5"
+            onClick={() => setActivePage('scanner')}
+            className="px-4 py-2 bg-[#FF6B35] hover:bg-[#ff7b49] active:scale-95 text-white text-xs font-semibold rounded-[10px] transition-all duration-200 cursor-pointer shadow-sm hover:shadow-[0_0_16px_rgba(255,107,53,0.35)] flex items-center gap-1.5"
           >
-            <span>Scan a URL</span>
+            <span>Get Started</span>
             <ArrowRight className="w-3.5 h-3.5 stroke-[2.2]" />
           </button>
         </div>
@@ -114,7 +114,7 @@ export default function LandingNavbar({
             onClick={() => handleNavClick('scanner')}
             className="w-full text-left py-2 text-sm text-[#F5F5F5] font-medium"
           >
-            Scanner
+            Scanner Workstation
           </button>
           <button
             onClick={() => handleNavClick('how-it-works')}
@@ -151,12 +151,12 @@ export default function LandingNavbar({
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                if (onScanButtonClick) onScanButtonClick();
-                else handleNavClick('scanner');
+                setActivePage('scanner');
               }}
-              className="w-full py-2.5 bg-[#FF6B35] hover:bg-[#ff7b49] text-white text-xs font-semibold rounded-[10px] text-center transition-all cursor-pointer"
+              className="w-full py-2.5 bg-[#FF6B35] hover:bg-[#ff7b49] active:scale-95 text-white text-xs font-semibold rounded-[10px] text-center transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
-              Scan a URL
+              <span>Get Started</span>
+              <ArrowRight className="w-3.5 h-3.5 stroke-[2.2]" />
             </button>
           </div>
         </div>
