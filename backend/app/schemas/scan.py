@@ -52,5 +52,6 @@ class ScanResponse(BaseModel):
     safe_indicators: List[ThreatIndicator]
     features: Dict[str, Any]
     details: Dict[str, Any]
+    origin_intelligence: Optional[Dict[str, Any]] = None
     detection_method: str
     created_at: datetime

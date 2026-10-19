@@ -8,7 +8,7 @@ import LandingNavbar from '../components/layout/LandingNavbar';
 import LandingFooter from '../components/layout/LandingFooter';
 import ThreatTrace from '../components/common/ThreatTrace';
 
-export default function Home({ setActivePage }) {
+export default function Home({ setActivePage, setScanResult, theme, toggleTheme }) {
   const [scrollY, setScrollY] = useState(0);
   const [activeScenario, setActiveScenario] = useState('microsoft');
   const [previewExpanded, setPreviewExpanded] = useState(false);
@@ -166,7 +166,7 @@ export default function Home({ setActivePage }) {
       />
 
       {/* 1. Slim Landing Navigation Bar */}
-      <LandingNavbar setActivePage={setActivePage} />
+      <LandingNavbar setActivePage={setActivePage} theme={theme} toggleTheme={toggleTheme} />
 
       <main className="flex-1 relative z-10">
         {/* ==========================================================================

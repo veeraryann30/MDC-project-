@@ -5,6 +5,7 @@ import {
   ChevronUp, Server, Cpu, ExternalLink, AlertCircle, Info, Shield
 } from 'lucide-react';
 import ThreatTrace from '../components/common/ThreatTrace';
+import LinkOriginIntelligence from '../components/results/LinkOriginIntelligence';
 
 /**
  * THREAT FINGERPRINT — Signature Security Analysis Report (SHADOW UI)
@@ -412,7 +413,14 @@ Verification Protocol: Zero-Execution Static Sandbox`;
         </div>
       </div>
 
-      {/* 5. Collapsible "Why was this flagged?" Forensic Evidence */}
+      {/* 5. Link Origin Intelligence (Infrastructure, Geolocation & DNS Reconnaissance) */}
+      <LinkOriginIntelligence 
+        originData={result.origin_intelligence} 
+        targetUrl={url} 
+        domain={domain} 
+      />
+
+      {/* 6. Collapsible "Why was this flagged?" Forensic Evidence */}
       <div className="rounded-[16px] bg-[#151517] border border-[#29292D] overflow-hidden">
         <button
           onClick={() => setWhyFlaggedOpen(!whyFlaggedOpen)}

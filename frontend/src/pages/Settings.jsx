@@ -455,7 +455,7 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
                   if (setTheme) setTheme('dark');
                 }}
                 className={`p-4 rounded-[12px] border cursor-pointer transition-colors ${
-                  (theme === 'dark' || settings.theme === 'dark' || settings.theme === 'tactical-orange') 
+                  theme === 'dark'
                     ? 'bg-[#1B1B1F] border-[#FF6B35]' 
                     : 'bg-[#101012] border-[#29292D] hover:border-[#686870]'
                 }`}
@@ -468,7 +468,7 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
                   Deep dark canvas (#0B0B0C), restrained brand accent (#FF6B35), and high-contrast security indicators.
                 </p>
                 <div className="mt-3 flex items-center gap-1.5 text-[10px] font-mono text-[#FF6B35]">
-                  <span>● Active by Default</span>
+                  <span>{theme === 'dark' ? '● Currently Active' : 'Select Dark Theme'}</span>
                 </div>
               </div>
 
@@ -479,7 +479,7 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
                   if (setTheme) setTheme('light');
                 }}
                 className={`p-4 rounded-[12px] border cursor-pointer transition-colors ${
-                  (theme === 'light' || settings.theme === 'light') 
+                  theme === 'light'
                     ? 'bg-[#1B1B1F] border-blue-500' 
                     : 'bg-[#101012] border-[#29292D] hover:border-[#686870]'
                 }`}
@@ -492,7 +492,7 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
                   Clean white and soft slate canvas, royal cyber blue accents (#2563EB), and high-readability telemetry cards.
                 </p>
                 <div className="mt-3 flex items-center gap-1.5 text-[10px] font-mono text-blue-500">
-                  <span>● Daytime & High-Light Workstations</span>
+                  <span>{theme === 'light' ? '● Currently Active' : 'Select Light Theme'}</span>
                 </div>
               </div>
             </div>

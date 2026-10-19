@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   LayoutGrid, Search, Clock, BarChart2, Crosshair, 
-  BookOpen, Settings, ChevronLeft, ChevronRight, Globe, ArrowLeft
+  BookOpen, Settings, ChevronLeft, ChevronRight, Globe, ArrowLeft, Sun, Moon
 } from 'lucide-react';
 import Logo from '../common/Logo';
 
@@ -11,7 +11,9 @@ export default function Sidebar({
   isCollapsed, 
   setIsCollapsed, 
   isMobileOpen, 
-  setIsMobileOpen 
+  setIsMobileOpen,
+  theme = 'dark',
+  toggleTheme
 }) {
   const navItems = [
     { id: 'dashboard', label: 'Overview', icon: LayoutGrid },
@@ -94,8 +96,23 @@ export default function Sidebar({
           })}
         </div>
 
-        {/* Bottom Return to Landing Page */}
-        <div className="p-3 border-t border-[#29292D]">
+        {/* Bottom Actions: Theme Toggle & Landing Page */}
+        <div className="p-3 border-t border-[#29292D] space-y-1.5">
+          {toggleTheme && (
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-xs font-mono text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517] transition-colors cursor-pointer"
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            >
+              {theme === 'light' ? (
+                <Moon className="w-4 h-4 shrink-0 text-[#2563EB]" />
+              ) : (
+                <Sun className="w-4 h-4 shrink-0 text-[#FF6B35]" />
+              )}
+              {!isCollapsed && <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>}
+            </button>
+          )}
+
           <button
             onClick={() => handleNavClick('home')}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-xs font-mono text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517] transition-colors cursor-pointer"

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Menu, X, ArrowRight, Shield } from 'lucide-react';
+import { Menu, X, ArrowRight, Shield, Sun, Moon } from 'lucide-react';
 import Logo from '../common/Logo';
 
 export default function LandingNavbar({ 
   setActivePage, 
   onScanButtonClick,
-  onSectionNavigate 
+  onSectionNavigate,
+  theme = 'dark',
+  toggleTheme
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -84,8 +86,19 @@ export default function LandingNavbar({
           </button>
         </nav>
 
-        {/* Far Right: Compact Orange CTA Button */}
-        <div className="hidden sm:flex items-center gap-3">
+        {/* Far Right: Compact Orange CTA Button & Theme Switcher */}
+        <div className="hidden sm:flex items-center gap-2.5">
+          {toggleTheme && (
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-[10px] bg-[#151517] border border-[#29292D] text-[#92929A] hover:text-[#F5F5F5] transition-colors cursor-pointer"
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? <Moon className="w-4 h-4 text-[#2563EB]" /> : <Sun className="w-4 h-4 text-[#FF6B35]" />}
+            </button>
+          )}
+
           <button
             onClick={() => setActivePage('scanner')}
             className="px-4 py-2 bg-[#FF6B35] hover:bg-[#ff7b49] active:scale-95 text-white text-xs font-semibold rounded-[10px] transition-all duration-200 cursor-pointer shadow-sm hover:shadow-[0_0_16px_rgba(255,107,53,0.35)] flex items-center gap-1.5"
@@ -97,6 +110,16 @@ export default function LandingNavbar({
 
         {/* Mobile Hamburger Button */}
         <div className="flex md:hidden items-center gap-2">
+          {toggleTheme && (
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517] border border-[#29292D] transition-colors"
+              title="Toggle theme"
+            >
+              {theme === 'light' ? <Moon className="w-4 h-4 text-[#2563EB]" /> : <Sun className="w-4 h-4 text-[#FF6B35]" />}
+            </button>
+          )}
+
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 rounded-lg text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517] border border-[#29292D] transition-colors"

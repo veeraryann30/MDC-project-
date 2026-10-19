@@ -141,7 +141,7 @@ export default function App() {
         {redirectionBeam}
         <ScrollController activePage={activePage} theme={theme} />
         <div className={`page-view-wrapper ${isTransitioning ? 'page-view-exit' : 'page-view-enter'}`}>
-          <Home setActivePage={navigateToPage} setScanResult={setScanResult} />
+          <Home setActivePage={navigateToPage} setScanResult={setScanResult} theme={theme} toggleTheme={toggleTheme} />
         </div>
       </div>
     );
