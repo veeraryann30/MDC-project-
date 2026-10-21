@@ -219,12 +219,12 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme 
 
             <button
               onClick={() => {
-                const el = document.getElementById('story');
+                const el = document.getElementById('how-it-works');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}
               className="btn-apple w-full sm:w-auto px-6 py-3.5 bg-[#151517] hover:bg-[#1B1B1F] border border-[#29292D] hover:border-[#686870] text-[#92929A] hover:text-[#F5F5F5] font-mono text-xs rounded-[10px] inline-flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Explore Threat Story</span>
+              <span>How It Works</span>
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -251,13 +251,10 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme 
         </div>
 
         {/* ==========================================================================
-            ACT 2: SCROLLYTELLING — THE ANATOMY OF DECEPTION
+            SECTION 2: THE ANATOMY OF DECEPTION
             ========================================================================== */}
-        <section id="story" className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-16">
+        <section id="threat-anatomy" className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-16">
           <div className="text-center space-y-3 max-w-xl mx-auto scroll-reveal">
-            <div className="inline-flex items-center gap-1.5 text-xs font-mono text-[#FF6B35] uppercase tracking-wider font-semibold">
-              <span>Chapter 01</span>
-            </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F5F5F5]">
               The Anatomy of a Phish
             </h2>
@@ -342,14 +339,11 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme 
         </div>
 
         {/* ==========================================================================
-            ACT 3: CINEMATIC SCROLLING — THE THREAT FINGERPRINT SHOWCASE
+            SECTION 3: THE THREAT FINGERPRINT SHOWCASE
             ========================================================================== */}
         <section id="threat-fingerprint" className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 scroll-reveal">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 text-xs font-mono text-[#FF6B35] uppercase tracking-wider font-semibold">
-                <span>Chapter 02 · Signature Intelligence</span>
-              </div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F5F5F5]">
                 The Threat Fingerprint
               </h2>
@@ -550,13 +544,10 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme 
         </div>
 
         {/* ==========================================================================
-            ACT 4: HOW IT WORKS (3 MINIMAL STEPS)
+            SECTION 4: HOW IT WORKS (3 MINIMAL STEPS)
             ========================================================================== */}
         <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-14">
           <div className="text-center space-y-3 max-w-xl mx-auto scroll-reveal">
-            <div className="inline-flex items-center gap-1.5 text-xs font-mono text-[#FF6B35] uppercase tracking-wider font-semibold">
-              <span>Chapter 03 · Operational Methodology</span>
-            </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F5F5F5]">
               Security, without the guesswork.
             </h2>
