@@ -116,7 +116,7 @@ export default function Footer({ setActivePage }) {
               © 2026 VeerAryan Bhadwal. All rights reserved.
             </div>
             <div className="text-[10px] text-[#92929A] font-mono">
-              part of : MDC Projects CSE Cyber SEcurity (Batch2025)
+              part of : MDC Projects CSE Cyber-Security (Batch2025)
             </div>
           </div>
           <div className="font-mono">
