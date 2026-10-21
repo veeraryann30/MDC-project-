@@ -111,8 +111,13 @@ export default function Footer({ setActivePage }) {
         </div>
 
         <div className="pt-6 mt-8 border-t border-[#29292D] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#686870]">
-          <div>
-            © {currentYear} Catch the Phish. All rights reserved.
+          <div className="space-y-0.5 text-center sm:text-left">
+            <div>
+              © 2026 VeerAryan Bhadwal. All rights reserved.
+            </div>
+            <div className="text-[10px] text-[#92929A] font-mono">
+              part of : MDC Projects CSE Cyber SEcurity (Batch2025)
+            </div>
           </div>
           <div className="font-mono">
             SHADOW UI
