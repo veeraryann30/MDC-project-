@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
+import { flushSync } from 'react-dom';
 import Sidebar from './components/layout/Sidebar';
 import TopNavbar from './components/layout/TopNavbar';
 import Footer from './components/layout/Footer';
@@ -31,7 +32,9 @@ export default function App() {
     return localStorage.getItem('catch_the_phish_theme') || 'dark';
   });
 
-  React.useEffect(() => {
+  const isThemeTransitioningRef = useRef(false);
+
+  useLayoutEffect(() => {
     const root = document.documentElement;
     if (theme === 'light') {
       root.classList.remove('dark');
@@ -43,8 +46,95 @@ export default function App() {
     localStorage.setItem('catch_the_phish_theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  // Apple-Inspired Circular Reveal Theme Switcher
+  const toggleTheme = (e, targetTheme) => {
+    const nextTheme = targetTheme || (theme === 'dark' ? 'light' : 'dark');
+    if (nextTheme === theme || isThemeTransitioningRef.current) return;
+
+    // Check for reduced motion preference or lack of View Transitions API support
+    const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || isReducedMotion) {
+      isThemeTransitioningRef.current = true;
+      document.documentElement.classList.add('theme-transitioning');
+      setTheme(nextTheme);
+      setTimeout(() => {
+        document.documentElement.classList.remove('theme-transitioning');
+        isThemeTransitioningRef.current = false;
+      }, 650);
+      return;
+    }
+
+    isThemeTransitioningRef.current = true;
+
+    // Determine epicenter of circular expansion
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight / 2;
+
+    if (e) {
+      if (typeof e.clientX === 'number' && typeof e.clientY === 'number' && (e.clientX !== 0 || e.clientY !== 0)) {
+        x = e.clientX;
+        y = e.clientY;
+      } else if (e.currentTarget && typeof e.currentTarget.getBoundingClientRect === 'function') {
+        const rect = e.currentTarget.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      }
+    }
+
+    // Calculate maximum radius to the furthest viewport corner
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    try {
+      const transition = document.startViewTransition(() => {
+        flushSync(() => {
+          setTheme(nextTheme);
+          const root = document.documentElement;
+          if (nextTheme === 'light') {
+            root.classList.remove('dark');
+            root.classList.add('light');
+          } else {
+            root.classList.remove('light');
+            root.classList.add('dark');
+          }
+          localStorage.setItem('catch_the_phish_theme', nextTheme);
+        });
+      });
+
+      transition.ready.then(() => {
+        const clipPath = [
+          `circle(0px at ${x}px ${y}px)`,
+          `circle(${endRadius}px at ${x}px ${y}px)`
+        ];
+
+        const anim = document.documentElement.animate(
+          {
+            clipPath: clipPath,
+          },
+          {
+            duration: 620,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            pseudoElement: '::view-transition-new(root)',
+          }
+        );
+
+        anim.onfinish = () => {
+          isThemeTransitioningRef.current = false;
+        };
+      }).catch(() => {
+        isThemeTransitioningRef.current = false;
+      });
+
+      transition.finished.finally(() => {
+        isThemeTransitioningRef.current = false;
+      });
+    } catch {
+      // Fallback if startViewTransition throws synchronously
+      setTheme(nextTheme);
+      isThemeTransitioningRef.current = false;
+    }
   };
 
   // Smooth Page Redirection Controller

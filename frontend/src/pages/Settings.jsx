@@ -450,9 +450,10 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Option 1: Dark Mode - SHADOW UI */}
               <div 
-                onClick={() => {
+                onClick={(e) => {
                   handleChange('theme', 'dark');
-                  if (setTheme) setTheme('dark');
+                  if (toggleTheme) toggleTheme(e, 'dark');
+                  else if (setTheme) setTheme('dark');
                 }}
                 className={`p-4 rounded-[12px] border cursor-pointer transition-colors ${
                   theme === 'dark'
@@ -474,9 +475,10 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
 
               {/* Option 2: Light Mode - Cyber Blue & White */}
               <div 
-                onClick={() => {
+                onClick={(e) => {
                   handleChange('theme', 'light');
-                  if (setTheme) setTheme('light');
+                  if (toggleTheme) toggleTheme(e, 'light');
+                  else if (setTheme) setTheme('light');
                 }}
                 className={`p-4 rounded-[12px] border cursor-pointer transition-colors ${
                   theme === 'light'

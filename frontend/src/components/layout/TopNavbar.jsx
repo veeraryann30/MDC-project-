@@ -104,11 +104,27 @@ export default function TopNavbar({
 
         {toggleTheme && (
           <button
-            onClick={toggleTheme}
-            className="p-2 rounded-[8px] bg-[#151517] border border-[#29292D] text-[#92929A] hover:text-[#F5F5F5] transition-colors cursor-pointer"
-            title="Toggle Theme"
+            onClick={(e) => toggleTheme(e)}
+            className="p-2 rounded-[8px] bg-[#151517] border border-[#29292D] text-[#92929A] hover:text-[#F5F5F5] transition-colors cursor-pointer relative overflow-hidden group"
+            title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            aria-label="Toggle theme"
           >
-            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            <span className="relative flex items-center justify-center w-4 h-4">
+              <Sun 
+                className={`w-4 h-4 text-[#FF6B35] absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  theme === 'dark' 
+                    ? 'rotate-0 scale-100 opacity-100' 
+                    : 'rotate-90 scale-0 opacity-0 pointer-events-none'
+                }`} 
+              />
+              <Moon 
+                className={`w-4 h-4 text-[#2563EB] absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  theme === 'light' 
+                    ? 'rotate-0 scale-100 opacity-100' 
+                    : '-rotate-90 scale-0 opacity-0 pointer-events-none'
+                }`} 
+              />
+            </span>
           </button>
         )}
       </div>
