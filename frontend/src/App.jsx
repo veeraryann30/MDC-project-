@@ -7,6 +7,7 @@ import LandingNavbar from './components/layout/LandingNavbar';
 import LandingFooter from './components/layout/LandingFooter';
 import ScrollController from './components/layout/ScrollController';
 import AboutModal from './components/common/AboutModal';
+import { playScanResultSound, unlockAudio } from './lib/sound';
 
 // Pages. Home loads eagerly (landing); every other page is split into its own chunk
 // so the first visit does not download charts, maps and graph libraries it may never use.
@@ -27,10 +28,12 @@ const EmailScanner = lazy(() => import('./pages/EmailScanner'));
 const ScamDNA = lazy(() => import('./pages/ScamDNA'));
 
 const PageFallback = () => (
-  <div className="py-24 text-center text-xs font-mono text-[#94A3B8]" role="status" aria-live="polite">
+  <div className="flex flex-col items-center justify-center gap-3 py-28 text-xs text-ctp-text-2" role="status" aria-live="polite">
+    <span className="ctp-spinner" aria-hidden="true" />
     Loading…
   </div>
 );
+;
 
 import { api } from './services/api';
 
@@ -61,7 +64,8 @@ export default function App() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [navProgress, setNavProgress] = useState(0);
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('catch_the_phish_theme') || 'light';
+    // index.html already resolved saved choice / system preference onto <html> before first paint.
+    return document.documentElement.classList.contains('light') ? 'light' : 'dark';
   });
 
   useLayoutEffect(() => {
@@ -73,7 +77,8 @@ export default function App() {
       root.classList.remove('light');
       root.classList.add('dark');
     }
-    localStorage.setItem('catch_the_phish_theme', theme);
+    // Not persisted here: the saved preference is only written when the user chooses a theme,
+    // so the system preference keeps applying until then.
   }, [theme]);
 
   // Synchronize browser history and hash navigation
@@ -213,7 +218,9 @@ export default function App() {
     setIsScanning(true);
     setScanError('');
     try {
+      unlockAudio();
       const data = await api.scanUrl(url.trim());
+      playScanResultSound(data); // real result only; silent unless the user enabled sound
       setScanResult(data);
       navigateToPage('results');
     } catch (err) {

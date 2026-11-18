@@ -1,24 +1,29 @@
 <!doctype html>
-<html lang="en" class="light">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Catch the Phish | Don't trust the link. Verify it.</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#0a0a0b" />
+    <meta name="theme-color" content="#050505" />
     <meta name="description" content="Explainable Phishing URL Intelligence Platform combining real-time lexical inspection, brand impersonation analysis, and machine learning." />
     <script>
-      // Apply the saved theme before first paint to avoid a flash of the wrong theme.
+      // Apply the theme before first paint: saved choice, otherwise the system preference.
       try {
-        var t = localStorage.getItem('catch_the_phish_theme') || 'light';
+        var saved = localStorage.getItem('catch_the_phish_theme');
+        var t = saved === 'light' || saved === 'dark'
+          ? saved
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
         var r = document.documentElement;
         r.classList.remove('light', 'dark');
-        r.classList.add(t === 'dark' ? 'dark' : 'light');
+        r.classList.add(t);
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#050505');
       } catch (e) {}
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body class="antialiased font-sans">
     <div id="root"></div>

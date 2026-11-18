@@ -32,45 +32,59 @@
 }
 
 /* ==========================================================================
-   Design foundation (v2 redesign) — tokens only, not yet applied to pages.
-   Charcoal / monochrome with a single restrained cyan accent.
-   Existing pages keep their current look until each phase migrates them.
+   Design system v3 — theme tokens (dark + light, purple accent)
+   Driven by the class on <html> ("dark" | "light"), set before first paint
+   by the script in index.html (saved choice, else the system preference).
+   No blue-tinted surfaces anywhere: pure neutrals + purple + status colours.
    ========================================================================== */
 @layer base {
   :root,
-  html.dark,
-  .ctp-dark {
-    --ctp-bg: #0a0a0b;
-    --ctp-surface: #111113;
-    --ctp-surface-2: #17171a;
-    --ctp-border: #26262b;
-    --ctp-border-strong: #3a3a42;
-    --ctp-text: #f4f4f5;
+  html.dark {
+    --ctp-bg: #050505;
+    --ctp-bg-2: #0a0a0a;
+    --ctp-surface: #111111;
+    --ctp-surface-2: #181818;
+    --ctp-border: #292929;
+    --ctp-border-strong: #3d3d3d;
+    --ctp-text: #ffffff;
     --ctp-text-2: #a1a1aa;
-    --ctp-text-muted: #8b8b95;
-    --ctp-accent: #22d3ee;
-    --ctp-accent-ink: #04222a;
-    --ctp-safe: #34d399;
-    --ctp-warn: #fbbf24;
-    --ctp-danger: #f87171;
-    --ctp-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+    --ctp-text-muted: #8a8a93;
+    --ctp-accent: #a855f7;        /* borders, icons, glows, accent text on dark */
+    --ctp-accent-text: #c084fc;
+    --ctp-accent-solid: #9333ea;  /* filled buttons (white ink: AA) */
+    --ctp-accent-ink: #ffffff;
+    --ctp-accent-glow: rgba(168, 85, 247, 0.38);
+    --ctp-safe: #22c55e;
+    --ctp-warn: #f59e0b;
+    --ctp-danger: #ef4444;
+    --ctp-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.8);
+    --ctp-shadow-sm: 0 8px 24px -12px rgba(0, 0, 0, 0.7);
+    --ctp-grid-line: rgba(255, 255, 255, 0.05);
+    color-scheme: dark;
   }
 
   html.light {
     --ctp-bg: #ffffff;
-    --ctp-surface: #f7f7f8;
-    --ctp-surface-2: #efeff1;
-    --ctp-border: #e4e4e7;
-    --ctp-border-strong: #d1d1d6;
-    --ctp-text: #0a0a0b;
-    --ctp-text-2: #52525b;
-    --ctp-text-muted: #71717a;
-    --ctp-accent: #0e7490;
+    --ctp-bg-2: #f7f7f7;
+    --ctp-surface: #ffffff;
+    --ctp-surface-2: #f7f7f7;
+    --ctp-border: #eaeaea;
+    --ctp-border-strong: #d4d4d4;
+    --ctp-text: #111111;
+    --ctp-text-2: #666666;
+    --ctp-text-muted: #757575;
+    --ctp-accent: #7e22ce;
+    --ctp-accent-text: #7e22ce;
+    --ctp-accent-solid: #7e22ce;
     --ctp-accent-ink: #ffffff;
-    --ctp-safe: #059669;
-    --ctp-warn: #b45309;
-    --ctp-danger: #dc2626;
-    --ctp-shadow: 0 24px 60px -28px rgba(10, 10, 11, 0.25);
+    --ctp-accent-glow: rgba(126, 34, 206, 0.22);
+    --ctp-safe: #166534;
+    --ctp-warn: #a3470a;
+    --ctp-danger: #c81e1e;
+    --ctp-shadow: 0 24px 60px -28px rgba(17, 17, 17, 0.22);
+    --ctp-shadow-sm: 0 8px 24px -14px rgba(17, 17, 17, 0.2);
+    --ctp-grid-line: rgba(17, 17, 17, 0.05);
+    color-scheme: light;
   }
 
   :root {
@@ -80,10 +94,11 @@
     --ctp-dur-fast: 160ms;
     --ctp-dur-base: 320ms;
     --ctp-dur-slow: 700ms;
-    /* Type scale (fluid) */
-    --ctp-text-display: clamp(2.5rem, 1.4rem + 5vw, 5.5rem);
-    --ctp-text-h1: clamp(2rem, 1.3rem + 3vw, 3.5rem);
-    --ctp-text-h2: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
+    /* Type */
+    --ctp-font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --ctp-text-display: clamp(2.75rem, 1.5rem + 5.4vw, 6rem);
+    --ctp-text-h1: clamp(2.25rem, 1.4rem + 3.2vw, 4rem);
+    --ctp-text-h2: clamp(1.75rem, 1.2rem + 1.8vw, 2.75rem);
     --ctp-text-body: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
   }
 
@@ -91,23 +106,29 @@
     font-feature-settings: 'cv11', 'ss01';
     -webkit-text-size-adjust: 100%;
   }
+  body { background-color: var(--ctp-bg); }
 }
 
-/* Dark redesign sections must win over the legacy html.light !important overrides. */
-html.light .ctp-dark h1,
-html.light .ctp-dark h2,
-html.light .ctp-dark h3 { color: var(--ctp-text) !important; }
+/* Display serif for headlines (hero + section titles) */
+.ctp-display {
+  font-family: var(--ctp-font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+
+/* Token-styled sections must win over the legacy html.light / html.dark !important overrides. */
+html.light .ctp-dark h1, html.light .ctp-dark h2, html.light .ctp-dark h3,
+html.dark .ctp-dark h1, html.dark .ctp-dark h2, html.dark .ctp-dark h3 { color: var(--ctp-text) !important; }
 header.landing-nav.ctp-dark {
-  background-color: color-mix(in srgb, var(--ctp-bg) 35%, transparent) !important;
-  border-bottom-color: transparent !important;
-  box-shadow: none !important;
+  background-color: color-mix(in srgb, var(--ctp-bg) 72%, transparent) !important;
+  border-color: var(--ctp-border) !important;
+  box-shadow: var(--ctp-shadow-sm) !important;
+  color: var(--ctp-text) !important;
 }
 header.landing-nav.ctp-dark.is-scrolled {
-  background-color: color-mix(in srgb, var(--ctp-bg) 85%, transparent) !important;
-  border-bottom-color: var(--ctp-border) !important;
+  background-color: color-mix(in srgb, var(--ctp-bg) 90%, transparent) !important;
 }
-html.light header.landing-nav.ctp-dark { color: var(--ctp-text) !important; }
-html.light header.landing-nav.ctp-dark nav button { color: var(--ctp-text-2) !important; }
 html.light footer.ctp-dark,
 html.dark footer.ctp-dark {
   background-color: var(--ctp-bg) !important;
@@ -118,19 +139,25 @@ html.light footer.ctp-dark h4,
 html.dark footer.ctp-dark h4 { color: var(--ctp-text) !important; }
 
 /* Nav items are drawn by a sliding pill (framer-motion layoutId); neutralise the legacy per-button hover box. */
-html.light header.landing-nav nav button:hover { background-color: transparent !important; }
+html.light header.landing-nav nav button:hover,
+html.dark header.landing-nav nav button:hover { background-color: transparent !important; }
+html.light header.landing-nav.ctp-dark nav button,
+html.dark header.landing-nav.ctp-dark nav button { color: var(--ctp-text-2) !important; }
 html.light header.landing-nav.ctp-dark nav button:hover,
-html.light header.landing-nav.ctp-dark nav button:focus-visible { color: var(--ctp-text) !important; }
-html.light header.landing-nav:not(.ctp-dark) nav button { color: #475569 !important; }
-html.light header.landing-nav:not(.ctp-dark) nav button.text-\[\#2563EB\] { color: #1D4ED8 !important; }
-html.light header.landing-nav.ctp-dark nav button.text-ctp-text { color: var(--ctp-text) !important; }
-html.light header.landing-nav.ctp-dark .landing-theme-btn {
+html.light header.landing-nav.ctp-dark nav button:focus-visible,
+html.light header.landing-nav.ctp-dark nav button.text-ctp-text,
+html.dark header.landing-nav.ctp-dark nav button:hover,
+html.dark header.landing-nav.ctp-dark nav button:focus-visible,
+html.dark header.landing-nav.ctp-dark nav button.text-ctp-text { color: var(--ctp-text) !important; }
+html.light header.landing-nav.ctp-dark .landing-theme-btn,
+html.dark header.landing-nav.ctp-dark .landing-theme-btn {
   background-color: var(--ctp-surface) !important;
   border-color: var(--ctp-border) !important;
   color: var(--ctp-text-2) !important;
   box-shadow: none !important;
 }
-html.light header.landing-nav.ctp-dark .landing-theme-btn:hover { background-color: var(--ctp-surface-2) !important; }
+html.light header.landing-nav.ctp-dark .landing-theme-btn:hover,
+html.dark header.landing-nav.ctp-dark .landing-theme-btn:hover { background-color: var(--ctp-surface-2) !important; }
 
 /* Services list: accent hairline draws across the row top on hover; icon gets a scan sweep. */
 .ctp-service-line {
@@ -1583,8 +1610,8 @@ html.light .card-apple:hover {
 /* Page transitions: opacity + small lift only. A permanent blur filter / transform on the page
    wrapper forced a costly compositing layer and a containing block for the whole page. */
 .page-view-wrapper {
-  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: 50% 0;
+  transition: opacity 0.45s var(--ctp-ease-out), transform 0.45s var(--ctp-ease-out);
 }
 
 .page-view-enter {
@@ -1594,7 +1621,8 @@ html.light .card-apple:hover {
 
 .page-view-exit {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(10px) scale(0.992);
+  transition-duration: 0.16s;
   pointer-events: none;
 }
 
@@ -1780,3 +1808,175 @@ html.light .flow-signal-runner {
 
 
 
+
+/* ==========================================================================
+   Tactile 3D buttons (.ctp-btn): lift on hover, physical press on click, light pulse
+   ========================================================================== */
+.ctp-btn {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  border-radius: 9999px; font-weight: 500; letter-spacing: 0.01em; white-space: nowrap;
+  cursor: pointer; user-select: none; overflow: hidden; isolation: isolate;
+  transform: translateY(0) scale(1);
+  transition: transform 220ms var(--ctp-ease-out), box-shadow 260ms var(--ctp-ease-out),
+              background-color 200ms, border-color 200ms, color 200ms;
+  will-change: transform;
+}
+.ctp-btn::after {
+  content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; opacity: 0; pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.55), transparent 62%);
+}
+.ctp-btn:active::after { animation: ctp-btn-pulse 600ms var(--ctp-ease-out); }
+@keyframes ctp-btn-pulse { 0% { opacity: 0.9; transform: scale(0.4); } 100% { opacity: 0; transform: scale(1.6); } }
+.ctp-btn:disabled { cursor: wait; opacity: 0.65; }
+
+.ctp-btn-primary {
+  color: var(--ctp-accent-ink);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ctp-accent-solid) 82%, white) 0%, var(--ctp-accent-solid) 58%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.22),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 8px 18px -8px var(--ctp-accent-glow);
+}
+.ctp-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.22),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 14px 28px -8px var(--ctp-accent-glow);
+}
+.ctp-btn-primary:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  transition-duration: 80ms;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.38), 0 2px 6px -2px var(--ctp-accent-glow);
+}
+
+.ctp-btn-ghost {
+  color: var(--ctp-text);
+  background: var(--ctp-surface);
+  border: 1px solid var(--ctp-border-strong);
+  box-shadow: var(--ctp-shadow-sm);
+}
+.ctp-btn-ghost:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--ctp-accent) 55%, var(--ctp-border-strong));
+  box-shadow: var(--ctp-shadow-sm), 0 0 0 3px color-mix(in srgb, var(--ctp-accent) 10%, transparent);
+}
+.ctp-btn-ghost:active:not(:disabled) { transform: translateY(1px) scale(0.97); transition-duration: 80ms; }
+
+.ctp-static-pulse { transform-origin: 100px 115px; animation: ctp-static-pulse 1s var(--ctp-ease-out) forwards; }
+@keyframes ctp-static-pulse { from { opacity: 0.9; transform: scale(0.6); } to { opacity: 0; transform: scale(1.7); } }
+
+/* Cursor-lit surface: components set --mx / --my (0-100%) from pointer position */
+.ctp-lit { position: relative; }
+.ctp-lit::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--ctp-accent) 14%, transparent), transparent 62%);
+  opacity: 0; transition: opacity 300ms;
+}
+.ctp-lit:hover::before { opacity: 1; }
+
+/* ==========================================================================
+   Feature card 3D illustrations (pure CSS 3D; theme-aware via tokens)
+   ========================================================================== */
+.f3d-tone-purple { --f3d: var(--ctp-accent); }
+.f3d-tone-green  { --f3d: var(--ctp-safe); }
+.f3d-tone-amber  { --f3d: var(--ctp-warn); }
+.f3d-card:hover { border-color: color-mix(in srgb, var(--f3d) 45%, var(--ctp-border)); }
+
+.f3d-stage { perspective: 640px; overflow: hidden; }
+.f3d-stage::before {                      /* soft coloured light on the stage floor */
+  content: ''; position: absolute; left: 50%; bottom: -30%; width: 70%; height: 70%; transform: translateX(-50%);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--f3d) 30%, transparent), transparent);
+  filter: blur(8px); pointer-events: none;
+}
+.f3d-obj {
+  position: relative; width: 112px; height: 112px; transform-style: preserve-3d;
+  transform: translate3d(calc(var(--px, 0) * 12px), calc(var(--py, 0) * 9px), 0) rotateY(calc(var(--px, 0) * 16deg)) rotateX(calc(var(--py, 0) * -12deg));
+  transition: transform 500ms var(--ctp-ease-out);
+}
+.f3d-float { animation: f3d-float 5s ease-in-out infinite; }
+@keyframes f3d-float { 0%, 100% { translate: 0 -4px; } 50% { translate: 0 5px; } }
+
+/* link */
+.f3d-link {
+  position: absolute; left: 50%; top: 50%; width: 84px; height: 40px; border-radius: 999px;
+  border: 9px solid var(--f3d); margin: -20px 0 0 -42px;
+  box-shadow: 0 0 22px color-mix(in srgb, var(--f3d) 55%, transparent), inset 0 0 8px color-mix(in srgb, var(--f3d) 40%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--f3d) 18%, transparent), transparent 60%);
+}
+.f3d-link-a { transform: translate3d(-18px, -8px, -12px) rotate(-32deg); }
+.f3d-link-b { transform: translate3d(18px, 8px, 12px) rotate(-32deg); }
+.f3d-orb { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 14px var(--f3d); transform: translateZ(26px); }
+
+/* qr */
+.f3d-qr-spin { animation: f3d-qr-spin 7s ease-in-out infinite; }
+@keyframes f3d-qr-spin { 0%, 100% { rotate: y -26deg; } 50% { rotate: y 26deg; } }
+.f3d-plate {
+  position: absolute; left: 50%; top: 50%; width: 92px; height: 92px; margin: -46px; border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--f3d) 55%, transparent);
+  background: color-mix(in srgb, var(--ctp-surface) 88%, var(--f3d) 12%);
+  color: var(--f3d); padding: 9px; overflow: hidden;
+}
+.f3d-plate-back { transform: translateZ(-16px); opacity: 0.5; padding: 0; }
+.f3d-qr-face { transform: translateZ(8px); box-shadow: 0 0 26px color-mix(in srgb, var(--f3d) 30%, transparent); }
+.f3d-scanline {
+  position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--f3d);
+  box-shadow: 0 0 12px 2px var(--f3d); animation: f3d-scan 2.4s var(--ctp-ease-in-out) infinite;
+}
+@keyframes f3d-scan { 0% { top: 4%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { top: 96%; opacity: 0; } }
+
+/* book (isometric stack) */
+.f3d-book { transform: rotateX(58deg) rotateZ(-34deg) translate3d(calc(var(--px, 0) * 8px), calc(var(--py, 0) * 6px), 0); }
+.f3d-page, .f3d-cover { position: absolute; left: 50%; top: 50%; width: 82px; height: 106px; margin: -53px -41px; border-radius: 4px 8px 8px 4px; }
+.f3d-page { background: var(--ctp-surface-2); border: 1px solid var(--ctp-border-strong); }
+.f3d-page-4 { transform: translateZ(0); }
+.f3d-page-3 { transform: translateZ(7px) translateX(2px); }
+.f3d-page-2 { transform: translateZ(14px) translateX(4px); }
+.f3d-page-1 { transform: translateZ(21px) translateX(6px); }
+.f3d-cover {
+  transform: translateZ(30px) translateX(8px);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--f3d) 85%, #fff 0%), color-mix(in srgb, var(--f3d) 55%, #000));
+  box-shadow: -8px 10px 24px -6px rgba(0, 0, 0, 0.45), inset 5px 0 0 rgba(0, 0, 0, 0.25);
+}
+.f3d-cover-lines { position: absolute; left: 20px; right: 12px; top: 26px; height: 22px; border-top: 2px solid rgba(255,255,255,.55); border-bottom: 2px solid rgba(255,255,255,.3); }
+.f3d-card:hover .f3d-page-1 { transform: translateZ(21px) translateX(14px); }
+.f3d-card:hover .f3d-page-2 { transform: translateZ(14px) translateX(9px); }
+.f3d-page { transition: transform 500ms var(--ctp-ease-out); }
+
+/* quiz */
+.f3d-qcard {
+  position: absolute; left: 50%; top: 50%; width: 92px; height: 118px; margin: -59px -46px; padding: 10px; border-radius: 14px;
+  background: var(--ctp-surface); border: 1px solid var(--ctp-border-strong);
+  box-shadow: 0 18px 30px -14px rgba(0, 0, 0, 0.5), 0 0 24px color-mix(in srgb, var(--f3d) 22%, transparent);
+  transform: rotateY(-16deg) rotateX(6deg) translateZ(14px);
+  display: flex; flex-direction: column; gap: 7px;
+}
+.f3d-qmark { font-family: var(--ctp-font-display); font-size: 34px; line-height: 1; color: var(--f3d); text-align: center; }
+.f3d-qopt { display: block; height: 11px; border-radius: 6px; background: var(--ctp-surface-2); border: 1px solid var(--ctp-border); transition: all 300ms var(--ctp-ease-out); }
+.f3d-qopt-hit { border-color: color-mix(in srgb, var(--ctp-safe) 60%, transparent); }
+.f3d-card:hover .f3d-qopt-hit { background: color-mix(in srgb, var(--ctp-safe) 35%, transparent); transform: translateX(4px) translateZ(8px); }
+
+/* Scanner: sweeping beam + running-stage dots (shown only while a real request is in flight) */
+.ctp-scanbeam {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 38%; pointer-events: none; z-index: 5;
+  background: linear-gradient(to right, transparent, color-mix(in srgb, var(--ctp-accent) 16%, transparent) 70%, color-mix(in srgb, var(--ctp-accent) 45%, transparent));
+  border-right: 2px solid var(--ctp-accent);
+  box-shadow: 8px 0 28px -2px var(--ctp-accent-glow);
+  animation: ctp-scanbeam 1.7s var(--ctp-ease-in-out) infinite;
+}
+@keyframes ctp-scanbeam { 0% { transform: translateX(-100%); } 100% { transform: translateX(265%); } }
+.ctp-run-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ctp-accent); animation: ctp-run-dot 1.1s ease-in-out infinite; }
+@keyframes ctp-run-dot { 0%, 100% { opacity: 0.25; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.15); } }
+
+/* Consistent loading indicator */
+.ctp-spinner { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--ctp-border-strong); border-top-color: var(--ctp-accent); animation: ctp-spin 0.8s linear infinite; }
+@keyframes ctp-spin { to { transform: rotate(360deg); } }
+
+/* Theme toggle keeps token colours over any legacy button overrides */
+html.light .ctp-theme-toggle, html.dark .ctp-theme-toggle {
+  background-color: var(--ctp-surface) !important; border-color: var(--ctp-border) !important; color: var(--ctp-text) !important; box-shadow: none !important;
+}
+html.light .ctp-theme-toggle:hover, html.dark .ctp-theme-toggle:hover { background-color: var(--ctp-surface-2) !important; border-color: var(--ctp-border-strong) !important; }

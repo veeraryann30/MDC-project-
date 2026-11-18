@@ -13,7 +13,6 @@
 :root .ctp-console.ctp-dark {
   background-color: var(--ctp-bg) !important;
   color: var(--ctp-text) !important;
-  color-scheme: dark;
 }
 html.light body:has(.ctp-console),
 html.dark body:has(.ctp-console) { background-color: var(--ctp-bg) !important; }
@@ -73,7 +72,7 @@ html.dark body:has(.ctp-console) { background-color: var(--ctp-bg) !important; }
 :root .ctp-console [class~="bg-gradient-to-r"][class~="from-[#2563EB]"],
 :root .ctp-console [class~="bg-gradient-to-br"][class~="from-[#2563EB]"] {
   background-image: none !important;
-  background-color: var(--ctp-accent) !important;
+  background-color: var(--ctp-accent-solid) !important;
   color: var(--ctp-accent-ink) !important;
 }
 :root .ctp-console [class~="bg-[#2563EB]"] *,
@@ -89,13 +88,13 @@ html.dark body:has(.ctp-console) { background-color: var(--ctp-bg) !important; }
 
 /* Status tints */
 :root .ctp-console [class~="bg-[#FEF2F2]"],
-:root .ctp-console [class~="bg-red-50"] { background-color: color-mix(in srgb, var(--ctp-danger) 12%, transparent) !important; }
+:root .ctp-console [class~="bg-red-50"] { background-color: color-mix(in srgb, var(--ctp-danger) 8%, transparent) !important; }
 :root .ctp-console [class~="bg-[#F0FDF4]"],
 :root .ctp-console [class~="bg-emerald-50"],
 :root .ctp-console [class~="bg-emerald-50/60"],
-:root .ctp-console [class~="bg-green-50"] { background-color: color-mix(in srgb, var(--ctp-safe) 12%, transparent) !important; }
+:root .ctp-console [class~="bg-green-50"] { background-color: color-mix(in srgb, var(--ctp-safe) 8%, transparent) !important; }
 :root .ctp-console [class~="bg-[#FFFBEB]"],
-:root .ctp-console [class~="bg-amber-50"] { background-color: color-mix(in srgb, var(--ctp-warn) 12%, transparent) !important; }
+:root .ctp-console [class~="bg-amber-50"] { background-color: color-mix(in srgb, var(--ctp-warn) 8%, transparent) !important; }
 
 /* ---------- Borders & dividers ---------- */
 :root .ctp-console [class~="border-[#E2E8F0]"],
@@ -160,7 +159,7 @@ html.dark body:has(.ctp-console) { background-color: var(--ctp-bg) !important; }
 :root .ctp-console [class~="text-blue-600"],
 :root .ctp-console [class~="hover:text-[#2563EB]"]:hover,
 :root .ctp-console [class~="hover:text-[#1E40AF]"]:hover,
-:root .ctp-console [class~="group-hover:text-[#2563EB]"] { color: var(--ctp-accent) !important; }
+:root .ctp-console [class~="group-hover:text-[#2563EB]"] { color: var(--ctp-accent-text) !important; }
 :root .ctp-console [class~="text-[#16A34A]"],
 :root .ctp-console [class~="text-[#059669]"] { color: var(--ctp-safe) !important; }
 :root .ctp-console [class~="text-[#DC2626]"],
@@ -202,7 +201,7 @@ html.dark body:has(.ctp-console) { background-color: var(--ctp-bg) !important; }
 :root .ctp-console hr { border-color: var(--ctp-border); }
 :root .ctp-console ::selection { background: var(--ctp-accent); color: var(--ctp-accent-ink); }
 :root .ctp-console .leaflet-container { background: var(--ctp-surface); }
-:root .ctp-console .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9) saturate(0.6); }
+html.dark .ctp-console .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9) saturate(0.6); }
 
 /* Leaflet popups/controls, range sliders */
 :root .ctp-console .leaflet-popup-content-wrapper,
@@ -223,9 +222,9 @@ html.dark body:has(.ctp-console) { background-color: var(--ctp-bg) !important; }
 :root .ctp-console [class~="text-[#35C98A]"] { color: var(--ctp-safe) !important; }
 :root .ctp-console [class~="text-[#F2B84B]"] { color: var(--ctp-warn) !important; }
 :root .ctp-console [class~="text-[#FF5C5C]"] { color: var(--ctp-danger) !important; }
-:root .ctp-console [class~="bg-[#35C98A]/10"] { background-color: color-mix(in srgb, var(--ctp-safe) 12%, transparent) !important; }
-:root .ctp-console [class~="bg-[#F2B84B]/10"] { background-color: color-mix(in srgb, var(--ctp-warn) 12%, transparent) !important; }
-:root .ctp-console [class~="bg-[#FF5C5C]/10"] { background-color: color-mix(in srgb, var(--ctp-danger) 12%, transparent) !important; }
+:root .ctp-console [class~="bg-[#35C98A]/10"] { background-color: color-mix(in srgb, var(--ctp-safe) 8%, transparent) !important; }
+:root .ctp-console [class~="bg-[#F2B84B]/10"] { background-color: color-mix(in srgb, var(--ctp-warn) 8%, transparent) !important; }
+:root .ctp-console [class~="bg-[#FF5C5C]/10"] { background-color: color-mix(in srgb, var(--ctp-danger) 8%, transparent) !important; }
 :root .ctp-console [class~="border-[#35C98A]"], :root .ctp-console [class~="border-[#35C98A]/30"] { border-color: color-mix(in srgb, var(--ctp-safe) 40%, transparent) !important; }
 :root .ctp-console [class~="border-[#F2B84B]/30"] { border-color: color-mix(in srgb, var(--ctp-warn) 40%, transparent) !important; }
 :root .ctp-console [class~="border-[#FF5C5C]/30"] { border-color: color-mix(in srgb, var(--ctp-danger) 40%, transparent) !important; }
@@ -261,3 +260,30 @@ html.dark body:has(.ctp-console) { background-color: var(--ctp-bg) !important; }
 :root .ctp-console [class~="bg-[#DBEAFE]/40"],
 :root .ctp-console [class~="bg-[#DBEAFE]/50"] { background-color: color-mix(in srgb, var(--ctp-accent) 12%, transparent) !important; }
 
+
+
+/* ---------- v3 refinements (both themes) ---------- */
+/* Text accents use the readable accent-text token (AA in light and dark) */
+:root .ctp-console [class~="text-[#2563EB]"],
+:root .ctp-console [class~="text-[#1E40AF]"],
+:root .ctp-console [class~="text-[#1D4ED8]"],
+:root .ctp-console [class~="text-[#0284C7]"],
+:root .ctp-console [class~="text-blue-600"],
+:root .ctp-console [class~="hover:text-[#2563EB]"]:hover,
+:root .ctp-console [class~="hover:text-[#1E40AF]"]:hover { color: var(--ctp-accent-text) !important; }
+:root .ctp-console [class~="bg-[#2563EB]"],
+:root .ctp-console [class~="bg-[#2563EB]"] [class~="text-white"] { color: var(--ctp-accent-ink) !important; }
+
+/* Filled status chips/buttons keep legible ink */
+:root .ctp-console [class~="bg-[#16A34A]"],
+:root .ctp-console [class~="bg-[#DC2626]"],
+:root .ctp-console [class~="bg-[#16A34A]"] *,
+:root .ctp-console [class~="bg-[#DC2626]"] * { color: #ffffff !important; }
+:root .ctp-console [class~="bg-[#F59E0B]"],
+:root .ctp-console [class~="bg-[#F59E0B]"] * { color: #111111 !important; }
+
+/* Light theme: surfaces get a hairline instead of a heavy shadow */
+html.light .ctp-console [class*="shadow-"] { --tw-shadow-color: rgba(17, 17, 17, 0.08); }
+html.light .ctp-console ::selection { background: var(--ctp-accent); color: #ffffff; }
+/* Faded red labels must keep AA contrast */
+:root .ctp-console [class~="text-[#DC2626]"][class~="opacity-80"] { opacity: 1 !important; }

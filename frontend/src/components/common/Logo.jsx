@@ -39,23 +39,23 @@ export default function Logo({
           {/* Subtle outer geometric shield outline */}
           <path 
             d="M16 3L6 7.5V15.5C6 22.2 10.3 27.8 16 29.5C21.7 27.8 26 22.2 26 15.5V7.5L16 3Z" 
-            stroke="#DBEAFE" 
+            style={{ stroke: 'var(--ctp-border-strong)', fill: 'var(--ctp-surface)' }} 
             strokeWidth="1.5" 
-            fill="#F5F9FF"
+            
           />
 
           {/* Inner protective contour */}
           <path 
             d="M16 6.2L8.5 9.8V15.5C8.5 20.8 11.8 25.2 16 26.8C20.2 25.2 23.5 20.8 23.5 15.5V9.8L16 6.2Z" 
-            stroke="#93C5FD" 
+            style={{ stroke: 'var(--ctp-accent)', fill: 'var(--ctp-bg)' }} 
             strokeWidth="1.2" 
-            fill="#FFFFFF"
+            
           />
 
           {/* Phishing Hook / Precision Cursor Glyph in Primary Blue */}
           <path 
             d="M16 11V18C16 19.6569 14.6569 21 13 21C11.3431 21 10 19.6569 10 18" 
-            stroke="#2563EB" 
+            style={{ stroke: 'var(--ctp-accent)' }} 
             strokeWidth="2" 
             strokeLinecap="round"
           />
@@ -65,7 +65,7 @@ export default function Logo({
             cx="19.5" 
             cy="13.5" 
             r="2" 
-            fill="#2563EB" 
+            style={{ fill: 'var(--ctp-accent)' }} 
           />
         </svg>
       </div>
@@ -73,8 +73,8 @@ export default function Logo({
       {/* Brand Wordmark */}
       {withWordmark && (
         <div className="flex flex-col leading-none">
-          <div className={`font-bold font-sans ${uppercase ? 'uppercase tracking-[0.08em]' : 'tracking-tight'} ${tone === 'dark' ? 'text-ctp-text' : 'text-[#111827]'} ${textSizes[size] || textSizes.md}`}>
-            Catch the Phish<span className="text-[10px] text-[#2563EB] ml-0.5 font-normal">™</span>
+          <div className={`font-bold font-sans ${uppercase ? 'uppercase tracking-[0.08em]' : 'tracking-tight'} ${'text-ctp-text'} ${textSizes[size] || textSizes.md}`}>
+            Catch the Phish<span className="text-[10px] text-ctp-accent-text ml-0.5 font-normal">™</span>
           </div>
           {withTagline && (
             <div className="text-[10px] text-[#64748B] tracking-wider uppercase font-mono mt-1">

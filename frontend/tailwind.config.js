@@ -16,12 +16,14 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'Geist', '-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'sans-serif'],
+        display: ['"Instrument Serif"', '"Iowan Old Style"', 'Georgia', 'serif'],
         mono: ['"JetBrains Mono"', '"SF Mono"', 'Menlo', 'Consolas', 'monospace'],
       },
       colors: {
         // v2 redesign tokens (theme-aware CSS variables, see index.css)
         ctp: {
           bg: ctpVar('--ctp-bg'),
+          'bg-2': ctpVar('--ctp-bg-2'),
           surface: ctpVar('--ctp-surface'),
           'surface-2': ctpVar('--ctp-surface-2'),
           border: ctpVar('--ctp-border'),
@@ -30,6 +32,8 @@ export default {
           'text-2': ctpVar('--ctp-text-2'),
           muted: ctpVar('--ctp-text-muted'),
           accent: ctpVar('--ctp-accent'),
+          'accent-text': ctpVar('--ctp-accent-text'),
+          'accent-solid': ctpVar('--ctp-accent-solid'),
           'accent-ink': ctpVar('--ctp-accent-ink'),
           safe: ctpVar('--ctp-safe'),
           warn: ctpVar('--ctp-warn'),

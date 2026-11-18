@@ -11,7 +11,7 @@ function GitHubIcon({ className = "w-3.5 h-3.5" }) {
 }
 
 export default function LandingFooter({ setActivePage, tone = 'light' }) {
-  const dark = tone === 'dark';
+  const dark = true; // token-styled: follows the active theme
   const hov = dark ? 'hover:text-ctp-text' : 'hover:text-[#2563EB]';
   const head = dark ? 'text-ctp-text' : 'text-[#111827]';
   const rule = dark ? 'border-ctp-border' : 'border-[#E2E8F0]';

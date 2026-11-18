@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Menu, X, Sun, Moon, ArrowRight } from 'lucide-react';
+import { Menu, X, ArrowRight } from 'lucide-react';
+import ThemeToggle from '../common/ThemeToggle';
 import Logo from '../common/Logo';
 
 const NAV_ITEMS = [
@@ -29,7 +30,8 @@ export default function LandingNavbar({
   toggleTheme,
   tone = 'light'
 }) {
-  const dark = tone === 'dark';
+  // Always token-styled: colours come from the active theme (dark or light), not from 	one.
+  const dark = true;
   const reduced = useReducedMotion();
   const [hoverId, setHoverId] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -73,18 +75,9 @@ export default function LandingNavbar({
   };
 
   return (
-    <header 
-      className={`landing-nav ${dark ? `ctp-dark ${scrolled ? 'is-scrolled' : ''}` : ''} sticky top-0 z-50 h-[68px] transition-all duration-300 ${
-        dark
-          ? (scrolled
-              ? 'bg-[color-mix(in_srgb,var(--ctp-bg)_85%,transparent)] backdrop-blur-md border-b border-ctp-border'
-              : 'bg-[color-mix(in_srgb,var(--ctp-bg)_35%,transparent)] backdrop-blur-sm border-b border-transparent')
-          : (scrolled
-              ? 'bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] shadow-[0_4px_20px_-4px_rgba(37,99,235,0.06)]'
-              : 'bg-white/80 backdrop-blur-sm border-b border-[#E2E8F0]')
-      }`}
-    >
-      <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+    <header
+      className={`landing-nav ctp-dark ${scrolled ? 'is-scrolled' : ''} sticky top-3 z-50 mx-auto mt-3 w-[min(1120px,calc(100%-24px))] rounded-2xl border backdrop-blur-xl transition-[background-color,box-shadow] duration-300`}
+    >      <div className="h-14 px-3 sm:px-4 flex items-center justify-between">
         {/* ====================================================================
             LEFT: LOGO
             ==================================================================== */}
@@ -138,43 +131,26 @@ export default function LandingNavbar({
             RIGHT: THEME TOGGLE, GITHUB & ROUNDED BLUE CTA BUTTON
             ==================================================================== */}
         <div className="hidden md:flex items-center gap-2.5">
-          {toggleTheme && (
-            <button
-              type="button"
-              onClick={(e) => toggleTheme(e)}
-              className={`p-2 rounded-full ${dark ? 'bg-ctp-surface hover:bg-ctp-surface-2 border border-ctp-border text-ctp-text-2 hover:text-ctp-text' : 'bg-[#F5F9FF] hover:bg-[#DBEAFE]/50 border border-[#E2E8F0] hover:border-[#2563EB]/40 text-[#64748B] hover:text-[#2563EB]'} transition-all cursor-pointer flex items-center justify-center group landing-theme-btn`}
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              aria-label="Toggle color theme"
-            >
-              {theme === 'dark' ? (
-                <Moon className="w-3.5 h-3.5 text-[#2563EB] transition-transform group-hover:scale-110" />
-              ) : (
-                <Sun className="w-3.5 h-3.5 text-amber-500 transition-transform group-hover:scale-110" />
-              )}
-            </button>
-          )}
+          {toggleTheme && <ThemeToggle theme={theme} toggleTheme={toggleTheme} size={34} />}
 
-          {/* Rounded Blue CTA Button */}
           <button
             type="button"
             onClick={() => handleNavClick('scan')}
-            className={dark
-              ? 'whitespace-nowrap px-4 py-2 rounded-full bg-ctp-text hover:bg-ctp-accent text-ctp-bg hover:text-ctp-accent-ink active:scale-95 font-sans font-medium text-xs tracking-wide transition-colors duration-200 inline-flex items-center gap-1.5 cursor-pointer'
-              : 'whitespace-nowrap px-4 py-2 rounded-full bg-[#2563EB] hover:bg-[#1E40AF] active:scale-95 text-white font-sans font-medium text-xs tracking-wide transition-all duration-200 inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_10px_rgba(37,99,235,0.28)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.4)]'}
+            className="ctp-btn ctp-btn-primary h-9 px-4 text-xs"
           >
             <span>Scan a Link</span>
-            <ArrowRight className={`w-3.5 h-3.5 stroke-[2.2] ${dark ? '' : 'text-white'}`} />
-          </button>
-        </div>
+            <ArrowRight className="w-3.5 h-3.5" strokeWidth={2.2} />
+          </button>        </div>
 
         {/* ====================================================================
             MOBILE HAMBURGER BUTTON & CTA
             ==================================================================== */}
         <div className="flex md:hidden items-center gap-2">
+          {toggleTheme && <ThemeToggle theme={theme} toggleTheme={toggleTheme} size={32} />}
           <button
             type="button"
             onClick={() => handleNavClick('scan')}
-            className={`px-3 py-1.5 rounded-full ${dark ? 'bg-ctp-text text-ctp-bg' : 'bg-[#2563EB] hover:bg-[#1E40AF] text-white'} font-sans font-medium text-xs cursor-pointer active:scale-95 transition-transform`}
+            className="ctp-btn ctp-btn-primary h-8 px-3 text-xs"
           >
             Scan Link
           </button>
@@ -182,7 +158,7 @@ export default function LandingNavbar({
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`p-1.5 rounded-lg ${dark ? 'bg-ctp-surface border border-ctp-border text-ctp-text' : 'bg-[#F5F9FF] border border-[#E2E8F0] text-[#111827] hover:border-[#2563EB]/30'} cursor-pointer`}
+            className="p-1.5 rounded-lg bg-ctp-surface border border-ctp-border text-ctp-text cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -201,7 +177,7 @@ export default function LandingNavbar({
             animate={{ opacity: 1, height: 'auto' }}
             exit={reduced ? { opacity: 0 } : { opacity: 0, height: 0 }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className={`md:hidden overflow-hidden backdrop-blur-xl shadow-lg ${dark ? 'bg-ctp-bg border-b border-ctp-border' : 'bg-white/95 border-b border-[#E2E8F0]'}`}
+            className="md:hidden overflow-hidden border-t border-ctp-border"
           >
             <div className="px-4 py-4 space-y-1">
               {NAV_ITEMS.map((item, i) => (

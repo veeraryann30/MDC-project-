@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Search, CheckCircle2, Shield, Sun, Moon, ArrowRight } from 'lucide-react';
+import { Menu, Search, CheckCircle2, Shield, ArrowRight } from 'lucide-react';
+import ThemeToggle from '../common/ThemeToggle';
 import { api } from '../../services/api';
 
 export default function TopNavbar({ 
@@ -26,7 +27,7 @@ export default function TopNavbar({
   }, []);
 
   const pageMeta = {
-    dashboard: { title: 'Services Hub', breadcrumb: 'SERVICES' },
+    dashboard: { title: 'Dashboard', breadcrumb: 'OVERVIEW' },
     scanner: { title: 'URL Scanner Workstation', breadcrumb: 'MODULE 1: URL & WEB' },
     'qr-scanner': { title: 'QR Code Scam Detector', breadcrumb: 'MODULE 1B: QR CODE' },
     'message-scanner': { title: 'AI Message Scam Detector', breadcrumb: 'MODULE 2: SMS & CHAT' },
@@ -59,7 +60,7 @@ export default function TopNavbar({
   return (
     <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] px-4 sm:px-6 flex items-center justify-between gap-4 select-none">
       {/* Left: Mobile Toggle & Page Title */}
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-3 md:flex-none">
         <button
           onClick={() => setIsMobileOpen(true)}
           className="lg:hidden p-2 rounded-full text-[#64748B] hover:text-[#111827] hover:bg-[#F5F9FF] transition-colors"
@@ -68,7 +69,7 @@ export default function TopNavbar({
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="flex flex-col">
+        <div className="flex min-w-0 flex-col">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono text-[#2563EB] uppercase tracking-wider font-semibold">
               {current.breadcrumb}
@@ -122,22 +123,7 @@ export default function TopNavbar({
           </span>
         </div>
 
-        {toggleTheme && (
-          <button
-            onClick={(e) => toggleTheme(e)}
-            className="p-2 rounded-full bg-[#F5F9FF] border border-[#E2E8F0] hover:border-[#2563EB]/30 text-[#64748B] hover:text-[#2563EB] transition-all cursor-pointer relative overflow-hidden group topnav-theme-btn"
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            aria-label="Toggle theme"
-          >
-            <span className="relative flex items-center justify-center w-4 h-4">
-              {theme === 'dark' ? (
-                <Moon className="w-4 h-4 text-[#2563EB] transition-transform group-hover:scale-110" />
-              ) : (
-                <Sun className="w-4 h-4 text-amber-500 transition-transform group-hover:scale-110" />
-              )}
-            </span>
-          </button>
-        )}
+        {toggleTheme && <ThemeToggle theme={theme} toggleTheme={toggleTheme} size={34} />}
       </div>
     </header>
   );

@@ -1,10 +1,11 @@
 import React from 'react';
 import { 
   LayoutGrid, Search, Clock, 
-  Settings, ChevronLeft, ChevronRight, Globe, Sun, Moon,
+  Settings, ChevronLeft, ChevronRight, Globe,
   MessageSquare, Mail, Dna, QrCode
 } from 'lucide-react';
 import Logo from '../common/Logo';
+import ThemeToggle from '../common/ThemeToggle';
 
 export default function Sidebar({ 
   activePage, 
@@ -102,25 +103,14 @@ export default function Sidebar({
         {/* Bottom Actions: Theme Toggle & Landing Page */}
         <div className="p-3 border-t border-[#E2E8F0] space-y-1.5">
           {toggleTheme && (
-            <button
-              onClick={(e) => toggleTheme(e)}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-mono text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] transition-colors cursor-pointer group"
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              aria-label="Toggle theme"
-            >
-              <span className="relative flex items-center justify-center w-4 h-4 shrink-0">
-                {theme === 'dark' ? (
-                  <Moon className="w-4 h-4 text-[#2563EB] transition-transform group-hover:scale-110" />
-                ) : (
-                  <Sun className="w-4 h-4 text-amber-500 transition-transform group-hover:scale-110" />
-                )}
-              </span>
+            <div className="flex items-center gap-2.5 px-1.5 py-1">
+              <ThemeToggle theme={theme} toggleTheme={toggleTheme} size={32} />
               {!isCollapsed && (
-                <span className="transition-colors duration-300">
-                  {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                <span className="text-xs font-mono text-ctp-text-2">
+                  {theme === 'dark' ? 'Dark theme' : 'Light theme'}
                 </span>
               )}
-            </button>
+            </div>
           )}
 
           <button

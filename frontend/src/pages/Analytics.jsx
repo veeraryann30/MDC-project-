@@ -203,8 +203,8 @@ export default function Analytics() {
               <AreaChart data={activityData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="analyticsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#22d3ee" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#26262b" />
@@ -213,7 +213,7 @@ export default function Analytics() {
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#17171a', borderColor: '#26262b', borderRadius: '12px', color: '#f4f4f5', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                 />
-                <Area type="monotone" dataKey="score" stroke="#22d3ee" fillOpacity={1} fill="url(#analyticsGradient)" strokeWidth={2} />
+                <Area type="monotone" dataKey="score" stroke="#a855f7" fillOpacity={1} fill="url(#analyticsGradient)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -235,9 +235,9 @@ export default function Analytics() {
               <YAxis stroke="#a1a1aa" tick={{ fontSize: 11, fill: '#a1a1aa' }} />
               <Tooltip 
                 contentStyle={{ backgroundColor: '#17171a', borderColor: '#26262b', borderRadius: '12px', color: '#f4f4f5', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                itemStyle={{ color: '#22d3ee' }}
+                itemStyle={{ color: '#a855f7' }}
               />
-              <Bar dataKey="count" fill="#22d3ee" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="count" fill="#a855f7" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

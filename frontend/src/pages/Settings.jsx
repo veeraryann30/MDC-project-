@@ -5,6 +5,7 @@ import {
   Lock, Terminal, HelpCircle, HardDrive, Info
 } from 'lucide-react';
 import { api } from '../services/api';
+import SoundToggle from '../components/common/SoundToggle';
 
 export default function Settings({ theme = 'light', setTheme, toggleTheme }) {
   const [activeTab, setActiveTab] = useState('scan');
@@ -462,11 +463,11 @@ export default function Settings({ theme = 'light', setTheme, toggleTheme }) {
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-bold text-[#111827]">Light Theme (White & Blue)</span>
-                  <span className="w-4 h-4 rounded-full bg-[#2563EB] shadow-xs" />
+                  <span className="text-sm font-bold text-[#111827]">Light Theme</span>
+                  <span className="w-4 h-4 rounded-full bg-[#A855F7] shadow-xs" />
                 </div>
                 <p className="text-xs text-[#64748B] leading-relaxed">
-                  Apple & Stripe-grade design system: #FFFFFF primary, #F5F9FF secondary, #2563EB electric blue accents, and clean borders.
+                  Clean white canvas with neutral greys, deep purple accents and crisp borders.
                 </p>
                 <div className="mt-3 flex items-center gap-1.5 text-xs font-mono text-[#2563EB] font-bold">
                   <span>{theme === 'light' ? '● Currently Active' : 'Select Light Theme'}</span>
@@ -491,12 +492,27 @@ export default function Settings({ theme = 'light', setTheme, toggleTheme }) {
                   <span className="w-4 h-4 rounded-full bg-[#111827]" />
                 </div>
                 <p className="text-xs text-[#64748B] leading-relaxed">
-                  Deep monochromatic canvas (#000000), low-light SOC console display, and high-contrast indicators.
+                  Pure black canvas with charcoal surfaces, purple accents and high-contrast status colours. Follows your system setting until you choose.
                 </p>
                 <div className="mt-3 flex items-center gap-1.5 text-xs font-mono text-[#64748B]">
                   <span>{theme === 'dark' ? '● Currently Active' : 'Select Dark Theme'}</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-[14px] bg-[#151517] border border-[#29292D]">
+            <div className="flex items-start justify-between gap-6">
+              <div>
+                <h3 className="text-sm font-semibold text-[#F5F5F5] uppercase tracking-wider font-mono">
+                  Sound Effects
+                </h3>
+                <p className="text-xs text-[#92929A] mt-1 max-w-xl">
+                  Play a short sound when a scan finishes: a soft chime for safe, a gentle tone for suspicious and a low double pulse for dangerous.
+                  Off by default; sounds only play after a real scan result and never replace the visual warning.
+                </p>
+              </div>
+              <SoundToggle variant="switch" />
             </div>
           </div>
         </div>

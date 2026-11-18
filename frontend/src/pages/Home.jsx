@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import LandingNavbar from '../components/layout/LandingNavbar';
 import LandingFooter from '../components/layout/LandingFooter';
 import HeroSection from '../components/home/HeroSection';
-import ServicesSection from '../components/home/ServicesSection';
+import FeatureCards from '../components/home/FeatureCards';
 import CursorAccent from '../components/common/CursorAccent';
 import UrlScanner from '../components/scanner/UrlScanner';
 
@@ -42,7 +42,7 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme,
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] text-[#111827] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#FFFFFF] text-[#111827] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white relative overflow-x-clip">
       {/* ======================================================================
           1. NAVIGATION BAR
           ====================================================================== */}
@@ -61,8 +61,8 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme,
         <HeroSection onScan={handleScanLink} onExplore={handleExploreProtection} />
 
 
-        {/* 3. SERVICES - dark, continues the hero */}
-        <ServicesSection setActivePage={setActivePage} />
+        {/* 3. FEATURES - four cards with CSS-3D illustrations */}
+        <FeatureCards setActivePage={setActivePage} />
 
         {/* 4. SCANNER - dark, same surface as hero and services */}
         <section className="ctp-dark bg-ctp-bg text-ctp-text border-t border-ctp-border">

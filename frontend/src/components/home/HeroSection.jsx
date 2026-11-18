@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Check } from 'lucide-react';
 import HeroShield from './HeroShield';
 import MagneticButton from '../common/MagneticButton';
@@ -13,12 +13,12 @@ function RevealLine({ text, delay = 0, className = '' }) {
   return (
     <span className={`block ${className}`}>
       {words.map((w, i) => (
-        <span key={i} className="inline-block overflow-hidden align-bottom pb-[0.08em] -mb-[0.08em]">
+        <span key={i} className="inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em]">
           <motion.span
             className="inline-block"
             initial={reduced ? false : { y: '110%' }}
             animate={{ y: 0 }}
-            transition={{ duration: 0.9, ease: EASE, delay: delay + i * 0.07 }}
+            transition={{ duration: 0.95, ease: EASE, delay: delay + i * 0.08 }}
           >
             {w}{i < words.length - 1 ? ' ' : ''}
           </motion.span>
@@ -37,24 +37,46 @@ const fadeUp = (delay) => ({
 export default function HeroSection({ onScan, onExplore }) {
   const reduced = useReducedMotion();
   const anim = (d) => (reduced ? {} : fadeUp(d));
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] });
+  const glowY = useTransform(scrollYProgress, [0, 1], reduced ? [0, 0] : [0, 140]);
+  const glowOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.15]);
+
+  // Cursor-responsive lighting: write CSS variables directly (no React re-render per move)
+  const onMove = (e) => {
+    if (reduced || e.pointerType === 'touch') return;
+    const r = sectionRef.current?.getBoundingClientRect();
+    if (!r) return;
+    sectionRef.current.style.setProperty('--hx', `${((e.clientX - r.left) / r.width) * 100}%`);
+    sectionRef.current.style.setProperty('--hy', `${((e.clientY - r.top) / r.height) * 100}%`);
+  };
 
   return (
-    <section className="ctp-dark relative -mt-[68px] pt-[68px] bg-ctp-bg text-ctp-text overflow-hidden">
-      {/* Background: faint engineering grid + one slow-drifting light. Decorative only. */}
+    <section
+      ref={sectionRef}
+      onPointerMove={onMove}
+      className="ctp-dark relative -mt-[68px] pt-[68px] bg-ctp-bg text-ctp-text overflow-hidden"
+      style={{ '--hx': '62%', '--hy': '40%' }}
+    >
+      {/* Background: faint grid, purple key light that follows the cursor, and a scroll-parallax glow */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute inset-0 opacity-[0.5]"
+          className="absolute inset-0"
           style={{
             backgroundImage:
-              'linear-gradient(to right, rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.045) 1px, transparent 1px)',
+              'linear-gradient(to right, var(--ctp-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--ctp-grid-line) 1px, transparent 1px)',
             backgroundSize: '72px 72px',
             WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 62% 45%, #000 20%, transparent 75%)',
             maskImage: 'radial-gradient(ellipse 70% 60% at 62% 45%, #000 20%, transparent 75%)',
           }}
         />
         <div
-          className="ctp-drift absolute right-[8%] top-[10%] w-[560px] h-[560px] rounded-full blur-[120px] opacity-[0.14]"
-          style={{ background: 'radial-gradient(closest-side, var(--ctp-accent), transparent)' }}
+          className="absolute inset-0 transition-opacity duration-500"
+          style={{ background: 'radial-gradient(640px circle at var(--hx) var(--hy), color-mix(in srgb, var(--ctp-accent) 14%, transparent), transparent 65%)' }}
+        />
+        <motion.div
+          className="absolute right-[6%] top-[8%] h-[560px] w-[560px] rounded-full blur-[130px]"
+          style={{ y: glowY, opacity: glowOpacity, background: 'radial-gradient(closest-side, var(--ctp-accent-glow), transparent)' }}
         />
       </div>
 
@@ -68,42 +90,38 @@ export default function HeroSection({ onScan, onExplore }) {
             Zero-execution phishing intelligence
           </motion.div>
 
-          <h1 className="mt-6 font-semibold text-[length:var(--ctp-text-display)] leading-[1.02] tracking-[-0.04em]">
-            <RevealLine text="Your Digital World." delay={0.1} />
-            <RevealLine
-              text="Protected."
-              delay={0.35}
-              className="w-fit bg-gradient-to-r from-ctp-text via-ctp-text to-ctp-accent bg-clip-text text-transparent"
-            />
+          <h1 className="ctp-display mt-6 text-[length:var(--ctp-text-display)]">
+            <RevealLine text="Don't Trust the Link." delay={0.1} />
+            <RevealLine text="Verify It." delay={0.38} className="text-ctp-accent-text" />
           </h1>
 
-          <motion.p {...anim(0.6)} className="mt-6 max-w-xl text-[length:var(--ctp-text-body)] leading-relaxed text-ctp-text-2">
-            Detect digital threats before they become digital disasters. Stay one step ahead of phishing, scams, and malicious links.
+          <motion.p {...anim(0.62)} className="mt-6 max-w-xl text-[length:var(--ctp-text-body)] leading-relaxed text-ctp-text-2">
+            Your intelligent defence against phishing, malicious URLs and digital scams.
           </motion.p>
 
-          <motion.div {...anim(0.75)} className="mt-9 flex flex-wrap items-center gap-3">
+          <motion.div {...anim(0.78)} className="mt-9 flex flex-wrap items-center gap-3">
             <MagneticButton
               type="button"
               onClick={onScan}
-              className="group inline-flex items-center gap-2 h-12 px-7 rounded-full bg-ctp-accent text-ctp-accent-ink text-sm font-medium tracking-wide cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ctp-accent"
+              className="ctp-btn ctp-btn-primary h-12 px-7 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ctp-accent"
             >
               Scan a Link
-              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+              <ArrowRight className="w-4 h-4" strokeWidth={2.2} />
             </MagneticButton>
             <MagneticButton
               type="button"
               onClick={onExplore}
               strength={0.2}
-              className="inline-flex items-center h-12 px-6 rounded-full border border-ctp-border-strong text-ctp-text text-sm font-medium tracking-wide hover:bg-ctp-surface-2 transition-colors duration-200 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ctp-text"
+              className="ctp-btn ctp-btn-ghost h-12 px-6 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ctp-accent"
             >
               Explore Protection
             </MagneticButton>
           </motion.div>
 
-          <motion.ul {...anim(0.9)} className="mt-12 flex flex-wrap gap-x-7 gap-y-2 text-[13px] text-ctp-muted">
+          <motion.ul {...anim(0.92)} className="mt-12 flex flex-wrap gap-x-7 gap-y-2 text-[13px] text-ctp-text-2">
             {['Zero-execution static analysis', '34 structural URL features', 'ML model + explainable rules'].map((t) => (
               <li key={t} className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-ctp-accent" strokeWidth={2.4} />
+                <Check className="w-3.5 h-3.5 text-ctp-accent-text" strokeWidth={2.4} />
                 {t}
               </li>
             ))}
@@ -112,7 +130,7 @@ export default function HeroSection({ onScan, onExplore }) {
 
         <motion.div
           className="lg:col-span-5"
-          initial={reduced ? false : { opacity: 0, scale: 0.96 }}
+          initial={reduced ? false : { opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: EASE, delay: 0.25 }}
         >

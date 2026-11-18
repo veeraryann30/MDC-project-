@@ -135,6 +135,8 @@ Verification Protocol: Zero-Execution Static Sandbox`;
         title={statusVerdict.title}
         summary={breakdown.summary_explanation || statusVerdict.summary}
         url={url}
+        domain={domain}
+        tld={details.tld}
         mlScore={breakdown.ml_score}
         ruleScore={breakdown.rule_score}
         https={!!features.has_https}
