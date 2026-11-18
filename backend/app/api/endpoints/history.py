@@ -12,6 +12,7 @@ from sqlalchemy import desc
 from backend.app.database.session import get_db
 from backend.app.database.models import ScanRecord
 from backend.app.schemas.history import HistoryResponse, HistoryItem
+from backend.app.security.auth import require_admin
 
 router = APIRouter()
 
@@ -67,7 +68,7 @@ def get_history_detail(record_id: int, db: Session = Depends(get_db)):
 
 
 @router.delete("/history/{record_id}")
-def delete_history_item(record_id: int, db: Session = Depends(get_db)):
+def delete_history_item(record_id: int, db: Session = Depends(get_db), _admin: dict = Depends(require_admin)):
     record = db.query(ScanRecord).filter(ScanRecord.id == record_id).first()
     if not record:
         raise HTTPException(status_code=404, detail="Scan record not found")
@@ -77,7 +78,7 @@ def delete_history_item(record_id: int, db: Session = Depends(get_db)):
 
 
 @router.delete("/history")
-def clear_all_history(db: Session = Depends(get_db)):
+def clear_all_history(db: Session = Depends(get_db), _admin: dict = Depends(require_admin)):
     deleted_count = db.query(ScanRecord).delete()
     db.commit()
     return {"status": "success", "message": f"Cleared {deleted_count} scan records"}

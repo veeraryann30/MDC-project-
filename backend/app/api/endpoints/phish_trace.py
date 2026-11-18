@@ -4,6 +4,7 @@ Provides real-time attacker infrastructure reconnaissance, geolocation intellige
 IP threat reputation, SSL certificate inspection, and historical telemetry queries.
 """
 
+import logging
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -13,7 +14,9 @@ from sqlalchemy import func, desc, distinct
 from backend.app.database.session import get_db
 from backend.app.database.models import PhishTraceRecord
 from backend.app.services.phish_trace_service import PhishTraceService
+from backend.app.security.auth import require_admin
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -70,11 +73,12 @@ def analyze_infrastructure(payload: TraceRequest, db: Session = Depends(get_db))
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
+        logger.exception("Infrastructure trace failed")
         db.rollback()
         raise HTTPException(
             status_code=500,
-            detail=f"An error occurred while executing infrastructure trace: {str(e)}"
+            detail="An error occurred while executing infrastructure trace."
         )
 
 
@@ -205,7 +209,7 @@ def get_trace_detail(record_id: int, db: Session = Depends(get_db)):
 
 
 @router.delete("/phish-trace/{record_id}")
-def delete_trace_record(record_id: int, db: Session = Depends(get_db)):
+def delete_trace_record(record_id: int, db: Session = Depends(get_db), _admin: dict = Depends(require_admin)):
     """
     Deletes an infrastructure trace record.
     """

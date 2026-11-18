@@ -193,7 +193,8 @@ Ran 18 tests in 1.95s
 ```bash
 python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-Default Demonstration Analyst Account:
+Default Demonstration Analyst Account (**local development only** — it is never created when
+`APP_ENV=production`; see `docs/DEPLOYMENT.md`):
 - **Email**: `analyst@catchthephish.io`
 - **Password**: `CyberGuard2026!`
 

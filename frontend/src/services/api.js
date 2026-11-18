@@ -544,6 +544,7 @@ export const api = {
     try {
       const response = await fetch(`${API_BASE_URL}/phish-trace/${id}`, {
         method: 'DELETE',
+        headers: this.getAuthHeaders(),
         signal: AbortSignal.timeout(3000)
       });
       if (response.ok) return await response.json();
@@ -1297,7 +1298,7 @@ export const api = {
 
   async deleteHistoryItem(id) {
     try {
-      await fetch(`${API_BASE_URL}/history/${id}`, { method: 'DELETE', signal: AbortSignal.timeout(3000) });
+      await fetch(`${API_BASE_URL}/history/${id}`, { method: 'DELETE', headers: this.getAuthHeaders(), signal: AbortSignal.timeout(3000) });
     } catch {
       // ignore
     }
@@ -1308,7 +1309,7 @@ export const api = {
 
   async clearAllHistory() {
     try {
-      await fetch(`${API_BASE_URL}/history`, { method: 'DELETE', signal: AbortSignal.timeout(3000) });
+      await fetch(`${API_BASE_URL}/history`, { method: 'DELETE', headers: this.getAuthHeaders(), signal: AbortSignal.timeout(3000) });
     } catch {
       // ignore
     }

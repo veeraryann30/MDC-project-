@@ -4,11 +4,14 @@ Provides network infrastructure investigation, DNS resolution, IP geolocation,
 and RDAP domain registration intelligence.
 """
 
+import logging
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from backend.app.services.link_origin_service import LinkOriginService
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -25,8 +28,9 @@ def get_origin_intelligence(payload: OriginRequest):
     try:
         intelligence = LinkOriginService.analyze(raw_url)
         return intelligence
-    except Exception as e:
+    except Exception:
+        logger.exception("Link origin analysis failed")
         raise HTTPException(
             status_code=500,
-            detail=f"An error occurred while analyzing link origin: {str(e)}"
+            detail="An error occurred while analyzing link origin."
         )

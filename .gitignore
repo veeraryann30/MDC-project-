@@ -35,3 +35,8 @@ Thumbs.db
 # Internal agent skills / cache
 .agents/
 andrej-karpathy-skills-main/
+
+# Local databases (never commit scan data)
+*.db
+.claude/
+

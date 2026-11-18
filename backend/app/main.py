@@ -21,6 +21,7 @@ from backend.app.services.rule_engine import RuleEngineService
 from backend.app.services.ml_service import MLService
 from backend.app.services.scorer import ScorerService
 from backend.app.security.auth import hash_password
+from backend.app.security.rate_limit import RateLimitMiddleware
 from backend.app.services.message_scanner_service import MessageScannerService
 from backend.app.services.job_scam_service import JobScamService
 from backend.app.services.investment_scam_service import InvestmentScamService
@@ -35,13 +36,16 @@ app = FastAPI(
     version=settings.VERSION
 )
 
-# CORS configuration
+# Rate limiting (added first so CORS, added next, wraps it and error responses keep CORS headers)
+app.add_middleware(RateLimitMiddleware, per_minute=settings.RATE_LIMIT_PER_MINUTE)
+
+# CORS configuration: explicit origins only (see CORS_ORIGINS in config)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Register API Router
@@ -51,6 +55,9 @@ app.include_router(api_router, prefix=settings.API_PREFIX)
 @app.on_event("startup")
 def seed_demo_data_if_empty():
     """Seeds initial demonstration scan records if database is empty."""
+    if settings.IS_PRODUCTION:
+        # Never seed demo records or the demo admin account in production.
+        return
     db = SessionLocal()
     try:
         count = db.query(ScanRecord).count()

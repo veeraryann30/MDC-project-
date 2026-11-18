@@ -6,9 +6,12 @@ rule-based explainability generation, and audit logging.
 
 import base64
 import asyncio
+import logging
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
+
+from backend.app.core.config import settings
 
 from backend.app.database.session import get_db
 from backend.app.database.models import ScanRecord
@@ -22,6 +25,7 @@ from backend.app.services.scorer import ScorerService
 from backend.app.services.link_origin_service import LinkOriginService
 from backend.app.services.qr_scanner_service import QRScannerService
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.post("/scan", response_model=ScanResponse)
@@ -100,11 +104,12 @@ def scan_url(payload: ScanRequest, db: Session = Depends(get_db)):
         )
         return response
 
-    except Exception as e:
+    except Exception:
+        logger.exception("URL scan failed")
         db.rollback()
         raise HTTPException(
             status_code=500,
-            detail=f"An error occurred while analyzing the URL: {str(e)}"
+            detail="An error occurred while analyzing the URL."
         )
 
 
@@ -128,6 +133,9 @@ async def scan_qr_file(
         else:
             contents = bytes(file)
 
+        if len(contents) > settings.MAX_UPLOAD_BYTES:
+            raise HTTPException(status_code=413, detail="File is too large.")
+
         filename = file.filename or "uploaded_qr_file"
         result = QRScannerService.analyze_qr_file(
             file_name=filename,
@@ -135,10 +143,13 @@ async def scan_qr_file(
             db=db
         )
         return result
-    except Exception as e:
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("QR file processing failed")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to process QR code file: {str(e)}"
+            detail="Failed to process the QR code file."
         )
 
 
@@ -153,6 +164,8 @@ def scan_qr_json(
     """
     try:
         b64_data = payload.file_base64
+        if len(b64_data) > settings.MAX_UPLOAD_BYTES * 4 // 3 + 1024:
+            raise HTTPException(status_code=413, detail="File is too large.")
         if "," in b64_data:
             b64_data = b64_data.split(",", 1)[1]
         file_bytes = base64.b64decode(b64_data)
@@ -162,8 +175,10 @@ def scan_qr_json(
             db=db
         )
         return result
-    except Exception as e:
+    except HTTPException:
+        raise
+    except Exception:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid base64 payload: {str(e)}"
+            detail="Invalid base64 payload."
         )

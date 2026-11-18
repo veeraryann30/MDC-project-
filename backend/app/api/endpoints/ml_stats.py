@@ -25,5 +25,5 @@ def get_ml_metrics():
         with open(METRICS_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
         return data
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error loading model metrics: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Error loading model metrics.")

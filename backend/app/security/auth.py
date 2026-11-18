@@ -15,7 +15,25 @@ from typing import Optional, Dict, Any
 from fastapi import HTTPException, Security, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-SECRET_KEY = os.getenv("AUTH_SECRET_KEY", "catch-the-phish-super-secure-jwt-key-2026-xyz-token")
+def _load_secret_key() -> str:
+    """Signing key for JWTs. Must come from the environment in production."""
+    key = os.getenv("AUTH_SECRET_KEY", "").strip()
+    is_prod = os.getenv("APP_ENV", "development").lower() == "production"
+    if key and key.startswith("catch-the-phish-super-secure"):
+        # The old default is public (it was committed to the repository); never accept it.
+        key = ""
+    if len(key) >= 32:
+        return key
+    if is_prod:
+        raise RuntimeError(
+            "AUTH_SECRET_KEY must be set to a random string of at least 32 characters when APP_ENV=production."
+        )
+    # Development: a random per-process key. Tokens simply stop working after a restart.
+    print("[!] AUTH_SECRET_KEY not set; using a temporary random key (development only).")
+    return secrets.token_urlsafe(48)
+
+
+SECRET_KEY = _load_secret_key()
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24 * 7  # 7 days
 
@@ -119,3 +137,16 @@ def get_current_user_optional(credentials: Optional[HTTPAuthorizationCredentials
         return decode_access_token(credentials.credentials)
     except HTTPException:
         return None
+
+def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_bearer)) -> Dict[str, Any]:
+    """Requires a valid bearer token; returns the decoded payload."""
+    if not credentials:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required.")
+    return decode_access_token(credentials.credentials)
+
+
+def require_admin(user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
+    """Requires an authenticated user whose token carries the admin role."""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Administrator access required.")
+    return user

@@ -11,7 +11,7 @@ from sqlalchemy import desc
 
 from backend.app.database.session import get_db
 from backend.app.database.models import ScamAnalysisRecord
-from backend.app.security.auth import get_current_user_optional
+from backend.app.security.auth import get_current_user_optional, get_current_user
 from backend.app.schemas.scam import (
     MessageScanRequest, MessageScanResponse,
     JobScanRequest, JobScanResponse,
@@ -27,6 +27,22 @@ from backend.app.services.email_scam_service import EmailScamService
 from backend.app.services.scam_dna_service import ScamDNAService
 
 router = APIRouter(prefix="/scam", tags=["Scam Detection Engines"])
+
+
+def _can_access(rec, token_payload: Optional[dict]) -> bool:
+    """Anonymous records are readable by anyone; owned records only by their owner or an admin."""
+    if rec.user_id is None:
+        return True
+    if not token_payload:
+        return False
+    return token_payload.get("role") == "admin" or _extract_user_id(token_payload) == rec.user_id
+
+
+def _can_modify(rec, token_payload: dict) -> bool:
+    if token_payload.get("role") == "admin":
+        return True
+    uid = _extract_user_id(token_payload)
+    return uid is not None and rec.user_id == uid
 
 
 def _extract_user_id(token_payload: Optional[dict]) -> Optional[int]:
@@ -231,10 +247,13 @@ def get_scam_history(
 ):
     query = db.query(ScamAnalysisRecord)
 
-    # If user is authenticated, prioritize user-scoped history
+    # Anonymous visitors only ever see anonymous records; signed-in users see their own
+    # records plus anonymous ones. One user's history is never shown to another.
     user_id = _extract_user_id(user_payload)
     if user_id:
         query = query.filter((ScamAnalysisRecord.user_id == user_id) | (ScamAnalysisRecord.user_id == None))
+    else:
+        query = query.filter(ScamAnalysisRecord.user_id == None)
 
     if search.strip():
         s = f"%{search.strip()}%"
@@ -275,9 +294,13 @@ def get_scam_history(
 
 
 @router.get("/history/{record_id}")
-def get_scam_history_item(record_id: int, db: Session = Depends(get_db)):
+def get_scam_history_item(
+    record_id: int,
+    db: Session = Depends(get_db),
+    user_payload: Optional[dict] = Depends(get_current_user_optional)
+):
     rec = db.query(ScamAnalysisRecord).filter(ScamAnalysisRecord.id == record_id).first()
-    if not rec:
+    if not rec or not _can_access(rec, user_payload):
         raise HTTPException(status_code=404, detail="Analysis record not found.")
     return {
         "id": rec.id,
@@ -298,9 +321,13 @@ def get_scam_history_item(record_id: int, db: Session = Depends(get_db)):
 
 
 @router.delete("/history/{record_id}")
-def delete_scam_history_item(record_id: int, db: Session = Depends(get_db)):
+def delete_scam_history_item(
+    record_id: int,
+    db: Session = Depends(get_db),
+    user_payload: dict = Depends(get_current_user)
+):
     rec = db.query(ScamAnalysisRecord).filter(ScamAnalysisRecord.id == record_id).first()
-    if not rec:
+    if not rec or not _can_modify(rec, user_payload):
         raise HTTPException(status_code=404, detail="Analysis record not found.")
     db.delete(rec)
     db.commit()
@@ -308,7 +335,17 @@ def delete_scam_history_item(record_id: int, db: Session = Depends(get_db)):
 
 
 @router.delete("/history")
-def clear_scam_history(db: Session = Depends(get_db)):
-    db.query(ScamAnalysisRecord).delete()
+def clear_scam_history(
+    db: Session = Depends(get_db),
+    user_payload: dict = Depends(get_current_user)
+):
+    # Admins clear everything; everyone else clears only their own records.
+    query = db.query(ScamAnalysisRecord)
+    if user_payload.get("role") != "admin":
+        user_id = _extract_user_id(user_payload)
+        if user_id is None:
+            raise HTTPException(status_code=403, detail="Not allowed.")
+        query = query.filter(ScamAnalysisRecord.user_id == user_id)
+    deleted = query.delete(synchronize_session=False)
     db.commit()
-    return {"status": "success", "message": "All scam analysis records cleared."}
+    return {"status": "success", "message": f"{deleted} scam analysis records cleared."}
