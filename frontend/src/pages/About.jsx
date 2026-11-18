@@ -6,6 +6,7 @@ import {
   FileText, Zap, Globe, Search, Sliders, Check, Terminal
 } from 'lucide-react';
 import { api } from '../services/api';
+const pct = (v) => (typeof v === 'number' ? `${(v * 100).toFixed(1)}%` : '—');
 
 export default function About({ setActivePage }) {
   const [activeSection, setActiveSection] = useState('problem');
@@ -24,7 +25,7 @@ export default function About({ setActivePage }) {
         const data = await api.getMLMetrics();
         if (isMounted) setMlMetrics(data);
       } catch (err) {
-        console.warn('Backend ML metrics unavailable, using offline baseline specifications', err);
+        console.warn('Backend ML metrics unavailable', err);
       }
     };
     loadMetrics();
@@ -40,19 +41,14 @@ export default function About({ setActivePage }) {
     };
   }, []);
 
-  // Model fallback statistics if backend is offline
+  // Live model metrics from the backend. When unavailable, values show as "—" (nothing is invented).
   const rf = mlMetrics?.models?.random_forest || {
-    accuracy: mlMetrics?.accuracy ?? 0.984,
-    f1_score: mlMetrics?.f1_score ?? 0.984,
-    precision: mlMetrics?.precision ?? 0.981,
-    recall: mlMetrics?.recall ?? 0.987
+    accuracy: mlMetrics?.accuracy,
+    f1_score: mlMetrics?.f1_score,
+    precision: mlMetrics?.precision,
+    recall: mlMetrics?.recall
   };
-  const lr = mlMetrics?.models?.logistic_regression || {
-    accuracy: 0.942,
-    f1_score: 0.941,
-    precision: 0.938,
-    recall: 0.945
-  };
+  const lr = mlMetrics?.models?.logistic_regression || { accuracy: undefined, f1_score: undefined, precision: undefined, recall: undefined };
 
   // The 10 Architectural Pipeline Stages of Catch the Phish
   const pipelineStages = [
@@ -1089,7 +1085,7 @@ export default function About({ setActivePage }) {
             <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm text-center space-y-1 hover:shadow-md transition-all">
               <div className="text-[11px] font-mono text-[#64748B] uppercase font-semibold">Model Accuracy</div>
               <div className="text-3xl font-bold font-mono text-[#2563EB]">
-                {(rf.accuracy * 100).toFixed(1)}%
+                {pct(rf.accuracy)}
               </div>
               <div className="text-[11px] text-[#64748B]">Random Forest Classifier</div>
             </div>
@@ -1097,7 +1093,7 @@ export default function About({ setActivePage }) {
             <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm text-center space-y-1 hover:shadow-md transition-all">
               <div className="text-[11px] font-mono text-[#64748B] uppercase font-semibold">F1-Score</div>
               <div className="text-3xl font-bold font-mono text-[#16A34A]">
-                {(rf.f1_score * 100).toFixed(1)}%
+                {pct(rf.f1_score)}
               </div>
               <div className="text-[11px] text-[#64748B]">Precision / Recall Harmonic Mean</div>
             </div>
@@ -1105,7 +1101,7 @@ export default function About({ setActivePage }) {
             <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm text-center space-y-1 hover:shadow-md transition-all">
               <div className="text-[11px] font-mono text-[#64748B] uppercase font-semibold">Precision</div>
               <div className="text-3xl font-bold font-mono text-[#111827]">
-                {(rf.precision * 100).toFixed(1)}%
+                {pct(rf.precision)}
               </div>
               <div className="text-[11px] text-[#64748B]">Minimal False Positive Rate</div>
             </div>
@@ -1113,7 +1109,7 @@ export default function About({ setActivePage }) {
             <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm text-center space-y-1 hover:shadow-md transition-all">
               <div className="text-[11px] font-mono text-[#64748B] uppercase font-semibold">Recall</div>
               <div className="text-3xl font-bold font-mono text-[#F59E0B]">
-                {(rf.recall * 100).toFixed(1)}%
+                {pct(rf.recall)}
               </div>
               <div className="text-[11px] text-[#64748B]">True Phishing Capture</div>
             </div>
@@ -1149,10 +1145,10 @@ export default function About({ setActivePage }) {
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#16A34A]" />
                       <span>Random Forest (120 Estimators)</span>
                     </td>
-                    <td className="py-3 px-3 font-semibold">{(rf.accuracy * 100).toFixed(1)}%</td>
-                    <td className="py-3 px-3">{(rf.precision * 100).toFixed(1)}%</td>
-                    <td className="py-3 px-3">{(rf.recall * 100).toFixed(1)}%</td>
-                    <td className="py-3 px-3 font-semibold">{(rf.f1_score * 100).toFixed(1)}%</td>
+                    <td className="py-3 px-3 font-semibold">{pct(rf.accuracy)}</td>
+                    <td className="py-3 px-3">{pct(rf.precision)}</td>
+                    <td className="py-3 px-3">{pct(rf.recall)}</td>
+                    <td className="py-3 px-3 font-semibold">{pct(rf.f1_score)}</td>
                     <td className="py-3 px-3">
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-emerald-50 text-[#16A34A] border border-emerald-200 font-semibold">
                         Production Model
@@ -1161,10 +1157,10 @@ export default function About({ setActivePage }) {
                   </tr>
                   <tr className="text-[#64748B]">
                     <td className="py-3 px-3">Logistic Regression</td>
-                    <td className="py-3 px-3">{(lr.accuracy * 100).toFixed(1)}%</td>
-                    <td className="py-3 px-3">{(lr.precision * 100).toFixed(1)}%</td>
-                    <td className="py-3 px-3">{(lr.recall * 100).toFixed(1)}%</td>
-                    <td className="py-3 px-3">{(lr.f1_score * 100).toFixed(1)}%</td>
+                    <td className="py-3 px-3">{pct(lr.accuracy)}</td>
+                    <td className="py-3 px-3">{pct(lr.precision)}</td>
+                    <td className="py-3 px-3">{pct(lr.recall)}</td>
+                    <td className="py-3 px-3">{pct(lr.f1_score)}</td>
                     <td className="py-3 px-3">
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-slate-100 text-[#64748B] border border-slate-200">
                         Baseline Reference

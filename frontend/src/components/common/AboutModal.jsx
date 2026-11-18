@@ -6,6 +6,7 @@ import {
   FileText, Zap, Globe, Search, Sliders, Check, Share2
 } from 'lucide-react';
 import { api } from '../../services/api';
+const pct = (v) => (typeof v === 'number' ? `${(v * 100).toFixed(1)}%` : '—');
 
 export default function AboutModal({ isOpen, onClose, setActivePage }) {
   const [activeTab, setActiveTab] = useState('flowchart'); // 'flowchart' | 'problem' | 'objectives' | 'ml' | 'all'
@@ -55,19 +56,14 @@ export default function AboutModal({ isOpen, onClose, setActivePage }) {
 
   if (!isOpen) return null;
 
-  // ML Metrics Fallback
+  // Live model metrics from the backend; "—" when unavailable (nothing is invented).
   const rf = mlMetrics?.models?.random_forest || {
-    accuracy: mlMetrics?.accuracy ?? 0.984,
-    f1_score: mlMetrics?.f1_score ?? 0.984,
-    precision: mlMetrics?.precision ?? 0.981,
-    recall: mlMetrics?.recall ?? 0.987
+    accuracy: mlMetrics?.accuracy,
+    f1_score: mlMetrics?.f1_score,
+    precision: mlMetrics?.precision,
+    recall: mlMetrics?.recall
   };
-  const lr = mlMetrics?.models?.logistic_regression || {
-    accuracy: 0.942,
-    f1_score: 0.941,
-    precision: 0.938,
-    recall: 0.945
-  };
+  const lr = mlMetrics?.models?.logistic_regression || { accuracy: undefined, f1_score: undefined, precision: undefined, recall: undefined };
 
   // The 10 App Pipeline Stages
   const pipelineStages = [
@@ -784,28 +780,28 @@ export default function AboutModal({ isOpen, onClose, setActivePage }) {
                 <div className="p-3.5 rounded-xl bg-white border border-[#E2E8F0] shadow-sm text-center">
                   <div className="text-[10px] font-mono text-[#64748B] uppercase font-semibold">Model Accuracy</div>
                   <div className="text-2xl font-bold font-mono text-[#2563EB]">
-                    {(rf.accuracy * 100).toFixed(1)}%
+                    {pct(rf.accuracy)}
                   </div>
                   <div className="text-[10px] text-[#64748B]">Random Forest</div>
                 </div>
                 <div className="p-3.5 rounded-xl bg-white border border-[#E2E8F0] shadow-sm text-center">
                   <div className="text-[10px] font-mono text-[#64748B] uppercase font-semibold">F1-Score</div>
                   <div className="text-2xl font-bold font-mono text-[#16A34A]">
-                    {(rf.f1_score * 100).toFixed(1)}%
+                    {pct(rf.f1_score)}
                   </div>
                   <div className="text-[10px] text-[#64748B]">Harmonic Mean</div>
                 </div>
                 <div className="p-3.5 rounded-xl bg-white border border-[#E2E8F0] shadow-sm text-center">
                   <div className="text-[10px] font-mono text-[#64748B] uppercase font-semibold">Precision</div>
                   <div className="text-2xl font-bold font-mono text-[#111827]">
-                    {(rf.precision * 100).toFixed(1)}%
+                    {pct(rf.precision)}
                   </div>
                   <div className="text-[10px] text-[#64748B]">Low False Positives</div>
                 </div>
                 <div className="p-3.5 rounded-xl bg-white border border-[#E2E8F0] shadow-sm text-center">
                   <div className="text-[10px] font-mono text-[#64748B] uppercase font-semibold">Recall</div>
                   <div className="text-2xl font-bold font-mono text-[#F59E0B]">
-                    {(rf.recall * 100).toFixed(1)}%
+                    {pct(rf.recall)}
                   </div>
                   <div className="text-[10px] text-[#64748B]">True Phish Capture</div>
                 </div>
@@ -830,17 +826,17 @@ export default function AboutModal({ isOpen, onClose, setActivePage }) {
                     <tbody className="divide-y divide-[#E2E8F0]">
                       <tr className="text-[#111827]">
                         <td className="py-2 px-2.5 text-[#2563EB] font-semibold">Random Forest (120 Trees)</td>
-                        <td className="py-2 px-2.5">{(rf.accuracy * 100).toFixed(1)}%</td>
-                        <td className="py-2 px-2.5">{(rf.precision * 100).toFixed(1)}%</td>
-                        <td className="py-2 px-2.5">{(rf.recall * 100).toFixed(1)}%</td>
-                        <td className="py-2 px-2.5 font-semibold">{(rf.f1_score * 100).toFixed(1)}%</td>
+                        <td className="py-2 px-2.5">{pct(rf.accuracy)}</td>
+                        <td className="py-2 px-2.5">{pct(rf.precision)}</td>
+                        <td className="py-2 px-2.5">{pct(rf.recall)}</td>
+                        <td className="py-2 px-2.5 font-semibold">{pct(rf.f1_score)}</td>
                       </tr>
                       <tr className="text-[#64748B]">
                         <td className="py-2 px-2.5">Logistic Regression (Baseline)</td>
-                        <td className="py-2 px-2.5">{(lr.accuracy * 100).toFixed(1)}%</td>
-                        <td className="py-2 px-2.5">{(lr.precision * 100).toFixed(1)}%</td>
-                        <td className="py-2 px-2.5">{(lr.recall * 100).toFixed(1)}%</td>
-                        <td className="py-2 px-2.5">{(lr.f1_score * 100).toFixed(1)}%</td>
+                        <td className="py-2 px-2.5">{pct(lr.accuracy)}</td>
+                        <td className="py-2 px-2.5">{pct(lr.precision)}</td>
+                        <td className="py-2 px-2.5">{pct(lr.recall)}</td>
+                        <td className="py-2 px-2.5">{pct(lr.f1_score)}</td>
                       </tr>
                     </tbody>
                   </table>
