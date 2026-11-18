@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
 import LandingNavbar from '../components/layout/LandingNavbar';
 import LandingFooter from '../components/layout/LandingFooter';
 import HeroSection from '../components/home/HeroSection';
@@ -63,48 +62,42 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme,
         {/* 3. SERVICES - dark, continues the hero */}
         <ServicesSection setActivePage={setActivePage} />
 
-        {/* ====================================================================
-            4. SCANNER INTERFACE — THE VISUAL HIGHLIGHT SECTION
-            ==================================================================== */}
-        <section className="py-14 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#F5F9FF] border-y border-[#E2E8F0]">
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="text-center space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#DBEAFE] text-xs font-mono text-[#2563EB] shadow-2xs uppercase tracking-wider font-semibold">
-                <Search className="w-3.5 h-3.5" />
-                <span>Instant Forensic Verification</span>
-              </div>
-              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#111827]">
-                Analyze Any Link in Real Time
+        {/* 4. SCANNER - dark, same surface as hero and services */}
+        <section className="ctp-dark bg-ctp-bg text-ctp-text border-t border-ctp-border">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+            <div className="text-center">
+              <p className="text-[13px] tracking-wide text-ctp-accent">Try it now</p>
+              <h2 className="mt-4 font-semibold text-[length:var(--ctp-text-h1)] leading-[1.08] tracking-[-0.035em]">
+                Check any link in seconds.
               </h2>
-              <p className="text-sm sm:text-base text-[#64748B] max-w-xl mx-auto">
-                Paste any suspicious link below. Our zero-execution engine extracts 34 structural features without ever visiting the destination.
+              <p className="mt-4 mx-auto max-w-xl text-[length:var(--ctp-text-body)] leading-relaxed text-ctp-text-2">
+                Paste a link below. We extract 34 structural features and score it without ever opening the destination.
               </p>
             </div>
 
-            {/* Live URL Scanner Component */}
-            <UrlScanner onScanComplete={handleScanComplete} />
+            <div className="mt-10">
+              <UrlScanner onScanComplete={handleScanComplete} />
+            </div>
           </div>
         </section>
 
-        {/* ====================================================================
-            5. ARCHITECTURE HIGHLIGHT BANNER
-            ==================================================================== */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#2563EB] to-[#1E40AF] text-white">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-            <div className="space-y-1.5">
-              <h3 className="text-xl sm:text-2xl font-bold tracking-tight">
-                Built on Zero-Execution Verification Architecture
+        {/* 5. ARCHITECTURE - quiet closing statement */}
+        <section className="ctp-dark bg-ctp-bg text-ctp-text border-t border-ctp-border">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div className="space-y-2">
+              <h3 className="text-xl sm:text-2xl font-semibold tracking-[-0.02em]">
+                Built on zero-execution verification.
               </h3>
-              <p className="text-sm text-blue-100 max-w-xl">
-                Unlike traditional scanners that fetch malicious payloads, Catch the Phish inspects structural patterns safely in an air-gapped lexical model.
+              <p className="text-sm sm:text-[15px] text-ctp-text-2 max-w-xl leading-relaxed">
+                Unlike scanners that fetch the page, Catch the Phish inspects the structure of a link without ever opening it.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setActivePage('about')}
-              className="px-6 py-3 rounded-full bg-white text-[#2563EB] hover:bg-blue-50 font-semibold text-xs sm:text-sm tracking-wide shadow-md hover:shadow-lg transition-all shrink-0 cursor-pointer"
+              className="inline-flex items-center h-11 px-6 rounded-full border border-ctp-border-strong text-sm font-medium text-ctp-text hover:bg-ctp-surface-2 transition-colors cursor-pointer shrink-0"
             >
-              Explore Architecture
+              Explore architecture
             </button>
           </div>
         </section>

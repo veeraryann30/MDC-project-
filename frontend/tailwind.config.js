@@ -1,3 +1,9 @@
+// Theme-aware CSS-variable colour that still supports Tailwind opacity modifiers (e.g. bg-ctp-accent/20).
+const ctpVar = (name) => ({ opacityValue }) =>
+  opacityValue === undefined || opacityValue === '1'
+    ? `var(${name})`
+    : `color-mix(in srgb, var(${name}) ${Math.round(Number(opacityValue) * 100)}%, transparent)`;
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -14,19 +20,19 @@ export default {
       colors: {
         // v2 redesign tokens (theme-aware CSS variables, see index.css)
         ctp: {
-          bg: 'var(--ctp-bg)',
-          surface: 'var(--ctp-surface)',
-          'surface-2': 'var(--ctp-surface-2)',
-          border: 'var(--ctp-border)',
-          'border-strong': 'var(--ctp-border-strong)',
-          text: 'var(--ctp-text)',
-          'text-2': 'var(--ctp-text-2)',
-          muted: 'var(--ctp-text-muted)',
-          accent: 'var(--ctp-accent)',
-          'accent-ink': 'var(--ctp-accent-ink)',
-          safe: 'var(--ctp-safe)',
-          warn: 'var(--ctp-warn)',
-          danger: 'var(--ctp-danger)',
+          bg: ctpVar('--ctp-bg'),
+          surface: ctpVar('--ctp-surface'),
+          'surface-2': ctpVar('--ctp-surface-2'),
+          border: ctpVar('--ctp-border'),
+          'border-strong': ctpVar('--ctp-border-strong'),
+          text: ctpVar('--ctp-text'),
+          'text-2': ctpVar('--ctp-text-2'),
+          muted: ctpVar('--ctp-text-muted'),
+          accent: ctpVar('--ctp-accent'),
+          'accent-ink': ctpVar('--ctp-accent-ink'),
+          safe: ctpVar('--ctp-safe'),
+          warn: ctpVar('--ctp-warn'),
+          danger: ctpVar('--ctp-danger'),
         },
         // Sophisticated White & Blue Design System
         brand: {

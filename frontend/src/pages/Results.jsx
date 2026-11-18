@@ -4,7 +4,7 @@ import {
   CheckCircle2, XCircle, Globe, Lock, Terminal, FileText, ChevronDown, 
   ChevronUp, Server, Cpu, ExternalLink, AlertCircle, Info, Shield, ArrowRight
 } from 'lucide-react';
-import ThreatTrace from '../components/common/ThreatTrace';
+import VerdictPanel from '../components/scanner/VerdictPanel';
 import LinkOriginIntelligence from '../components/results/LinkOriginIntelligence';
 
 /**
@@ -128,37 +128,17 @@ Verification Protocol: Zero-Execution Static Sandbox`;
         </div>
       </div>
 
-      {/* 2. Signature Threat Trace Complete State */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-[#64748B] mb-2 flex items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#16A34A]" />
-            <span className="font-semibold text-[#111827]">Threat Trace Verification Complete</span>
-          </span>
-          <span className="text-[#64748B]">
-            {created_at ? new Date(created_at).toLocaleTimeString() : 'Live Scan'}
-          </span>
-        </div>
-        <ThreatTrace stage={4} isScanning={false} />
-      </div>
-
-      {/* 3. Submitted URL Display Card */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white border border-[#E2E8F0] space-y-3 shadow-sm">
-        <div className="flex items-center justify-between text-xs font-mono">
-          <span className="text-[#64748B] uppercase tracking-wider flex items-center gap-1.5 font-semibold">
-            <Globe className="w-3.5 h-3.5 text-[#2563EB]" />
-            <span>Submitted Target URL</span>
-          </span>
-          <span className="text-[#64748B] flex items-center gap-1.5 text-[11px]">
-            <Lock className="w-3.5 h-3.5 text-[#16A34A]" />
-            <span>Untrusted Input (Zero Execution)</span>
-          </span>
-        </div>
-
-        <div className="p-3.5 bg-[#F5F9FF] rounded-xl border border-[#E2E8F0] font-mono text-xs sm:text-sm text-[#111827] break-all select-all">
-          {url}
-        </div>
-      </div>
+      {/* 2. Verdict: three visual states (safe / suspicious / dangerous), driven by the real scan result */}
+      <VerdictPanel
+        state={statusVerdict.label === 'HIGH RISK' ? 'danger' : statusVerdict.label === 'SUSPICIOUS' ? 'suspicious' : 'safe'}
+        score={normalizedScore}
+        title={statusVerdict.title}
+        summary={breakdown.summary_explanation || statusVerdict.summary}
+        url={url}
+        mlScore={breakdown.ml_score}
+        ruleScore={breakdown.rule_score}
+        https={!!features.has_https}
+      />
 
       {/* 4. Two-Column Core Security Report */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -166,57 +146,8 @@ Verification Protocol: Zero-Execution Static Sandbox`;
         <div className="lg:col-span-5 space-y-6">
           {/* Overall Verdict Card */}
           <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] space-y-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-[#64748B] uppercase tracking-wider font-semibold">
-                Overall Verdict
-              </span>
-              <div className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase border ${statusVerdict.badgeClass}`}>
-                {statusVerdict.label}
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#111827]">
-                {statusVerdict.title}
-              </h2>
-              <p className="text-xs text-[#64748B] leading-relaxed pt-1">
-                {breakdown.summary_explanation || statusVerdict.summary}
-              </p>
-            </div>
-
-            {/* Risk Score Indicator */}
-            <div className="p-4 rounded-xl bg-[#F5F9FF] border border-[#E2E8F0] space-y-2">
-              <div className="flex items-baseline justify-between font-mono">
-                <span className="text-xs text-[#64748B]">Risk Score</span>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-black" style={{ color: statusVerdict.color }}>
-                    {normalizedScore}
-                  </span>
-                  <span className="text-xs text-[#64748B]">/ 100</span>
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div className="w-full h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{ 
-                    width: `${normalizedScore}%`,
-                    backgroundColor: statusVerdict.color 
-                  }}
-                />
-              </div>
-
-              <div className="flex justify-between text-[10px] font-mono text-[#64748B] pt-1">
-                <span>0 Safe</span>
-                <span>30</span>
-                <span>60</span>
-                <span>100 Danger</span>
-              </div>
-            </div>
-
             {/* Domain Summary Table */}
-            <div className="space-y-2 pt-2 border-t border-[#E2E8F0]">
+            <div className="space-y-2">
               <span className="text-[11px] font-mono uppercase tracking-wider text-[#64748B] block font-semibold">
                 Domain Summary
               </span>

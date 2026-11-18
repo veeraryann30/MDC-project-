@@ -141,6 +141,24 @@ html.light header.landing-nav.ctp-dark .landing-theme-btn:hover { background-col
   100% { transform: translateY(46px); opacity: 0; }
 }
 
+/* Scanner input must beat the legacy html.light input overrides. */
+html.light .ctp-dark input[type="text"],
+html.dark .ctp-dark input[type="text"] {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--ctp-text) !important;
+}
+html.light .ctp-dark input::placeholder,
+html.dark .ctp-dark input::placeholder { color: var(--ctp-text-muted) !important; }
+
+.ctp-indeterminate::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 28%;
+  background: linear-gradient(to right, transparent, var(--ctp-accent), transparent);
+  animation: ctp-indeterminate 1.3s var(--ctp-ease-in-out) infinite;
+}
+@keyframes ctp-indeterminate { from { left: -30%; } to { left: 102%; } }
+
 @keyframes ctp-drift {
   0%, 100% { transform: translate3d(0, 0, 0); }
   50% { transform: translate3d(-40px, 30px, 0); }
