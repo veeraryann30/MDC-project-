@@ -3,6 +3,7 @@ import LandingNavbar from '../components/layout/LandingNavbar';
 import LandingFooter from '../components/layout/LandingFooter';
 import HeroSection from '../components/home/HeroSection';
 import ServicesSection from '../components/home/ServicesSection';
+import CursorAccent from '../components/common/CursorAccent';
 import UrlScanner from '../components/scanner/UrlScanner';
 
 /**
@@ -54,6 +55,7 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme,
         tone="dark"
       />
 
+      <CursorAccent />
       <main className="flex-1 relative z-10 flex flex-col">
         {/* 2. HERO - dark cinematic section with lazy 3D shield (see components/home/HeroSection) */}
         <HeroSection onScan={handleScanLink} onExplore={handleExploreProtection} />
@@ -106,7 +108,7 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme,
       {/* ======================================================================
           6. FOOTER
           ====================================================================== */}
-      <LandingFooter setActivePage={setActivePage} />
+      <LandingFooter setActivePage={setActivePage} tone="dark" />
     </div>
   );
 }

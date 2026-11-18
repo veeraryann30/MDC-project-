@@ -108,8 +108,21 @@ header.landing-nav.ctp-dark.is-scrolled {
 }
 html.light header.landing-nav.ctp-dark { color: var(--ctp-text) !important; }
 html.light header.landing-nav.ctp-dark nav button { color: var(--ctp-text-2) !important; }
-html.light header.landing-nav.ctp-dark nav button:hover { background-color: var(--ctp-surface-2) !important; color: var(--ctp-text) !important; }
-html.light header.landing-nav.ctp-dark nav button.bg-ctp-surface-2 { color: var(--ctp-text) !important; }
+html.light footer.ctp-dark,
+html.dark footer.ctp-dark {
+  background-color: var(--ctp-bg) !important;
+  border-color: var(--ctp-border) !important;
+  color: var(--ctp-text-2) !important;
+}
+html.light footer.ctp-dark h4,
+html.dark footer.ctp-dark h4 { color: var(--ctp-text) !important; }
+
+/* Nav items are drawn by a sliding pill (framer-motion layoutId); neutralise the legacy per-button hover box. */
+html.light header.landing-nav nav button:hover { background-color: transparent !important; }
+html.light header.landing-nav.ctp-dark nav button:hover,
+html.light header.landing-nav.ctp-dark nav button:focus-visible { color: var(--ctp-text) !important; }
+html.light header.landing-nav:not(.ctp-dark) nav button.text-\[\#2563EB\] { color: #2563EB !important; }
+html.light header.landing-nav.ctp-dark nav button.text-ctp-text { color: var(--ctp-text) !important; }
 html.light header.landing-nav.ctp-dark .landing-theme-btn {
   background-color: var(--ctp-surface) !important;
   border-color: var(--ctp-border) !important;
@@ -1559,23 +1572,21 @@ html.light .card-apple:hover {
 /* ==========================================================================
    SMOOTH PAGE REDIRECTION TRANSITION (Apple Fluid View Transitions)
    ========================================================================== */
+/* Page transitions: opacity + small lift only. A permanent blur filter / transform on the page
+   wrapper forced a costly compositing layer and a containing block for the whole page. */
 .page-view-wrapper {
   transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              filter 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform, filter;
+              transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .page-view-enter {
   opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
+  transform: none;
 }
 
 .page-view-exit {
   opacity: 0;
   transform: translateY(8px);
-  filter: blur(2px);
   pointer-events: none;
 }
 

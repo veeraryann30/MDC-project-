@@ -1,6 +1,7 @@
 // Theme-aware CSS-variable colour that still supports Tailwind opacity modifiers (e.g. bg-ctp-accent/20).
 const ctpVar = (name) => ({ opacityValue }) =>
-  opacityValue === undefined || opacityValue === '1'
+  // Tailwind passes opacityValue as undefined, a "var(--tw-*-opacity)" string, or a number/numeric string.
+  opacityValue === undefined || String(opacityValue).startsWith('var(') || Number(opacityValue) === 1
     ? `var(${name})`
     : `color-mix(in srgb, var(${name}) ${Math.round(Number(opacityValue) * 100)}%, transparent)`;
 

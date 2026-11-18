@@ -163,25 +163,10 @@ export default function ScrollController({ activePage, theme = 'dark' }) {
         className="fixed top-16 left-0 right-0 z-30 pointer-events-none h-[2px] bg-transparent"
         aria-hidden="true"
       >
-        <div 
-          className={`h-full transition-all duration-150 ease-out relative ${
-            theme === 'light'
-              ? 'bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.7)]'
-              : 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.85)]'
-          }`}
-          style={{ width: `${scrollPercent}%` }}
-        >
-          {/* Glowing Head Dot at Progress Lead */}
-          {scrollPercent > 1 && (
-            <span 
-              className={`absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${
-                theme === 'light'
-                  ? 'bg-blue-400 shadow-[0_0_8px_#38bdf8]'
-                  : 'bg-white shadow-[0_0_8px_#ffffff]'
-              }`} 
-            />
-          )}
-        </div>
+        <div
+          className="ctp-dark h-full relative bg-ctp-accent will-change-[width]"
+          style={{ width: `${scrollPercent}%`, transition: 'width 120ms linear' }}
+        />
       </div>
 
       {/* Floating Tactical HUD "Scroll to Top" Controller with Apple Aesthetics */}
@@ -194,11 +179,7 @@ export default function ScrollController({ activePage, theme = 'dark' }) {
       >
         <button
           onClick={scrollToTop}
-          className={`group relative p-2.5 rounded-full backdrop-blur-md transition-all duration-200 cursor-pointer flex items-center justify-center shadow-2xl active:scale-95 ${
-            theme === 'light'
-              ? 'bg-white/95 border border-slate-300 text-slate-800 hover:border-blue-500 hover:text-blue-600 hover:shadow-[0_4px_20px_rgba(37,99,235,0.25)]'
-              : 'bg-[#121214]/90 border border-[#2c2c2e] text-[#f5f5f7] hover:border-white/50 hover:bg-white hover:text-black hover:shadow-[0_0_24px_rgba(255,255,255,0.35)]'
-          }`}
+          className="ctp-dark group relative p-2 rounded-full bg-ctp-bg/90 backdrop-blur-md border border-ctp-border text-ctp-text hover:border-ctp-border-strong transition-colors duration-200 cursor-pointer flex items-center justify-center shadow-[var(--ctp-shadow)] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ctp-accent"
           title="Scroll to Top"
           aria-label="Scroll back to top"
         >
@@ -208,7 +189,7 @@ export default function ScrollController({ activePage, theme = 'dark' }) {
               cx="20"
               cy="20"
               r={radius}
-              className={`${theme === 'light' ? 'stroke-slate-200' : 'stroke-white/10'}`}
+              className="stroke-ctp-border"
               strokeWidth="2.5"
               fill="transparent"
             />
@@ -216,9 +197,7 @@ export default function ScrollController({ activePage, theme = 'dark' }) {
               cx="20"
               cy="20"
               r={radius}
-              className={`transition-all duration-150 ${
-                theme === 'light' ? 'stroke-blue-600' : 'stroke-white'
-              }`}
+              className="stroke-ctp-accent transition-[stroke-dashoffset] duration-150"
               strokeWidth="2.5"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}

@@ -10,7 +10,11 @@ function GitHubIcon({ className = "w-3.5 h-3.5" }) {
   );
 }
 
-export default function LandingFooter({ setActivePage }) {
+export default function LandingFooter({ setActivePage, tone = 'light' }) {
+  const dark = tone === 'dark';
+  const hov = dark ? 'hover:text-ctp-text' : 'hover:text-[#2563EB]';
+  const head = dark ? 'text-ctp-text' : 'text-[#111827]';
+  const rule = dark ? 'border-ctp-border' : 'border-[#E2E8F0]';
   const currentYear = new Date().getFullYear();
 
   const handleNav = (page) => {
@@ -19,7 +23,7 @@ export default function LandingFooter({ setActivePage }) {
   };
 
   return (
-    <footer className="border-t border-[#E2E8F0] bg-white text-[#64748B] text-xs py-14 select-none">
+    <footer className={`${dark ? 'ctp-dark border-ctp-border bg-ctp-bg text-ctp-text-2' : 'border-[#E2E8F0] bg-white text-[#64748B]'} border-t text-xs py-14 select-none`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
           {/* Brand Info */}
@@ -28,27 +32,27 @@ export default function LandingFooter({ setActivePage }) {
               onClick={() => handleNav('home')} 
               className="cursor-pointer inline-block"
             >
-              <Logo size="md" withWordmark={true} withTagline={false} />
+              <Logo size="md" withWordmark={true} withTagline={false} tone={tone} />
             </div>
-            <p className="text-[#64748B] text-xs leading-relaxed max-w-sm font-sans">
+            <p className={`${dark ? 'text-ctp-text-2' : 'text-[#64748B]'} text-xs leading-relaxed max-w-sm font-sans`}>
               Next-generation digital threat intelligence and phishing verification platform. Built with zero-execution static analysis and transparent forensic machine learning.
             </p>
-            <div className="flex items-center gap-2.5 text-[11px] font-mono text-[#2563EB] bg-[#F5F9FF] border border-[#DBEAFE] px-3 py-1 rounded-full w-fit">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
+            <div className={`flex items-center gap-2.5 text-[11px] font-mono px-3 py-1 rounded-full w-fit border ${dark ? 'text-ctp-text-2 border-ctp-border' : 'text-[#2563EB] bg-[#F5F9FF] border-[#DBEAFE]'}`}>
+              <span className={`inline-block w-1.5 h-1.5 rounded-full ${dark ? 'bg-ctp-accent' : 'bg-[#2563EB]'}`} />
               <span className="font-semibold">DETECT · ANALYZE · PROTECT</span>
             </div>
           </div>
 
           {/* Quick Navigation */}
           <div className="md:col-span-2 space-y-3">
-            <h4 className="text-[11px] font-mono uppercase tracking-widest text-[#111827] font-bold">
+            <h4 className={`text-[11px] font-mono uppercase tracking-widest ${head} font-bold`}>
               Navigation
             </h4>
             <ul className="space-y-2 font-sans text-xs">
               <li>
                 <button 
                   onClick={() => handleNav('home')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   Home
                 </button>
@@ -56,7 +60,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('scanner')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   URL Scanner
                 </button>
@@ -64,7 +68,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('dashboard')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   Services Hub
                 </button>
@@ -72,7 +76,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('about')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   Architecture & Docs
                 </button>
@@ -80,7 +84,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('history')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   Audit History
                 </button>
@@ -90,14 +94,14 @@ export default function LandingFooter({ setActivePage }) {
 
           {/* Services */}
           <div className="md:col-span-3 space-y-3">
-            <h4 className="text-[11px] font-mono uppercase tracking-widest text-[#111827] font-bold">
+            <h4 className={`text-[11px] font-mono uppercase tracking-widest ${head} font-bold`}>
               Services
             </h4>
             <ul className="space-y-2 font-sans text-xs">
               <li>
                 <button 
                   onClick={() => handleNav('scanner')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   01 URL Threat Intelligence
                 </button>
@@ -105,7 +109,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('qr-scanner')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   02 QR Code Scam Detector
                 </button>
@@ -113,7 +117,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('message-scanner')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   03 Message Scam Detector
                 </button>
@@ -121,7 +125,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('email-scanner')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   04 Email Phishing Analysis
                 </button>
@@ -129,7 +133,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('scam-dna')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   05 Scam DNA Fingerprint
                 </button>
@@ -139,7 +143,7 @@ export default function LandingFooter({ setActivePage }) {
 
           {/* Social Links & Trust */}
           <div className="md:col-span-2 space-y-3">
-            <h4 className="text-[11px] font-mono uppercase tracking-widest text-[#111827] font-bold">
+            <h4 className={`text-[11px] font-mono uppercase tracking-widest ${head} font-bold`}>
               Resources
             </h4>
             <ul className="space-y-2 font-sans text-xs">
@@ -148,7 +152,7 @@ export default function LandingFooter({ setActivePage }) {
                   href="https://github.com" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="hover:text-[#2563EB] transition-colors inline-flex items-center gap-1.5"
+                  className={`${hov} transition-colors inline-flex items-center gap-1.5`}
                 >
                   <GitHubIcon className="w-3.5 h-3.5" />
                   <span>GitHub Repository</span>
@@ -157,7 +161,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('threat-intel')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   Threat Intel Feeds
                 </button>
@@ -165,7 +169,7 @@ export default function LandingFooter({ setActivePage }) {
               <li>
                 <button 
                   onClick={() => handleNav('learn')} 
-                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                  className={`${hov} transition-colors cursor-pointer`}
                 >
                   Security Academy
                 </button>
@@ -175,7 +179,7 @@ export default function LandingFooter({ setActivePage }) {
         </div>
 
         {/* Bottom Bar: Disclaimer & Copyright */}
-        <div className="pt-8 border-t border-[#E2E8F0] flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] font-mono text-[#64748B]">
+        <div className={`pt-8 border-t ${rule} flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] font-mono ${dark ? 'text-ctp-muted' : 'text-[#64748B]'}`}>
           <p>
             © {currentYear} CATCH THE PHISH. All rights reserved. Zero-Execution Verification Architecture.
           </p>

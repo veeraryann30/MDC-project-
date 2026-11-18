@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ShieldCheck, Sun, Moon, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Menu, X, Sun, Moon, ArrowRight } from 'lucide-react';
 import Logo from '../common/Logo';
+
+const NAV_ITEMS = [
+  { id: 'home', label: 'Home', action: 'home', active: ['home'] },
+  { id: 'scanner', label: 'Scanner', action: 'scan', active: ['scanner', 'qr-scanner'] },
+  { id: 'services', label: 'Services', action: 'features', active: ['dashboard'] },
+  { id: 'how', label: 'How it Works', action: 'how-it-works', active: [] },
+  { id: 'about', label: 'About', mobileLabel: 'About Architecture', action: 'about', active: ['about'] },
+];
 
 /**
  * LandingNavbar
@@ -21,8 +30,8 @@ export default function LandingNavbar({
   tone = 'light'
 }) {
   const dark = tone === 'dark';
-  const activeCls = dark ? 'bg-ctp-surface-2 text-ctp-text font-semibold' : 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold';
-  const idleCls = dark ? 'text-ctp-text-2 hover:text-ctp-text hover:bg-ctp-surface-2' : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]';
+  const reduced = useReducedMotion();
+  const [hoverId, setHoverId] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -93,59 +102,36 @@ export default function LandingNavbar({
         {/* ====================================================================
             CENTER: MINIMAL NAVIGATION LINKS WITH BLUE ACTIVE INDICATOR
             ==================================================================== */}
-        <nav className="hidden md:flex items-center gap-1 text-xs font-sans">
-          {/* Home */}
-          <button
-            type="button"
-            onClick={() => handleNavClick('home')}
-            className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
-              activePage === 'home' ? activeCls : idleCls
-            }`}
-          >
-            Home
-          </button>
-
-          {/* Scanner */}
-          <button
-            type="button"
-            onClick={() => handleNavClick('scan')}
-            className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
-              activePage === 'scanner' || activePage === 'qr-scanner' ? activeCls : idleCls
-            }`}
-          >
-            Scanner
-          </button>
-
-          {/* Services / Features */}
-          <button
-            type="button"
-            onClick={() => handleNavClick('features')}
-            className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
-              activePage === 'dashboard' ? activeCls : idleCls
-            }`}
-          >
-            Services
-          </button>
-
-          {/* How it Works */}
-          <button
-            type="button"
-            onClick={() => handleNavClick('how-it-works')}
-            className={`px-3.5 py-1.5 rounded-full ${idleCls} font-medium transition-all duration-200 cursor-pointer`}
-          >
-            How it Works
-          </button>
-
-          {/* Architecture / About */}
-          <button
-            type="button"
-            onClick={() => handleNavClick('about')}
-            className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
-              activePage === 'about' ? activeCls : idleCls
-            }`}
-          >
-            About
-          </button>
+        <nav
+          className="hidden md:flex items-center gap-1 text-xs font-sans"
+          onMouseLeave={() => setHoverId(null)}
+        >
+          {NAV_ITEMS.map((item) => {
+            const isActive = item.active?.includes(activePage);
+            const pillOn = hoverId ? hoverId === item.id : isActive;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleNavClick(item.action)}
+                onMouseEnter={() => setHoverId(item.id)}
+                onFocus={() => setHoverId(item.id)}
+                onBlur={() => setHoverId(null)}
+                className={`relative px-3.5 py-1.5 rounded-full font-medium transition-colors duration-200 cursor-pointer ${
+                  dark ? (pillOn || isActive ? 'text-ctp-text' : 'text-ctp-text-2') : (pillOn || isActive ? 'text-[#2563EB]' : 'text-[#64748B]')
+                } ${isActive ? 'font-semibold' : ''}`}
+              >
+                {pillOn && (
+                  <motion.span
+                    layoutId={reduced ? undefined : 'landing-nav-pill'}
+                    className={`absolute inset-0 -z-0 rounded-full ${dark ? 'bg-ctp-surface-2' : 'bg-[#DBEAFE]/70'}`}
+                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                  />
+                )}
+                <span className="relative z-10">{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
 
         {/* ====================================================================
@@ -207,40 +193,38 @@ export default function LandingNavbar({
       {/* ====================================================================
           MOBILE DRAWER MENU
           ==================================================================== */}
-      {mobileMenuOpen && (
-        <div className={`md:hidden ${dark ? 'bg-ctp-bg border-b border-ctp-border [&_button]:!text-ctp-text-2 [&_button:hover]:!bg-ctp-surface-2 [&_button:hover]:!text-ctp-text' : 'bg-white/95 border-b border-[#E2E8F0]'} backdrop-blur-xl px-4 py-4 space-y-2 shadow-lg animate-in slide-in-from-top duration-200`}>
-          <button
-            onClick={() => handleNavClick('home')}
-            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#111827] hover:bg-[#F5F9FF] hover:text-[#2563EB] transition-colors"
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            key="drawer"
+            initial={reduced ? false : { opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={reduced ? { opacity: 0 } : { opacity: 0, height: 0 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className={`md:hidden overflow-hidden backdrop-blur-xl shadow-lg ${dark ? 'bg-ctp-bg border-b border-ctp-border' : 'bg-white/95 border-b border-[#E2E8F0]'}`}
           >
-            Home
-          </button>
-          <button
-            onClick={() => handleNavClick('scan')}
-            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] transition-colors"
-          >
-            Scanner
-          </button>
-          <button
-            onClick={() => handleNavClick('features')}
-            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] transition-colors"
-          >
-            Services
-          </button>
-          <button
-            onClick={() => handleNavClick('how-it-works')}
-            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] transition-colors"
-          >
-            How it Works
-          </button>
-          <button
-            onClick={() => handleNavClick('about')}
-            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] transition-colors"
-          >
-            About Architecture
-          </button>
-        </div>
-      )}
+            <div className="px-4 py-4 space-y-1">
+              {NAV_ITEMS.map((item, i) => (
+                <motion.button
+                  key={item.id}
+                  type="button"
+                  initial={reduced ? false : { opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.04 * i, ease: [0.16, 1, 0.3, 1] }}
+                  onClick={() => handleNavClick(item.action)}
+                  className={`w-full text-left py-2.5 px-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    dark
+                      ? `${item.active?.includes(activePage) ? 'text-ctp-text' : 'text-ctp-text-2'} hover:bg-ctp-surface-2 hover:text-ctp-text`
+                      : `${item.active?.includes(activePage) ? 'text-[#111827]' : 'text-[#64748B]'} hover:text-[#2563EB] hover:bg-[#F5F9FF]`
+                  }`}
+                >
+                  {item.mobileLabel || item.label}
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
