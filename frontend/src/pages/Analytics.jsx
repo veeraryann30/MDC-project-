@@ -41,9 +41,9 @@ export default function Analytics() {
   const detectionRate = totalScans > 0 ? (((phishingCount + suspiciousCount) / totalScans) * 100).toFixed(1) : '0.0';
 
   const distributionData = [
-    { name: 'Safe (0-30)', value: safeCount || 1, color: '#35C98A' },
-    { name: 'Suspicious (31-60)', value: suspiciousCount || 1, color: '#F2B84B' },
-    { name: 'Phishing (61-100)', value: phishingCount || 1, color: '#FF5C5C' },
+    { name: 'Safe (0-30)', value: safeCount || 1, color: '#16A34A' },
+    { name: 'Suspicious (31-60)', value: suspiciousCount || 1, color: '#F59E0B' },
+    { name: 'Phishing (61-100)', value: phishingCount || 1, color: '#DC2626' },
   ];
 
   const topIndicatorsData = (stats?.top_threat_indicators && stats.top_threat_indicators.length > 0)
@@ -73,79 +73,79 @@ export default function Analytics() {
       ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8 select-none">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8 select-none font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] bg-[#151517] border border-[#29292D] text-[#92929A] text-xs font-mono uppercase tracking-wider mb-2">
-            <BarChart3 className="w-3.5 h-3.5 text-[#FF6B35]" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#DBEAFE] border border-[#BFDBFE] text-[#2563EB] text-xs font-semibold uppercase tracking-wider mb-2">
+            <BarChart3 className="w-3.5 h-3.5 text-[#2563EB]" />
             <span>SOC Telemetry & Threat Trends</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F5F5] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] tracking-tight">
             Cybersecurity Analytics
           </h1>
-          <p className="text-xs text-[#92929A] mt-1">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-1">
             Aggregate detection rates, classification ratios, and machine learning inference accuracy.
           </p>
         </div>
 
         <button
           onClick={loadData}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-[#151517] border border-[#29292D] hover:border-[#38383E] text-[#92929A] hover:text-[#F5F5F5] text-xs font-mono transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F5F9FF] border border-[#E2E8F0] hover:border-[#2563EB] text-[#64748B] hover:text-[#2563EB] text-xs font-mono font-medium shadow-sm transition-all cursor-pointer"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#FF6B35]' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#2563EB]' : ''}`} />
           <span>Refresh</span>
         </button>
       </div>
 
       {/* KPI Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-1">
-          <div className="text-[11px] font-mono text-[#92929A] uppercase font-semibold">Total Scanned URLs</div>
-          <div className="text-3xl font-bold font-mono text-[#F5F5F5]">{stats?.total_scans ?? 0}</div>
-          <div className="text-[11px] text-[#35C98A] font-mono">100% Zero-Execution</div>
+        <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow transition-all space-y-1">
+          <div className="text-[11px] font-mono text-[#64748B] uppercase font-semibold">Total Scanned URLs</div>
+          <div className="text-3xl font-bold font-mono text-[#111827]">{stats?.total_scans ?? 0}</div>
+          <div className="text-[11px] text-[#16A34A] font-semibold font-mono">100% Zero-Execution</div>
         </div>
 
-        <div className="p-5 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-1">
-          <div className="text-[11px] font-mono text-[#FF5C5C] uppercase font-semibold flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow transition-all space-y-1">
+          <div className="text-[11px] font-mono text-[#DC2626] uppercase font-semibold flex items-center justify-between">
             <span>Threat Detection Rate</span>
-            <ShieldAlert className="w-4 h-4 text-[#FF5C5C]" />
+            <ShieldAlert className="w-4 h-4 text-[#DC2626]" />
           </div>
-          <div className="text-3xl font-bold font-mono text-[#FF5C5C]">{detectionRate}%</div>
-          <div className="text-[11px] text-[#92929A] font-mono">Suspicious + Phishing</div>
+          <div className="text-3xl font-bold font-mono text-[#DC2626]">{detectionRate}%</div>
+          <div className="text-[11px] text-[#64748B] font-mono">Suspicious + Phishing</div>
         </div>
 
-        <div className="p-5 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-1">
-          <div className="text-[11px] font-mono text-[#F2B84B] uppercase font-semibold">Average Risk Score</div>
-          <div className="text-3xl font-bold font-mono text-[#F5F5F5]">
+        <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow transition-all space-y-1">
+          <div className="text-[11px] font-mono text-[#F59E0B] uppercase font-semibold">Average Risk Score</div>
+          <div className="text-3xl font-bold font-mono text-[#111827]">
             {stats?.avg_risk_score ?? 0}
-            <span className="text-sm text-[#686870] font-normal"> / 100</span>
+            <span className="text-sm text-[#94A3B8] font-normal"> / 100</span>
           </div>
-          <div className="text-[11px] text-[#92929A] font-mono">Fleet Mean Risk</div>
+          <div className="text-[11px] text-[#64748B] font-mono">Fleet Mean Risk</div>
         </div>
 
-        <div className="p-5 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-1">
-          <div className="text-[11px] font-mono text-[#35C98A] uppercase font-semibold flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm hover:shadow transition-all space-y-1">
+          <div className="text-[11px] font-mono text-[#16A34A] uppercase font-semibold flex items-center justify-between">
             <span>ML Model F1-Score</span>
-            <Cpu className="w-4 h-4 text-[#35C98A]" />
+            <Cpu className="w-4 h-4 text-[#16A34A]" />
           </div>
-          <div className="text-3xl font-bold font-mono text-[#35C98A]">
+          <div className="text-3xl font-bold font-mono text-[#16A34A]">
             {(() => {
               const f1 = mlMetrics?.models?.random_forest?.f1_score ?? mlMetrics?.f1_score ?? 0.984;
               return `${(f1 > 1 ? f1 : f1 * 100).toFixed(1)}%`;
             })()}
           </div>
-          <div className="text-[11px] text-[#92929A] font-mono">Random Forest Classifier</div>
+          <div className="text-[11px] text-[#64748B] font-mono">Random Forest Classifier</div>
         </div>
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Risk Level Distribution Donut */}
-        <div className="p-6 rounded-[16px] bg-[#151517] border border-[#29292D] space-y-4">
+        <div className="p-6 sm:p-7 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold text-[#F5F5F5] font-mono uppercase tracking-wider flex items-center gap-2">
-              <PieIcon className="w-4 h-4 text-[#FF6B35]" />
+            <h3 className="text-xs font-semibold text-[#111827] font-mono uppercase tracking-wider flex items-center gap-2">
+              <PieIcon className="w-4 h-4 text-[#2563EB]" />
               <span>Safe vs Suspicious vs Phishing</span>
             </h3>
           </div>
@@ -163,11 +163,11 @@ export default function Analytics() {
                   dataKey="value"
                 >
                   {distributionData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} stroke="#101012" strokeWidth={2} />
+                    <Cell key={`cell-${index}`} fill={entry.color} stroke="#FFFFFF" strokeWidth={2} />
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#151517', borderColor: '#29292D', borderRadius: '10px', color: '#F5F5F5', fontSize: '11px' }}
+                  contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0', borderRadius: '12px', color: '#111827', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -175,25 +175,25 @@ export default function Analytics() {
 
           <div className="flex justify-center gap-6 text-xs font-mono">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#35C98A]" />
-              <span className="text-[#92929A]">Safe: {safeCount}</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#16A34A]" />
+              <span className="text-[#64748B]">Safe: {safeCount}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#F2B84B]" />
-              <span className="text-[#92929A]">Suspicious: {suspiciousCount}</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+              <span className="text-[#64748B]">Suspicious: {suspiciousCount}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FF5C5C]" />
-              <span className="text-[#92929A]">Phishing: {phishingCount}</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#DC2626]" />
+              <span className="text-[#64748B]">Phishing: {phishingCount}</span>
             </div>
           </div>
         </div>
 
         {/* Threat Trends Over Time */}
-        <div className="p-6 rounded-[16px] bg-[#151517] border border-[#29292D] space-y-4">
+        <div className="p-6 sm:p-7 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold text-[#F5F5F5] font-mono uppercase tracking-wider flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
+            <h3 className="text-xs font-semibold text-[#111827] font-mono uppercase tracking-wider flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-[#2563EB]" />
               <span>Scan Risk Trends</span>
             </h3>
           </div>
@@ -203,17 +203,17 @@ export default function Analytics() {
               <AreaChart data={activityData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="analyticsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#FF6B35" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#FF6B35" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#2563EB" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#29292D" />
-                <XAxis dataKey="time" stroke="#686870" tick={{ fontSize: 10, fill: '#686870' }} />
-                <YAxis domain={[0, 100]} stroke="#686870" tick={{ fontSize: 10, fill: '#686870' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                <XAxis dataKey="time" stroke="#64748B" tick={{ fontSize: 10, fill: '#64748B' }} />
+                <YAxis domain={[0, 100]} stroke="#64748B" tick={{ fontSize: 10, fill: '#64748B' }} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#151517', borderColor: '#29292D', borderRadius: '10px', color: '#F5F5F5', fontSize: '11px' }}
+                  contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0', borderRadius: '12px', color: '#111827', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                 />
-                <Area type="monotone" dataKey="score" stroke="#FF6B35" fillOpacity={1} fill="url(#analyticsGradient)" strokeWidth={2} />
+                <Area type="monotone" dataKey="score" stroke="#2563EB" fillOpacity={1} fill="url(#analyticsGradient)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -221,23 +221,23 @@ export default function Analytics() {
       </div>
 
       {/* Top Threat Indicators Frequency Bar */}
-      <div className="p-6 rounded-[16px] bg-[#151517] border border-[#29292D] space-y-4">
-        <h3 className="text-xs font-semibold text-[#F5F5F5] font-mono uppercase tracking-wider flex items-center gap-2">
-          <Activity className="w-4 h-4 text-[#FF6B35]" />
+      <div className="p-6 sm:p-7 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm space-y-4">
+        <h3 className="text-xs font-semibold text-[#111827] font-mono uppercase tracking-wider flex items-center gap-2">
+          <Activity className="w-4 h-4 text-[#2563EB]" />
           <span>Most Frequently Triggered Threat Signatures</span>
         </h3>
 
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topIndicatorsData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#29292D" vertical={false} />
-              <XAxis dataKey="name" stroke="#686870" tick={{ fontSize: 11, fill: '#92929A' }} />
-              <YAxis stroke="#686870" tick={{ fontSize: 11, fill: '#686870' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+              <XAxis dataKey="name" stroke="#64748B" tick={{ fontSize: 11, fill: '#64748B' }} />
+              <YAxis stroke="#64748B" tick={{ fontSize: 11, fill: '#64748B' }} />
               <Tooltip 
-                contentStyle={{ backgroundColor: '#151517', borderColor: '#29292D', borderRadius: '10px', color: '#F5F5F5', fontSize: '11px' }}
-                itemStyle={{ color: '#FF6B35' }}
+                contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0', borderRadius: '12px', color: '#111827', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                itemStyle={{ color: '#2563EB' }}
               />
-              <Bar dataKey="count" fill="#FF6B35" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="#2563EB" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

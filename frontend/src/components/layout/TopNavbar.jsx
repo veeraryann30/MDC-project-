@@ -9,7 +9,8 @@ export default function TopNavbar({
   setIsMobileOpen,
   onQuickScan,
   theme,
-  toggleTheme
+  toggleTheme,
+  openAboutModal
 }) {
   const [isBackendOnline, setIsBackendOnline] = useState(false);
   const [quickSearch, setQuickSearch] = useState('');
@@ -25,13 +26,19 @@ export default function TopNavbar({
   }, []);
 
   const pageMeta = {
-    dashboard: { title: 'Security Overview', breadcrumb: 'CONSOLE' },
-    scanner: { title: 'URL Scanner Workstation', breadcrumb: 'WORKSTATION' },
+    dashboard: { title: 'Services Hub', breadcrumb: 'SERVICES' },
+    scanner: { title: 'URL Scanner Workstation', breadcrumb: 'MODULE 1: URL & WEB' },
+    'qr-scanner': { title: 'QR Code Scam Detector', breadcrumb: 'MODULE 1B: QR CODE' },
+    'message-scanner': { title: 'AI Message Scam Detector', breadcrumb: 'MODULE 2: SMS & CHAT' },
+    'investment-scanner': { title: 'Investment & Financial Scam Detector', breadcrumb: 'MODULE 4: FINANCIAL' },
+    'email-scanner': { title: 'Email Phishing & Header Forensics', breadcrumb: 'MODULE 5: EMAIL' },
+    'scam-dna': { title: 'SCAM DNA Intelligence Engine', breadcrumb: 'MODULE 6: SCAM DNA' },
+    'phish-trace': { title: 'Attacker Infrastructure & Geolocation Intelligence', breadcrumb: 'PHISH TRACE' },
     results: { title: 'Threat Fingerprint Report', breadcrumb: 'AUDIT REPORT' },
-    history: { title: 'Scan History & Audit Trail', breadcrumb: 'RECORDS' },
+    history: { title: 'Scan History & Multi-Channel Audit Trail', breadcrumb: 'RECORDS' },
     'threat-intel': { title: 'Threat Intelligence Feeds', breadcrumb: 'INTELLIGENCE' },
     analytics: { title: 'Detection Analytics & Insights', breadcrumb: 'INSIGHTS' },
-    learn: { title: 'Threat Guide & Academy', breadcrumb: 'EDUCATION' },
+    learn: { title: 'Scam Awareness Academy & IQ Quiz', breadcrumb: 'ACADEMY' },
     settings: { title: 'Settings & Appearance', breadcrumb: 'CONFIG' },
     about: { title: 'System Architecture & ML', breadcrumb: 'DOCS' }
   };
@@ -50,12 +57,12 @@ export default function TopNavbar({
   };
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-[#101012] border-b border-[#29292D] px-4 sm:px-6 flex items-center justify-between gap-4 select-none">
+    <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] px-4 sm:px-6 flex items-center justify-between gap-4 select-none">
       {/* Left: Mobile Toggle & Page Title */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => setIsMobileOpen(true)}
-          className="lg:hidden p-2 rounded-[8px] text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517] transition-colors"
+          className="lg:hidden p-2 rounded-full text-[#64748B] hover:text-[#111827] hover:bg-[#F5F9FF] transition-colors"
           aria-label="Open sidebar"
         >
           <Menu className="w-5 h-5" />
@@ -63,11 +70,11 @@ export default function TopNavbar({
 
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-[#686870] uppercase tracking-wider">
+            <span className="text-[10px] font-mono text-[#2563EB] uppercase tracking-wider font-semibold">
               {current.breadcrumb}
             </span>
           </div>
-          <h1 className="text-sm sm:text-base font-semibold text-[#F5F5F5] truncate">
+          <h1 className="text-sm sm:text-base font-semibold text-[#111827] tracking-tight truncate">
             {current.title}
           </h1>
         </div>
@@ -76,17 +83,17 @@ export default function TopNavbar({
       {/* Center: Quick Scanner Bar */}
       <div className="hidden md:flex flex-1 max-w-md mx-4">
         <form onSubmit={handleQuickSubmit} className="relative w-full">
-          <Search className="w-4 h-4 text-[#686870] absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={quickSearch}
             onChange={(e) => setQuickSearch(e.target.value)}
             placeholder="Quick URL scan..."
-            className="w-full pl-9 pr-14 py-2 bg-[#151517] border border-[#29292D] rounded-[10px] text-xs font-mono text-[#F5F5F5] placeholder-[#686870] focus:outline-none focus:border-[#FF6B35] transition-all"
+            className="w-full pl-10 pr-16 py-1.5 bg-[#F5F9FF] border border-[#E2E8F0] rounded-full text-xs font-mono text-[#111827] placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#DBEAFE] transition-all"
           />
           <button
             type="submit"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 px-2 py-1 bg-[#101012] hover:bg-[#1B1B1F] border border-[#29292D] text-[#92929A] hover:text-[#F5F5F5] text-[10px] font-mono rounded-[6px] transition-colors cursor-pointer"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 bg-[#2563EB] hover:bg-[#1E40AF] text-white font-mono font-medium text-[10px] rounded-full transition-all cursor-pointer shadow-sm"
           >
             Scan
           </button>
@@ -94,10 +101,23 @@ export default function TopNavbar({
       </div>
 
       {/* Right: Engine Status & Actions */}
-      <div className="flex items-center gap-3 shrink-0">
-        <div className="flex items-center gap-2 px-2.5 py-1 rounded-[8px] bg-[#151517] border border-[#29292D] text-xs font-mono">
-          <span className={`w-2 h-2 rounded-full ${isBackendOnline ? 'bg-[#35C98A]' : 'bg-[#F2B84B]'}`} />
-          <span className="hidden sm:inline text-[#92929A] text-[11px]">
+      <div className="flex items-center gap-2.5 shrink-0">
+        <button
+          onClick={() => setActivePage('about')}
+          className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono border transition-all duration-150 cursor-pointer topnav-about-btn ${
+            activePage === 'about'
+              ? 'bg-[#DBEAFE]/80 text-[#2563EB] border-[#BFDBFE] font-medium'
+              : 'bg-[#F5F9FF] hover:bg-[#EFF6FF] border-[#E2E8F0] hover:border-[#2563EB]/40 text-[#64748B] hover:text-[#2563EB]'
+          }`}
+          title="About the Project & Architecture"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A]" />
+          <span>About Project</span>
+        </button>
+
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#F5F9FF] border border-[#E2E8F0] text-[11px] font-mono text-[#64748B] topnav-engine-status">
+          <span className={`w-1.5 h-1.5 rounded-full ${isBackendOnline ? 'bg-[#16A34A]' : 'bg-[#F59E0B]'}`} />
+          <span className="hidden sm:inline">
             Engine: {isBackendOnline ? 'Online' : 'Checking'}
           </span>
         </div>
@@ -105,25 +125,16 @@ export default function TopNavbar({
         {toggleTheme && (
           <button
             onClick={(e) => toggleTheme(e)}
-            className="p-2 rounded-[8px] bg-[#151517] border border-[#29292D] text-[#92929A] hover:text-[#F5F5F5] transition-colors cursor-pointer relative overflow-hidden group"
-            title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            className="p-2 rounded-full bg-[#F5F9FF] border border-[#E2E8F0] hover:border-[#2563EB]/30 text-[#64748B] hover:text-[#2563EB] transition-all cursor-pointer relative overflow-hidden group topnav-theme-btn"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             aria-label="Toggle theme"
           >
             <span className="relative flex items-center justify-center w-4 h-4">
-              <Sun 
-                className={`w-4 h-4 text-[#FF6B35] absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                  theme === 'dark' 
-                    ? 'rotate-0 scale-100 opacity-100' 
-                    : 'rotate-90 scale-0 opacity-0 pointer-events-none'
-                }`} 
-              />
-              <Moon 
-                className={`w-4 h-4 text-[#2563EB] absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                  theme === 'light' 
-                    ? 'rotate-0 scale-100 opacity-100' 
-                    : '-rotate-90 scale-0 opacity-0 pointer-events-none'
-                }`} 
-              />
+              {theme === 'dark' ? (
+                <Moon className="w-4 h-4 text-[#2563EB] transition-transform group-hover:scale-110" />
+              ) : (
+                <Sun className="w-4 h-4 text-amber-500 transition-transform group-hover:scale-110" />
+              )}
             </span>
           </button>
         )}

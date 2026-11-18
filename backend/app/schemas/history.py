@@ -30,3 +30,14 @@ class DashboardStats(BaseModel):
     avg_risk_score: float
     top_threat_indicators: List[Dict[str, Any]]
     recent_activity: List[Dict[str, Any]]
+
+    # Multi-channel platform extensions
+    potential_scams_identified: int = 0
+    urls_analyzed: int = 0
+    messages_analyzed: int = 0
+    emails_analyzed: int = 0
+    job_scams_detected: int = 0
+    investment_scams_detected: int = 0
+    risk_distribution: Dict[str, int] = {}
+    top_scam_categories: List[Dict[str, Any]] = []
+    channel_breakdown: List[Dict[str, Any]] = []

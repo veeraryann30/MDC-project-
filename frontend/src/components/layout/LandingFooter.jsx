@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Lock, ExternalLink, Terminal } from 'lucide-react';
+import { ShieldCheck, ExternalLink } from 'lucide-react';
 import Logo from '../common/Logo';
 
 function GitHubIcon({ className = "w-3.5 h-3.5" }) {
@@ -13,124 +13,175 @@ function GitHubIcon({ className = "w-3.5 h-3.5" }) {
 export default function LandingFooter({ setActivePage }) {
   const currentYear = new Date().getFullYear();
 
+  const handleNav = (page) => {
+    setActivePage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="border-t border-[#29292D] bg-[#0B0B0C] text-[#92929A] text-xs py-14 select-none">
+    <footer className="border-t border-[#E2E8F0] bg-white text-[#64748B] text-xs py-14 select-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
           {/* Brand Info */}
-          <div className="md:col-span-5 space-y-3">
-            <Logo size="md" withWordmark={true} withTagline={false} />
-            <p className="text-[#92929A] text-xs leading-relaxed max-w-sm font-normal">
-              A minimalist, explainable phishing detection engine. Zero network execution, real-time lexical inspection, brand lookalike verification, and machine learning inference.
+          <div className="md:col-span-5 space-y-3.5">
+            <div 
+              onClick={() => handleNav('home')} 
+              className="cursor-pointer inline-block"
+            >
+              <Logo size="md" withWordmark={true} withTagline={false} />
+            </div>
+            <p className="text-[#64748B] text-xs leading-relaxed max-w-sm font-sans">
+              Next-generation digital threat intelligence and phishing verification platform. Built with zero-execution static analysis and transparent forensic machine learning.
             </p>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] bg-[#151517] border border-[#29292D] text-[#92929A] text-[11px] font-mono">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#35C98A]" />
-              <span>Zero-Execution Protocol</span>
+            <div className="flex items-center gap-2.5 text-[11px] font-mono text-[#2563EB] bg-[#F5F9FF] border border-[#DBEAFE] px-3 py-1 rounded-full w-fit">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
+              <span className="font-semibold">DETECT · ANALYZE · PROTECT</span>
             </div>
           </div>
 
-          {/* Product Links */}
-          <div className="md:col-span-3 space-y-3">
-            <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#F5F5F5] font-semibold">
-              Product
+          {/* Quick Navigation */}
+          <div className="md:col-span-2 space-y-3">
+            <h4 className="text-[11px] font-mono uppercase tracking-widest text-[#111827] font-bold">
+              Navigation
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-2 font-sans text-xs">
               <li>
                 <button 
-                  onClick={() => setActivePage('scanner')} 
-                  className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
+                  onClick={() => handleNav('home')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                >
+                  Home
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNav('scanner')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
                 >
                   URL Scanner
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => {
-                    const el = document.getElementById('how-it-works');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }} 
-                  className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
+                  onClick={() => handleNav('dashboard')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
                 >
-                  How It Works
+                  Services Hub
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => {
-                    const el = document.getElementById('threat-fingerprint');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }} 
-                  className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
+                  onClick={() => handleNav('about')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
                 >
-                  Threat Fingerprint
+                  Architecture & Docs
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => setActivePage('dashboard')} 
-                  className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
+                  onClick={() => handleNav('history')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
                 >
-                  SOC Telemetry Console
+                  Audit History
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Knowledge & Privacy */}
-          <div className="md:col-span-4 space-y-3">
-            <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#F5F5F5] font-semibold">
-              Intelligence & Privacy
+          {/* Services */}
+          <div className="md:col-span-3 space-y-3">
+            <h4 className="text-[11px] font-mono uppercase tracking-widest text-[#111827] font-bold">
+              Services
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-2 font-sans text-xs">
               <li>
                 <button 
-                  onClick={() => setActivePage('learn')} 
-                  className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
+                  onClick={() => handleNav('scanner')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
                 >
-                  Threat Guide & Academy
+                  01 URL Threat Intelligence
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => setActivePage('about')} 
-                  className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
+                  onClick={() => handleNav('qr-scanner')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
                 >
-                  Model Architecture & Evaluation
+                  02 QR Code Scam Detector
                 </button>
               </li>
               <li>
-                <span className="text-[#686870] cursor-default">
-                  Zero Data Tracking · Untrusted String Sandboxing
-                </span>
+                <button 
+                  onClick={() => handleNav('message-scanner')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                >
+                  03 Message Scam Detector
+                </button>
               </li>
-              <li className="pt-1">
+              <li>
+                <button 
+                  onClick={() => handleNav('email-scanner')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                >
+                  04 Email Phishing Analysis
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNav('scam-dna')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                >
+                  05 Scam DNA Fingerprint
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Social Links & Trust */}
+          <div className="md:col-span-2 space-y-3">
+            <h4 className="text-[11px] font-mono uppercase tracking-widest text-[#111827] font-bold">
+              Resources
+            </h4>
+            <ul className="space-y-2 font-sans text-xs">
+              <li>
                 <a 
-                  href="https://github.com/veeraryann30/MDC-project-" 
+                  href="https://github.com" 
                   target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[#F5F5F5] hover:text-[#FF6B35] transition-colors font-mono text-[11px]"
+                  rel="noopener noreferrer" 
+                  className="hover:text-[#2563EB] transition-colors inline-flex items-center gap-1.5"
                 >
                   <GitHubIcon className="w-3.5 h-3.5" />
-                  <span>github.com/veeraryann30/MDC-project-</span>
+                  <span>GitHub Repository</span>
                 </a>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNav('threat-intel')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                >
+                  Threat Intel Feeds
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNav('learn')} 
+                  className="hover:text-[#2563EB] transition-colors cursor-pointer"
+                >
+                  Security Academy
+                </button>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom subtle separator and copyright */}
-        <div className="pt-8 border-t border-[#29292D] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#686870]">
-          <div className="space-y-0.5 text-center sm:text-left">
-            <div>
-              © 2026 VeerAryan Bhadwal. All rights reserved.
-            </div>
-            <div className="text-[10px] text-[#92929A] font-mono">
-              part of : MDC Projects CSE Cyber-Security (Batch2025)
-            </div>
-          </div>
-          <div className="font-mono text-[#686870]">
-            SHADOW UI · v2.0
-          </div>
+        {/* Bottom Bar: Disclaimer & Copyright */}
+        <div className="pt-8 border-t border-[#E2E8F0] flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] font-mono text-[#64748B]">
+          <p>
+            © {currentYear} CATCH THE PHISH. All rights reserved. Zero-Execution Verification Architecture.
+          </p>
+          <p className="text-right max-w-md">
+            Defensive cybersecurity research platform. Protected with machine learning heuristics & lexical signature pipelines.
+          </p>
         </div>
       </div>
     </footer>

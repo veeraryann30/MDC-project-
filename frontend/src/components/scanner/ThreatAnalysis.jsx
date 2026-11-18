@@ -1,32 +1,32 @@
 import React from 'react';
 import { 
   ShieldCheck, AlertTriangle, XCircle, CheckCircle2, Globe, 
-  Lock, Network, Cpu, Info, Shield, Server, FileText, AlertCircle 
+  Lock, Cpu, FileText
 } from 'lucide-react';
 
 export default function ThreatAnalysis({ features = {}, details = {}, riskScore = 0, classification = 'SAFE' }) {
-  // Helpers to categorize factor severity
+  // Helpers to categorize factor severity in White & Blue system
   const getStatusBadge = (status) => {
     switch (status) {
       case 'dangerous':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold font-mono uppercase bg-rose-950/80 text-rose-300 border border-rose-800">
-            <XCircle className="w-3.5 h-3.5 text-rose-400" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold font-mono uppercase bg-[#FEF2F2] text-[#DC2626] border border-[#FECACA]">
+            <XCircle className="w-3.5 h-3.5 text-[#DC2626]" />
             <span>Dangerous</span>
           </span>
         );
       case 'warning':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold font-mono uppercase bg-amber-950/80 text-amber-300 border border-amber-800">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold font-mono uppercase bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]">
+            <AlertTriangle className="w-3.5 h-3.5 text-[#D97706]" />
             <span>Warning</span>
           </span>
         );
       case 'safe':
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold font-mono uppercase bg-emerald-950/80 text-emerald-300 border border-emerald-800">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold font-mono uppercase bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0]">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#16A34A]" />
             <span>Safe</span>
           </span>
         );
@@ -160,30 +160,30 @@ export default function ThreatAnalysis({ features = {}, details = {}, riskScore 
         {analysisCategories.map((cat, idx) => {
           const Icon = cat.icon;
           return (
-            <div key={idx} className="p-5 rounded-2xl bg-[#090C13] border border-[#1C2230] shadow-sm flex flex-col justify-between space-y-4">
+            <div key={idx} className="p-5 sm:p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm flex flex-col justify-between space-y-4">
               <div>
-                <div className="flex items-center justify-between pb-3 border-b border-[#1C2230] mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-orange-950/40 border border-orange-500/30 text-orange-400">
-                      <Icon className="w-4 h-4" />
+                <div className="flex items-center justify-between pb-3.5 border-b border-[#E2E8F0] mb-3.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 rounded-xl bg-[#F5F9FF] border border-[#DBEAFE] text-[#2563EB]">
+                      <Icon className="w-4 h-4 stroke-[2]" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-white text-sm">{cat.title}</h4>
-                      <p className="text-[11px] text-slate-400">{cat.desc}</p>
+                      <h4 className="font-bold text-[#111827] text-sm">{cat.title}</h4>
+                      <p className="text-[11px] text-[#64748B]">{cat.desc}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {cat.factors.map((factor, fIdx) => (
-                    <div key={fIdx} className="p-2.5 rounded-xl bg-[#06080E] border border-[#1C2230] text-xs">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-slate-200">{factor.label}</span>
+                    <div key={fIdx} className="p-3 rounded-xl bg-[#F5F9FF] border border-[#E2E8F0] text-xs">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-semibold text-[#111827]">{factor.label}</span>
                         {getStatusBadge(factor.status)}
                       </div>
                       <div className="flex items-baseline justify-between text-[11px] font-mono">
-                        <span className="text-orange-400 font-semibold">{factor.value}</span>
-                        <span className="text-slate-400 text-right truncate max-w-[200px]">{factor.note}</span>
+                        <span className="text-[#2563EB] font-bold">{factor.value}</span>
+                        <span className="text-[#64748B] text-right truncate max-w-[200px]">{factor.note}</span>
                       </div>
                     </div>
                   ))}

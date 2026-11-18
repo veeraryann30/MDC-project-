@@ -120,6 +120,36 @@ export default function Learn() {
       how: 'Scammers pose as authority figures, tech support, HR personnel, or legal representatives.',
       detect: 'Be skeptical of unexpected requests for sensitive data, passwords, or gift card purchases.',
       safe: 'Remember: Real IT administrators will NEVER ask you for your password or two-factor code.'
+    },
+    {
+      id: 'upi_fraud',
+      title: 'UPI Collect & QR Code Scams',
+      category: 'Payment Defense',
+      icon: QrCode,
+      what: 'Attackers misrepresent payment mechanisms by asking victims to enter their UPI PIN or scan a QR code to "receive" refunds or prize money.',
+      how: 'In UPI architecture, entering your PIN ALWAYS debits (sends) money from your account. PIN is NEVER required to receive money.',
+      detect: 'Watch out for buyers on OLX/Marketplaces who claim they sent a QR code to transfer advance payment.',
+      safe: 'Decline collect requests. Never enter your UPI PIN unless you are actively paying money out.'
+    },
+    {
+      id: 'fake_jobs',
+      title: 'Fake Jobs & Internship Traps',
+      category: 'Recruitment Safety',
+      icon: BookOpen,
+      what: 'Fraudulent work-from-home advertisements demanding upfront fees for training kits, laptop security, or registration.',
+      how: 'Scammers promise salaries like ₹45,000/month for minimal data entry tasks and send appointment letters without interviews.',
+      detect: 'Look for recruitment emails from free webmail addresses (@gmail.com) and any upfront payment demands.',
+      safe: 'Genuine corporate employers NEVER require candidates to pay money for onboarding or equipment.'
+    },
+    {
+      id: 'crypto_ponzi',
+      title: 'Crypto Ponzi & Guaranteed Returns',
+      category: 'Financial Defense',
+      icon: Award,
+      what: 'Schemes claiming automated AI arbitrage or high-yield trading bots with mathematically impossible guaranteed zero-risk profits.',
+      how: 'Early participants are paid using deposits from newer investors until the promoter freezes withdrawals and demands unlock fees.',
+      detect: 'Promises of 100% or 200% fixed returns with binary downlines or referral commission incentives.',
+      safe: 'Never invest in platforms that promise fixed profits. Never disclose crypto wallet recovery seed phrases.'
     }
   ];
 
@@ -207,36 +237,36 @@ export default function Learn() {
   const LessonIcon = activeLesson.icon;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8 select-none">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8 select-none font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] bg-[#151517] border border-[#29292D] text-[#92929A] text-xs font-mono uppercase tracking-wider mb-2">
-            <BookOpen className="w-3.5 h-3.5 text-[#FF6B35]" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#DBEAFE] border border-[#BFDBFE] text-[#2563EB] text-xs font-semibold uppercase tracking-wider mb-2">
+            <BookOpen className="w-3.5 h-3.5 text-[#2563EB]" />
             <span>Phishing Awareness Academy</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F5F5] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] tracking-tight">
             Threat Guide & Academy
           </h1>
-          <p className="text-xs text-[#92929A] mt-1">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-1">
             Master the anatomy of social engineering, lookalike domains, and credential harvesters.
           </p>
         </div>
 
         {/* Mode Toggle */}
-        <div className="flex rounded-[10px] bg-[#101012] border border-[#29292D] p-1 text-xs">
+        <div className="flex rounded-full bg-[#F5F9FF] border border-[#E2E8F0] p-1 text-xs">
           <button
             onClick={() => setQuizMode(false)}
-            className={`px-3 py-1.5 rounded-[8px] font-medium transition-colors cursor-pointer ${
-              !quizMode ? 'bg-[#FF6B35] text-white font-semibold' : 'text-[#92929A] hover:text-[#F5F5F5]'
+            className={`px-4 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
+              !quizMode ? 'bg-[#2563EB] text-white font-semibold shadow-sm' : 'text-[#64748B] hover:text-[#111827]'
             }`}
           >
             10 Lesson Modules
           </button>
           <button
             onClick={() => setQuizMode(true)}
-            className={`px-3 py-1.5 rounded-[8px] font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
-              quizMode ? 'bg-[#FF6B35] text-white font-semibold' : 'text-[#92929A] hover:text-[#F5F5F5]'
+            className={`px-4 py-1.5 rounded-full font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+              quizMode ? 'bg-[#2563EB] text-white font-semibold shadow-sm' : 'text-[#64748B] hover:text-[#111827]'
             }`}
           >
             <Award className="w-3.5 h-3.5" />
@@ -250,7 +280,7 @@ export default function Learn() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Sidebar Lesson Selector */}
           <div className="lg:col-span-4 space-y-2">
-            <h3 className="text-xs font-mono uppercase tracking-wider text-[#686870] font-semibold px-1 mb-2">
+            <h3 className="text-xs font-mono uppercase tracking-wider text-[#64748B] font-semibold px-1 mb-2">
               Select Vector ({lessons.length})
             </h3>
             <div className="space-y-1.5">
@@ -261,20 +291,20 @@ export default function Learn() {
                   <button
                     key={lesson.id}
                     onClick={() => setSelectedLesson(idx)}
-                    className={`w-full text-left p-3 rounded-[12px] border transition-colors flex items-center gap-3 cursor-pointer ${
+                    className={`w-full text-left p-3 rounded-2xl border transition-all flex items-center gap-3 cursor-pointer ${
                       isSelected
-                        ? 'bg-[#151517] border-[#FF6B35] text-[#F5F5F5] shadow-sm'
-                        : 'bg-[#101012] border-[#29292D] text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517]'
+                        ? 'bg-[#F5F9FF] border-[#2563EB] text-[#111827] shadow-sm'
+                        : 'bg-white border-[#E2E8F0] text-[#64748B] hover:text-[#111827] hover:bg-[#F5F9FF]'
                     }`}
                   >
-                    <div className={`p-2 rounded-[8px] ${isSelected ? 'bg-[#FF6B35]/15 text-[#FF6B35]' : 'bg-[#151517] text-[#686870]'}`}>
+                    <div className={`p-2 rounded-xl ${isSelected ? 'bg-[#DBEAFE] text-[#2563EB]' : 'bg-[#F5F9FF] text-[#64748B]'}`}>
                       <Icon className="w-4 h-4" />
                     </div>
                     <div className="truncate">
-                      <div className="text-xs font-semibold text-[#F5F5F5] truncate">
+                      <div className="text-xs font-semibold text-[#111827] truncate">
                         {lesson.title}
                       </div>
-                      <div className="text-[10px] text-[#686870] font-mono">
+                      <div className="text-[10px] text-[#64748B] font-mono">
                         {lesson.category}
                       </div>
                     </div>
@@ -286,17 +316,17 @@ export default function Learn() {
 
           {/* Active Lesson Detail View */}
           <div className="lg:col-span-8">
-            <div className="p-6 sm:p-8 rounded-[16px] bg-[#151517] border border-[#29292D] space-y-6">
+            <div className="p-6 sm:p-8 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm space-y-6">
               {/* Header */}
-              <div className="flex items-center gap-4 border-b border-[#29292D] pb-5">
-                <div className="p-3 rounded-[12px] bg-[#101012] border border-[#29292D] text-[#FF6B35]">
+              <div className="flex items-center gap-4 border-b border-[#E2E8F0] pb-5">
+                <div className="p-3 rounded-xl bg-[#DBEAFE] border border-[#BFDBFE] text-[#2563EB]">
                   <LessonIcon className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-[11px] font-mono text-[#FF6B35] uppercase tracking-wider font-semibold">
+                  <span className="text-[11px] font-mono text-[#2563EB] uppercase tracking-wider font-semibold">
                     {activeLesson.category}
                   </span>
-                  <h2 className="text-xl font-bold text-[#F5F5F5]">
+                  <h2 className="text-xl font-bold text-[#111827]">
                     {activeLesson.title}
                   </h2>
                 </div>
@@ -306,44 +336,44 @@ export default function Learn() {
               <div className="space-y-5 text-xs sm:text-sm">
                 {/* 1. What is it? */}
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-[#FF6B35] font-semibold uppercase tracking-wider text-xs font-mono">
+                  <div className="flex items-center gap-2 text-[#2563EB] font-semibold uppercase tracking-wider text-xs font-mono">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>1. What Is It?</span>
                   </div>
-                  <p className="text-[#92929A] pl-5 leading-relaxed font-normal">
+                  <p className="text-[#64748B] pl-5 leading-relaxed font-normal">
                     {activeLesson.what}
                   </p>
                 </div>
 
                 {/* 2. How attackers use it */}
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-[#FF5C5C] font-semibold uppercase tracking-wider text-xs font-mono">
+                  <div className="flex items-center gap-2 text-[#DC2626] font-semibold uppercase tracking-wider text-xs font-mono">
                     <AlertTriangle className="w-3.5 h-3.5" />
                     <span>2. How Attackers Use It</span>
                   </div>
-                  <p className="text-[#92929A] pl-5 leading-relaxed font-normal">
+                  <p className="text-[#64748B] pl-5 leading-relaxed font-normal">
                     {activeLesson.how}
                   </p>
                 </div>
 
                 {/* 3. How to detect it */}
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-[#F2B84B] font-semibold uppercase tracking-wider text-xs font-mono">
+                  <div className="flex items-center gap-2 text-[#F59E0B] font-semibold uppercase tracking-wider text-xs font-mono">
                     <HelpCircle className="w-3.5 h-3.5" />
                     <span>3. How to Detect It</span>
                   </div>
-                  <p className="text-[#92929A] pl-5 leading-relaxed font-normal">
+                  <p className="text-[#64748B] pl-5 leading-relaxed font-normal">
                     {activeLesson.detect}
                   </p>
                 </div>
 
                 {/* 4. How to stay safe */}
-                <div className="p-4 rounded-[12px] bg-[#101012] border border-[#29292D] space-y-1.5">
-                  <div className="flex items-center gap-2 text-[#35C98A] font-semibold uppercase tracking-wider text-xs font-mono">
+                <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-1.5">
+                  <div className="flex items-center gap-2 text-[#16A34A] font-semibold uppercase tracking-wider text-xs font-mono">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>4. How to Stay Safe</span>
                   </div>
-                  <p className="text-[#F5F5F5] pl-5 leading-relaxed font-normal">
+                  <p className="text-[#111827] pl-5 leading-relaxed font-normal">
                     {activeLesson.safe}
                   </p>
                 </div>
@@ -354,17 +384,17 @@ export default function Learn() {
       ) : (
         /* Interactive Phishing IQ Quiz */
         <div className="max-w-3xl mx-auto space-y-6 scroll-reveal">
-          <div className="p-6 rounded-[14px] bg-[#151517] border border-[#29292D] text-center space-y-2">
-            <h2 className="text-xl font-semibold text-[#F5F5F5]">Phishing IQ Challenge</h2>
-            <p className="text-xs text-[#92929A]">
+          <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm text-center space-y-2">
+            <h2 className="text-xl font-bold text-[#111827]">Phishing IQ Challenge</h2>
+            <p className="text-xs sm:text-sm text-[#64748B]">
               Evaluate real-world URL scenarios and determine whether each link is safe or an attack vector.
             </p>
             {quizSubmitted && (
-              <div className="mt-4 p-4 rounded-[12px] bg-[#101012] border border-[#29292D] inline-block font-mono">
-                <div className="text-2xl font-bold text-[#FF6B35]">
+              <div className="mt-4 p-4 rounded-xl bg-[#F5F9FF] border border-[#BFDBFE] inline-block font-mono">
+                <div className="text-2xl font-bold text-[#2563EB]">
                   Your Score: {calculateScore()} / {quizQuestions.length}
                 </div>
-                <div className="text-xs text-[#92929A] mt-1">
+                <div className="text-xs text-[#64748B] mt-1 font-sans">
                   {calculateScore() >= 5 ? '🏆 Cybersecurity Master!' : 'Keep practicing with the 10 lesson modules.'}
                 </div>
               </div>
@@ -375,26 +405,26 @@ export default function Learn() {
             {quizQuestions.map((q, idx) => {
               const selectedOpt = quizAnswers[q.id];
               return (
-                <div key={q.id} className="p-5 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-3">
-                  <div className="text-xs font-mono text-[#FF6B35] font-semibold uppercase tracking-wider">
+                <div key={q.id} className="p-5 sm:p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-sm space-y-3">
+                  <div className="text-xs font-mono text-[#2563EB] font-semibold uppercase tracking-wider">
                     Scenario #{idx + 1}
                   </div>
-                  <p className="text-sm font-medium text-[#F5F5F5] bg-[#101012] p-3 rounded-[10px] border border-[#29292D] font-mono break-all">
+                  <p className="text-xs sm:text-sm font-medium text-[#111827] bg-[#F5F9FF] p-3.5 rounded-xl border border-[#E2E8F0] font-mono break-all">
                     {q.scenario}
                   </p>
 
                   <div className="space-y-2 pt-1">
                     {q.options.map((opt, optIdx) => {
                       const isChosen = selectedOpt === optIdx;
-                      let optionClasses = 'bg-[#101012] border-[#29292D] text-[#92929A] hover:text-[#F5F5F5] hover:border-[#686870]';
+                      let optionClasses = 'bg-white border-[#E2E8F0] text-[#64748B] hover:text-[#111827] hover:border-[#2563EB]/40 hover:bg-[#F5F9FF]';
                       if (isChosen) {
-                        optionClasses = 'bg-[#1B1B1F] border-[#FF6B35] text-[#F5F5F5]';
+                        optionClasses = 'bg-[#DBEAFE]/50 border-[#2563EB] text-[#111827] font-semibold';
                       }
                       if (quizSubmitted) {
                         if (opt.isCorrect) {
-                          optionClasses = 'bg-[#101012] border-[#35C98A] text-[#35C98A]';
+                          optionClasses = 'bg-emerald-50 border-emerald-300 text-[#16A34A] font-semibold';
                         } else if (isChosen && !opt.isCorrect) {
-                          optionClasses = 'bg-[#101012] border-[#FF5C5C] text-[#FF5C5C]';
+                          optionClasses = 'bg-red-50 border-red-300 text-[#DC2626]';
                         }
                       }
 
@@ -402,11 +432,11 @@ export default function Learn() {
                         <button
                           key={optIdx}
                           onClick={() => handleSelectAnswer(q.id, optIdx)}
-                          className={`w-full text-left p-3 rounded-[10px] border text-xs transition-colors flex items-center justify-between cursor-pointer ${optionClasses}`}
+                          className={`w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm transition-all flex items-center justify-between cursor-pointer ${optionClasses}`}
                         >
                           <span>{opt.text}</span>
                           {quizSubmitted && opt.isCorrect && (
-                            <CheckCircle2 className="w-4 h-4 text-[#35C98A] shrink-0 ml-2" />
+                            <CheckCircle2 className="w-4 h-4 text-[#16A34A] shrink-0 ml-2" />
                           )}
                         </button>
                       );
@@ -414,8 +444,8 @@ export default function Learn() {
                   </div>
 
                   {quizSubmitted && (
-                    <div className="pt-2 text-xs text-[#92929A] font-mono bg-[#101012] p-3 rounded-[10px] border border-[#29292D]">
-                      <strong className="text-[#FF6B35]">Explanation: </strong>
+                    <div className="pt-2 text-xs text-[#64748B] font-mono bg-[#F5F9FF] p-3.5 rounded-xl border border-[#E2E8F0]">
+                      <strong className="text-[#2563EB]">Explanation: </strong>
                       {q.explanation}
                     </div>
                   )}
@@ -429,7 +459,7 @@ export default function Learn() {
               <button
                 onClick={() => setQuizSubmitted(true)}
                 disabled={Object.keys(quizAnswers).length < quizQuestions.length}
-                className="px-6 py-2.5 bg-[#FF6B35] hover:bg-[#e05a2b] disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold text-xs uppercase tracking-wider rounded-[10px] transition-colors cursor-pointer"
+                className="px-7 py-2.5 bg-gradient-to-r from-[#2563EB] to-[#1E40AF] hover:from-[#1E40AF] hover:to-[#1D4ED8] text-white font-semibold text-xs uppercase tracking-wider rounded-full shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 Submit Answers & View Grade
               </button>
@@ -439,7 +469,7 @@ export default function Learn() {
                   setQuizAnswers({});
                   setQuizSubmitted(false);
                 }}
-                className="px-6 py-2.5 bg-[#151517] border border-[#29292D] hover:border-[#FF6B35] text-[#F5F5F5] text-xs font-mono uppercase tracking-wider rounded-[10px] transition-colors cursor-pointer"
+                className="px-6 py-2.5 bg-white border border-[#E2E8F0] hover:border-[#2563EB] text-[#111827] text-xs font-semibold uppercase tracking-wider rounded-full shadow-sm transition-all cursor-pointer"
               >
                 Reset & Try Again
               </button>

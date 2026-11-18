@@ -12,6 +12,8 @@ class Settings:
     # Optional Threat Intelligence API Keys
     VIRUSTOTAL_API_KEY: str = os.getenv("VIRUSTOTAL_API_KEY", "")
     GOOGLE_SAFE_BROWSING_API_KEY: str = os.getenv("GOOGLE_SAFE_BROWSING_API_KEY", "")
+    ABUSEIPDB_API_KEY: str = os.getenv("ABUSEIPDB_API_KEY", "")
+    IPINFO_API_KEY: str = os.getenv("IPINFO_API_KEY", "")
     
     # CORS
     CORS_ORIGINS: list = [

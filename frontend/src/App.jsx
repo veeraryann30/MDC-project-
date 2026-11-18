@@ -1,9 +1,12 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { flushSync } from 'react-dom';
 import Sidebar from './components/layout/Sidebar';
 import TopNavbar from './components/layout/TopNavbar';
 import Footer from './components/layout/Footer';
+import LandingNavbar from './components/layout/LandingNavbar';
+import LandingFooter from './components/layout/LandingFooter';
 import ScrollController from './components/layout/ScrollController';
+import AboutModal from './components/common/AboutModal';
 
 // Pages
 import Dashboard from './pages/Dashboard';
@@ -16,12 +19,34 @@ import Learn from './pages/Learn';
 import Settings from './pages/Settings';
 import Home from './pages/Home';
 import About from './pages/About';
+import PhishTrace from './pages/PhishTrace';
+import MessageScanner from './pages/MessageScanner';
+import InvestmentScanner from './pages/InvestmentScanner';
+import EmailScanner from './pages/EmailScanner';
+import ScamDNA from './pages/ScamDNA';
 
 import { api } from './services/api';
 
 export default function App() {
-  const [activePage, setActivePage] = useState('home');
+  const [activePage, setActivePage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (hash === 'about' || hash === 'about-the-project') return 'about';
+      if ([
+        'scanner', 'qr-scanner', 'qr', 'message-scanner', 'investment-scanner', 
+        'email-scanner', 'scam-dna', 'phish-trace', 'dashboard', 'history', 
+        'threat-intel', 'analytics', 'learn', 'settings', 'results'
+      ].includes(hash)) {
+        return hash;
+      }
+      const params = new URLSearchParams(window.location.search);
+      const page = params.get('page');
+      if (page) return page;
+    }
+    return 'home';
+  });
   const [scanResult, setScanResult] = useState(null);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
@@ -29,10 +54,8 @@ export default function App() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [navProgress, setNavProgress] = useState(0);
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('catch_the_phish_theme') || 'dark';
+    return localStorage.getItem('catch_the_phish_theme') || 'light';
   });
-
-  const isThemeTransitioningRef = useRef(false);
 
   useLayoutEffect(() => {
     const root = document.documentElement;
@@ -46,25 +69,46 @@ export default function App() {
     localStorage.setItem('catch_the_phish_theme', theme);
   }, [theme]);
 
+  // Synchronize browser history and hash navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window !== 'undefined') {
+        const hash = window.location.hash.replace('#', '').toLowerCase();
+        if (hash) {
+          setActivePage(hash);
+        } else {
+          setActivePage('home');
+        }
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // Apple-Inspired Circular Reveal Theme Switcher
   const toggleTheme = (e, targetTheme) => {
     const nextTheme = targetTheme || (theme === 'dark' ? 'light' : 'dark');
-    if (nextTheme === theme || isThemeTransitioningRef.current) return;
+    if (nextTheme === theme) return;
+
+    const applyThemeClasses = (t) => {
+      const root = document.documentElement;
+      if (t === 'light') {
+        root.classList.remove('dark');
+        root.classList.add('light');
+      } else {
+        root.classList.remove('light');
+        root.classList.add('dark');
+      }
+      localStorage.setItem('catch_the_phish_theme', t);
+    };
 
     // Check for reduced motion preference or lack of View Transitions API support
     const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!document.startViewTransition || isReducedMotion) {
-      isThemeTransitioningRef.current = true;
-      document.documentElement.classList.add('theme-transitioning');
+      applyThemeClasses(nextTheme);
       setTheme(nextTheme);
-      setTimeout(() => {
-        document.documentElement.classList.remove('theme-transitioning');
-        isThemeTransitioningRef.current = false;
-      }, 650);
       return;
     }
-
-    isThemeTransitioningRef.current = true;
 
     // Determine epicenter of circular expansion
     let x = window.innerWidth / 2;
@@ -90,50 +134,33 @@ export default function App() {
     try {
       const transition = document.startViewTransition(() => {
         flushSync(() => {
+          applyThemeClasses(nextTheme);
           setTheme(nextTheme);
-          const root = document.documentElement;
-          if (nextTheme === 'light') {
-            root.classList.remove('dark');
-            root.classList.add('light');
-          } else {
-            root.classList.remove('light');
-            root.classList.add('dark');
-          }
-          localStorage.setItem('catch_the_phish_theme', nextTheme);
         });
       });
 
       transition.ready.then(() => {
-        const clipPath = [
-          `circle(0px at ${x}px ${y}px)`,
-          `circle(${endRadius}px at ${x}px ${y}px)`
-        ];
-
-        const anim = document.documentElement.animate(
-          {
-            clipPath: clipPath,
-          },
-          {
-            duration: 620,
-            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-            pseudoElement: '::view-transition-new(root)',
-          }
-        );
-
-        anim.onfinish = () => {
-          isThemeTransitioningRef.current = false;
-        };
-      }).catch(() => {
-        isThemeTransitioningRef.current = false;
-      });
-
-      transition.finished.finally(() => {
-        isThemeTransitioningRef.current = false;
-      });
+        try {
+          document.documentElement.animate(
+            {
+              clipPath: [
+                `circle(0px at ${x}px ${y}px)`,
+                `circle(${endRadius}px at ${x}px ${y}px)`
+              ],
+            },
+            {
+              duration: 520,
+              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+              pseudoElement: '::view-transition-new(root)',
+            }
+          );
+        } catch {
+          // If pseudoElement is not supported by the browser, default view transition runs smoothly
+        }
+      }).catch(() => {});
     } catch {
-      // Fallback if startViewTransition throws synchronously
+      applyThemeClasses(nextTheme);
       setTheme(nextTheme);
-      isThemeTransitioningRef.current = false;
     }
   };
 
@@ -153,6 +180,14 @@ export default function App() {
       setNavProgress(80);
       setActivePage(newPage);
       window.scrollTo(0, 0);
+
+      if (typeof window !== 'undefined') {
+        if (newPage === 'home') {
+          window.history.pushState(null, '', window.location.pathname);
+        } else {
+          window.history.pushState(null, '', `#${newPage}`);
+        }
+      }
 
       // 3. Smooth entrance reveal
       setTimeout(() => {
@@ -189,7 +224,22 @@ export default function App() {
       case 'dashboard':
         return <Dashboard setActivePage={navigateToPage} setScanResult={setScanResult} />;
       case 'scanner':
-        return <Scanner setActivePage={navigateToPage} setScanResult={setScanResult} />;
+        return <Scanner setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="URL" />;
+      case 'qr-scanner':
+      case 'qr':
+        return <Scanner setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="QR" />;
+      case 'message-scanner':
+        return <MessageScanner setActivePage={navigateToPage} />;
+      case 'job-scanner':
+        return <Dashboard setActivePage={navigateToPage} setScanResult={setScanResult} />;
+      case 'investment-scanner':
+        return <InvestmentScanner setActivePage={navigateToPage} />;
+      case 'email-scanner':
+        return <EmailScanner setActivePage={navigateToPage} />;
+      case 'scam-dna':
+        return <ScamDNA setActivePage={navigateToPage} />;
+      case 'phish-trace':
+        return <PhishTrace setActivePage={navigateToPage} />;
       case 'results':
         return <Results result={scanResult} setActivePage={navigateToPage} />;
       case 'history':
@@ -212,34 +262,63 @@ export default function App() {
   // Top Redirection Progress Beam
   const redirectionBeam = navProgress > 0 && (
     <div 
-      className="fixed top-0 left-0 right-0 z-[100] h-[2.5px] pointer-events-none bg-transparent"
+      className="fixed top-0 left-0 right-0 z-[100] h-[2px] pointer-events-none bg-transparent"
       aria-hidden="true"
     >
       <div 
-        className={`h-full shadow-[0_0_12px_rgba(255,107,53,0.85)] transition-all duration-150 ease-out ${
-          theme === 'light' ? 'bg-[#2563EB]' : 'bg-gradient-to-r from-[#FF6B35] to-[#FFA043]'
-        }`}
+        className="h-full bg-[#2563EB] shadow-[0_0_12px_rgba(37,99,235,0.85)] transition-all duration-150 ease-out"
         style={{ width: `${navProgress}%` }}
       />
     </div>
   );
 
-  // Dedicated full-width SHADOW UI Landing Page
+  // Dedicated full-width Minimalist Light Theme Landing Page
   if (activePage === 'home') {
     return (
-      <div className="min-h-screen bg-[#0B0B0C] text-[#F5F5F5] font-sans selection:bg-[#FF6B35]/30 selection:text-white antialiased relative">
+      <div className="min-h-screen bg-[#FFFFFF] text-[#111827] font-sans selection:bg-[#2563EB] selection:text-white antialiased relative">
         {redirectionBeam}
         <ScrollController activePage={activePage} theme={theme} />
         <div className={`page-view-wrapper ${isTransitioning ? 'page-view-exit' : 'page-view-enter'}`}>
-          <Home setActivePage={navigateToPage} setScanResult={setScanResult} theme={theme} toggleTheme={toggleTheme} />
+          <Home 
+            setActivePage={navigateToPage} 
+            setScanResult={setScanResult} 
+            theme={theme} 
+            toggleTheme={toggleTheme} 
+            openAboutModal={() => setIsAboutModalOpen(true)}
+          />
         </div>
+        <AboutModal
+          isOpen={isAboutModalOpen}
+          onClose={() => setIsAboutModalOpen(false)}
+          setActivePage={navigateToPage}
+        />
+      </div>
+    );
+  }
+
+  // Dedicated full-screen Apple / Linear / Stripe "About the Project" Experience
+  if (activePage === 'about') {
+    return (
+      <div className="min-h-screen bg-[#FFFFFF] text-[#111827] font-sans selection:bg-[#2563EB] selection:text-white antialiased relative">
+        {redirectionBeam}
+        <ScrollController activePage={activePage} theme={theme} />
+        <LandingNavbar 
+          activePage="about"
+          setActivePage={navigateToPage} 
+          theme={theme} 
+          toggleTheme={toggleTheme} 
+        />
+        <div className={`page-view-wrapper ${isTransitioning ? 'page-view-exit' : 'page-view-enter'}`}>
+          <About setActivePage={navigateToPage} theme={theme} toggleTheme={toggleTheme} />
+        </div>
+        <LandingFooter setActivePage={navigateToPage} />
       </div>
     );
   }
 
   // Security Operations Console Layout (Dashboard, Scanner, Results, Records, Intelligence, etc.)
   return (
-    <div className="min-h-screen bg-[#0B0B0C] text-[#F5F5F5] flex flex-col font-sans selection:bg-[#FF6B35]/30 selection:text-white antialiased relative">
+    <div className="min-h-screen bg-[#F5F9FF] text-[#111827] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white antialiased relative">
       {redirectionBeam}
 
       {/* Sidebar Navigation */}
@@ -252,6 +331,7 @@ export default function App() {
         setIsMobileOpen={setIsMobileOpen}
         theme={theme}
         toggleTheme={toggleTheme}
+        openAboutModal={() => setIsAboutModalOpen(true)}
       />
 
       {/* Main Layout Area */}
@@ -269,6 +349,7 @@ export default function App() {
           onQuickScan={handleQuickScan}
           theme={theme}
           toggleTheme={toggleTheme}
+          openAboutModal={() => setIsAboutModalOpen(true)}
         />
 
         {/* Scroll-Driven Telemetry Controller (Progress Tracker & Back to Top HUD) */}
@@ -276,18 +357,18 @@ export default function App() {
 
         {/* Global Quick Scan Status Indicator Banner */}
         {isScanning && (
-          <div className="bg-[#151517] border-b border-[#FF6B35]/50 px-4 py-2 text-center text-xs text-[#FF6B35] font-mono flex items-center justify-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#FF6B35] animate-ping" />
-            <span>Analyzing target link with 34-feature extraction pipeline & machine learning models...</span>
+          <div className="bg-[#EFF6FF] border-b border-[#BFDBFE] px-4 py-2.5 text-center text-xs text-[#2563EB] font-mono flex items-center justify-center gap-2 app-scanning-banner">
+            <span className="w-2 h-2 rounded-full bg-[#2563EB] animate-ping" />
+            <span className="font-medium">Analyzing target link with 34-feature extraction pipeline & machine learning models...</span>
           </div>
         )}
 
         {scanError && (
-          <div className="bg-[#241315] border-b border-[#FF5C5C]/50 px-4 py-2 text-center text-xs text-[#FF5C5C] font-mono flex items-center justify-center gap-2">
-            <span>Scan Error: {scanError}</span>
+          <div className="bg-[#FEF2F2] border-b border-[#FECACA] px-4 py-2.5 text-center text-xs text-[#DC2626] font-mono flex items-center justify-center gap-2">
+            <span className="font-medium">Scan Error: {scanError}</span>
             <button 
               onClick={() => setScanError('')} 
-              className="ml-2 text-[#FF5C5C] hover:text-white underline cursor-pointer"
+              className="ml-2 text-[#DC2626] hover:text-[#991B1B] underline cursor-pointer font-semibold"
             >
               Dismiss
             </button>
@@ -304,6 +385,12 @@ export default function App() {
         {/* Footer */}
         <Footer setActivePage={navigateToPage} />
       </div>
+
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+        setActivePage={navigateToPage}
+      />
     </div>
   );
 }

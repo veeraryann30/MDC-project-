@@ -1,625 +1,298 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  ArrowRight, Shield, ShieldCheck, ShieldAlert, Lock, Terminal, 
-  CheckCircle2, XCircle, AlertTriangle, ChevronDown, ChevronUp, 
-  ExternalLink, Layers, Sparkles, Eye, Cpu, Database
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight, ShieldCheck, Search, Link2, Mail, QrCode, MessageSquare, Lock, Cpu, Sparkles, CheckCircle2, ChevronRight, Zap } from 'lucide-react';
 import LandingNavbar from '../components/layout/LandingNavbar';
 import LandingFooter from '../components/layout/LandingFooter';
-import ThreatTrace from '../components/common/ThreatTrace';
+import HeroCyberVisual from '../components/home/HeroCyberVisual';
+import UrlScanner from '../components/scanner/UrlScanner';
 
-export default function Home({ setActivePage, setScanResult, theme, toggleTheme }) {
-  const [scrollY, setScrollY] = useState(0);
-  const [activeScenario, setActiveScenario] = useState('microsoft');
-  const [previewExpanded, setPreviewExpanded] = useState(false);
-  const showcaseRef = useRef(null);
-  const [showcaseTilt, setShowcaseTilt] = useState({ rotateX: 10, scale: 0.95 });
+/**
+ * Home Page — Premium White & Blue Cybersecurity SaaS Redesign
+ * Apple & Stripe inspired design system:
+ * - 80% White (#FFFFFF)
+ * - 15% Light Blue (#F5F9FF & #DBEAFE)
+ * - 5% Deep Blue (#2563EB & #1E40AF)
+ */
+export default function Home({ setActivePage, setScanResult, theme, toggleTheme, openAboutModal }) {
+  const [mounted, setMounted] = useState(false);
 
-  // 1. Smooth Hardware-Accelerated Scroll & Parallax Tracker
   useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentY = window.scrollY;
-          setScrollY(currentY);
-
-          // Cinematic 3D leveling calculation for showcase frame
-          if (showcaseRef.current) {
-            const rect = showcaseRef.current.getBoundingClientRect();
-            const viewportH = window.innerHeight;
-            // When showcase is entering viewport from bottom, it starts tilted at 10deg
-            // As it reaches center of screen, it becomes flush at 0deg
-            const progress = Math.min(Math.max((viewportH - rect.top) / (viewportH * 0.75), 0), 1);
-            const calculatedRotateX = 10 * (1 - progress);
-            const calculatedScale = 0.95 + 0.05 * progress;
-            setShowcaseTilt({
-              rotateX: Math.max(0, calculatedRotateX),
-              scale: Math.min(1, calculatedScale)
-            });
-          }
-
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener('scroll', handleScroll);
+    const t = setTimeout(() => setMounted(true), 40);
+    return () => clearTimeout(t);
   }, []);
 
-  // Demo Scenarios for Interactive Threat Fingerprint Showcase
-  const demoScenarios = {
-    microsoft: {
-      url: 'https://login.microsoft-verify365.xyz/auth/session?token=49a0e1',
-      verdict: 'Credential Harvesting Attack',
-      riskScore: 88,
-      status: 'danger',
-      brand: 'Microsoft 365',
-      similarity: 'Unauthorized Typosquat',
-      entropy: '4.62 (High Anomaly)',
-      mlScore: '94.2% Phishing Confidence',
-      findings: [
-        {
-          title: 'Brand Impersonation & Typosquatting',
-          severity: 'CRITICAL',
-          desc: 'Domain label incorporates "microsoft" into an unauthorized root domain (microsoft-verify365.xyz).',
-          why: 'Attackers use trusted brand tokens to deceive users into assuming corporate legitimacy.'
-        },
-        {
-          title: 'High-Abuse Top Level Domain (.xyz)',
-          severity: 'ELEVATED',
-          desc: 'The registration TLD has a statistically elevated ratio of phishing and disposable campaigns.',
-          why: 'Adversaries favor inexpensive, throwaway domains that can be rapidly abandoned when blacklisted.'
-        },
-        {
-          title: 'Credential Gateway Signatures',
-          severity: 'HIGH',
-          desc: 'Path components include /auth/session targeting corporate login cookies.',
-          why: 'Directs submitted form credentials to an adversarial server instead of Microsoft identity providers.'
-        }
-      ]
-    },
-    paypal: {
-      url: 'http://paypa1-account-verification.xyz/login.php?cmd=_login-run',
-      verdict: 'High-Risk Brand Lookalike',
-      riskScore: 92,
-      status: 'danger',
-      brand: 'PayPal',
-      similarity: 'Homoglyph Substitution (1 -> l)',
-      entropy: '4.78 (Severe Anomaly)',
-      mlScore: '96.5% Phishing Confidence',
-      findings: [
-        {
-          title: 'Character Substitution Typosquatting',
-          severity: 'CRITICAL',
-          desc: 'The letter "l" is substituted with the number "1" (paypa1 instead of paypal).',
-          why: 'Visually indistinguishable to human eyes in many system fonts, fooling quick glances.'
-        },
-        {
-          title: 'Unencrypted Authentication (HTTP)',
-          severity: 'HIGH',
-          desc: 'Login form is served over plaintext HTTP without TLS encryption.',
-          why: 'Legitimate financial platforms enforce HTTPS with HSTS headers unconditionally.'
-        },
-        {
-          title: 'Urgency / Account Verification Trigger',
-          severity: 'ELEVATED',
-          desc: 'Subdomain leverages urgent security lure terms: "account-verification".',
-          why: 'Creates artificial panic to compel users to enter credentials without scrutiny.'
-        }
-      ]
-    },
-    google: {
-      url: 'https://www.google.com/search?q=cybersecurity+defense+protocols',
-      verdict: 'Legitimate Enterprise Domain',
-      riskScore: 4,
-      status: 'safe',
-      brand: 'Google',
-      similarity: 'Authentic Official Host',
-      entropy: '3.12 (Normal Lexical)',
-      mlScore: '0.8% Phishing Probability',
-      findings: [
-        {
-          title: 'Authentic Organizational Domain',
-          severity: 'SAFE',
-          desc: 'Host google.com is verified against canonical brand authority records.',
-          why: 'The primary domain belongs to the official verified entity.'
-        },
-        {
-          title: 'Standard Lexical Structure',
-          severity: 'SAFE',
-          desc: 'Standard query parameters for public search queries with no suspicious credential tokens.',
-          why: 'Matches benign search engine usage patterns.'
-        }
-      ]
+  const handleScanLink = () => {
+    if (setActivePage) {
+      setActivePage('scanner');
     }
   };
 
-  const currentData = demoScenarios[activeScenario];
+  const handleExploreProtection = () => {
+    const section = document.getElementById('protection-overview');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    } else if (setActivePage) {
+      setActivePage('dashboard');
+    }
+  };
+
+  const handleScanComplete = (result) => {
+    if (setScanResult) setScanResult(result);
+    if (setActivePage) setActivePage('results');
+  };
+
+  const services = [
+    {
+      id: 'url-scanner',
+      title: 'URL Threat Intelligence',
+      badge: 'MODULE 01',
+      description: 'Lexical analysis and structural entropy checks on suspicious links in real time.',
+      icon: Link2,
+      route: 'scanner',
+    },
+    {
+      id: 'email-scanner',
+      title: 'Email Scam Forensics',
+      badge: 'MODULE 02',
+      description: 'Header inspection, spoofing indicators, and AI body verification for phishing emails.',
+      icon: Mail,
+      route: 'email-scanner',
+    },
+    {
+      id: 'qr-scanner',
+      title: 'QR Code Shield',
+      badge: 'MODULE 03',
+      description: 'Decode and safely verify QR vectors before loading them on mobile devices.',
+      icon: QrCode,
+      route: 'qr-scanner',
+    },
+    {
+      id: 'message-scanner',
+      title: 'Message Scam Detector',
+      badge: 'MODULE 04',
+      description: 'Instant analysis for bank KYC, lottery, and UPI refund SMS or chat fraud.',
+      icon: MessageSquare,
+      route: 'message-scanner',
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#0B0B0C] text-[#F5F5F5] flex flex-col font-sans selection:bg-[#FF6B35]/30 selection:text-white relative overflow-x-hidden">
-      {/* Parallax Background Grid Layer */}
-      <div 
-        className="fixed inset-0 pointer-events-none z-0 opacity-20"
-        style={{
-          backgroundImage: `radial-gradient(circle at 50% 50%, #29292D 1px, transparent 1px)`,
-          backgroundSize: '36px 36px',
-          transform: `translateY(${scrollY * 0.12}px)`
-        }}
-        aria-hidden="true"
+    <div className="min-h-screen bg-[#FFFFFF] text-[#111827] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white relative overflow-x-hidden">
+      {/* ======================================================================
+          1. NAVIGATION BAR
+          ====================================================================== */}
+      <LandingNavbar 
+        activePage="home"
+        setActivePage={setActivePage} 
+        openAboutModal={openAboutModal}
+        theme={theme} 
+        toggleTheme={toggleTheme} 
       />
 
-      {/* Parallax Ambient Radial Glow Layer */}
-      <div 
-        className="fixed top-0 left-1/2 -translate-x-1/2 pointer-events-none z-0 w-[800px] h-[500px] rounded-full blur-[140px] opacity-15"
-        style={{
-          background: 'radial-gradient(circle, #FF6B35 0%, rgba(255, 107, 53, 0) 70%)',
-          transform: `translate(-50%, ${scrollY * 0.2}px)`
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 1. Slim Landing Navigation Bar */}
-      <LandingNavbar setActivePage={setActivePage} theme={theme} toggleTheme={toggleTheme} />
-
-      <main className="flex-1 relative z-10">
-        {/* ==========================================================================
-            ACT 1: THE PROLOGUE — HERO & GET STARTED GATEWAY
-            ========================================================================== */}
-        <section className="pt-24 sm:pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center space-y-8 relative">
-          {/* Parallax Floating Telemetry Badges (Foreground depth) */}
+      <main className="flex-1 relative z-10 flex flex-col">
+        {/* ====================================================================
+            2. HERO SECTION — PREMIUM WHITE & BLUE CYBERSECURITY PLATFORM
+            ==================================================================== */}
+        <section className="relative pt-10 sm:pt-16 md:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto overflow-hidden">
+          {/* Subtle Ambient Blue Flare */}
           <div 
-            className="hidden lg:flex items-center gap-2 absolute -left-12 top-28 px-3 py-1.5 rounded-[10px] bg-[#151517]/80 backdrop-blur-md border border-[#29292D] text-[#92929A] text-[11px] font-mono shadow-xl transition-transform duration-100 ease-out pointer-events-none"
-            style={{ transform: `translateY(${scrollY * -0.08}px)` }}
-          >
-            <Lock className="w-3.5 h-3.5 text-[#35C98A]" />
-            <span>Zero Network Execution</span>
-          </div>
+            className="absolute top-12 left-1/2 -translate-x-1/2 w-[700px] sm:w-[950px] h-[450px] bg-gradient-to-b from-[#DBEAFE]/40 via-[#F5F9FF]/20 to-transparent rounded-full filter blur-[100px] pointer-events-none" 
+            aria-hidden="true" 
+          />
 
-          <div 
-            className="hidden lg:flex items-center gap-2 absolute -right-12 top-40 px-3 py-1.5 rounded-[10px] bg-[#151517]/80 backdrop-blur-md border border-[#29292D] text-[#92929A] text-[11px] font-mono shadow-xl transition-transform duration-100 ease-out pointer-events-none"
-            style={{ transform: `translateY(${scrollY * 0.14}px)` }}
-          >
-            <Cpu className="w-3.5 h-3.5 text-[#FF6B35]" />
-            <span>34 Feature Lexical Vector</span>
-          </div>
-
-          {/* Eyebrow Label */}
-          <div className="scroll-reveal in-view inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#151517] border border-[#29292D] text-[#92929A] text-xs font-mono uppercase tracking-[0.08em]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B35]" />
-            <span>PERSONAL CYBERSECURITY · URL INTELLIGENCE</span>
-          </div>
-
-          {/* Main Heading */}
-          <h1 className="scroll-reveal in-view scroll-stagger-1 text-4xl sm:text-6xl lg:text-[72px] font-bold tracking-[-0.03em] leading-[1.06] text-[#F5F5F5] max-w-4xl mx-auto">
-            Don't trust the link.<br />
-            <span className="text-[#FF6B35]">Verify it.</span>
-          </h1>
-
-          {/* Short Description */}
-          <p className="scroll-reveal in-view scroll-stagger-2 text-base sm:text-lg text-[#92929A] max-w-[600px] mx-auto leading-relaxed font-normal">
-            Analyze suspicious URLs, uncover phishing indicators, and understand the risks before you click.
-          </p>
-
-          {/* Primary "Get Started" Option (Redirects directly to Scanner) */}
-          <div className="scroll-reveal in-view scroll-stagger-3 pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => setActivePage('scanner')}
-              className="btn-apple btn-apple-glow w-full sm:w-auto px-8 py-3.5 bg-[#FF6B35] hover:bg-[#ff7b49] active:scale-95 text-white font-semibold text-sm rounded-[10px] inline-flex items-center justify-center gap-2.5 shadow-lg shadow-[#FF6B35]/25 cursor-pointer"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="w-4 h-4 stroke-[2.2]" />
-            </button>
-
-            <button
-              onClick={() => {
-                const el = document.getElementById('how-it-works');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="btn-apple w-full sm:w-auto px-6 py-3.5 bg-[#151517] hover:bg-[#1B1B1F] border border-[#29292D] hover:border-[#686870] text-[#92929A] hover:text-[#F5F5F5] font-mono text-xs rounded-[10px] inline-flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>How It Works</span>
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Static Sandbox Trust Badge */}
-          <div className="scroll-reveal in-view scroll-stagger-4 pt-2 flex items-center justify-center gap-2 text-xs text-[#686870] font-mono">
-            <Lock className="w-3.5 h-3.5 text-[#35C98A]" />
-            <span>Untrusted String Sandboxing · Zero HTTP Dispatch</span>
-          </div>
-
-          {/* 3 Capability Indicators */}
-          <div className="pt-10 flex items-center justify-center gap-3 sm:gap-8 text-[11px] font-mono tracking-wider text-[#686870] uppercase">
-            <span>01 URL Analysis</span>
-            <span className="text-[#29292D]">/</span>
-            <span>02 Threat Indicators</span>
-            <span className="text-[#29292D]">/</span>
-            <span>03 Explainable Results</span>
-          </div>
-        </section>
-
-        {/* Thin Divider */}
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="h-[1px] bg-[#29292D]" />
-        </div>
-
-        {/* ==========================================================================
-            SECTION 2: THE ANATOMY OF DECEPTION
-            ========================================================================== */}
-        <section id="threat-anatomy" className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-16">
-          <div className="text-center space-y-3 max-w-xl mx-auto scroll-reveal">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F5F5F5]">
-              The Anatomy of a Phish
-            </h2>
-            <p className="text-sm text-[#92929A] leading-relaxed">
-              Modern cyber attacks don't use obvious broken links. They construct sophisticated deceptive illusions designed to fool the human subconscious.
-            </p>
-          </div>
-
-          {/* 3 Scrollytelling Visual Breakdown Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Card 1: Typosquatting */}
-            <div className="card-apple p-6 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-4 scroll-reveal">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-semibold text-[#FF6B35]">
-                  01 / SPOOFING
-                </span>
-                <span className="w-2 h-2 rounded-full bg-[#FF5C5C]" />
-              </div>
-              <h3 className="text-base font-semibold text-[#F5F5F5]">
-                Brand Typosquatting
-              </h3>
-              <p className="text-xs text-[#92929A] leading-relaxed">
-                Adversaries register lookalike domains by swapping glyphs—substituting letters with numbers (e.g., <code className="text-[#FF5C5C]">paypa1.com</code>) or appending security buzzwords.
-              </p>
-              <div className="p-3 rounded-[10px] bg-[#101012] border border-[#29292D] text-[11px] font-mono space-y-1">
-                <div className="text-[#35C98A] flex items-center justify-between">
-                  <span>paypal.com</span>
-                  <span className="text-[10px] text-[#686870]">Legitimate</span>
-                </div>
-                <div className="text-[#FF5C5C] flex items-center justify-between">
-                  <span>paypa1-verify.xyz</span>
-                  <span className="text-[10px] text-[#FF5C5C]">Adversarial</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2: Deep Obfuscation */}
-            <div className="card-apple p-6 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-4 scroll-reveal scroll-stagger-1">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-semibold text-[#FF6B35]">
-                  02 / PATHWAYS
-                </span>
-                <span className="w-2 h-2 rounded-full bg-[#F2B84B]" />
-              </div>
-              <h3 className="text-base font-semibold text-[#F5F5F5]">
-                Payload Obfuscation
-              </h3>
-              <p className="text-xs text-[#92929A] leading-relaxed">
-                Excessive directory nesting, encoded hex queries, and raw IP addresses mask the destination to slip past legacy keyword blocklists.
-              </p>
-              <div className="p-3 rounded-[10px] bg-[#101012] border border-[#29292D] text-[11px] font-mono space-y-1">
-                <div className="text-[#686870] text-[10px]">Shannon Entropy Metric</div>
-                <div className="text-[#F2B84B] font-bold">4.78 Bits / Token (High Anomaly)</div>
-              </div>
-            </div>
-
-            {/* Card 3: Zero-Execution */}
-            <div className="card-apple p-6 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-4 scroll-reveal scroll-stagger-2">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-semibold text-[#FF6B35]">
-                  03 / ISOLATION
-                </span>
-                <span className="w-2 h-2 rounded-full bg-[#35C98A]" />
-              </div>
-              <h3 className="text-base font-semibold text-[#F5F5F5]">
-                Zero-Execution Static Sandbox
-              </h3>
-              <p className="text-xs text-[#92929A] leading-relaxed">
-                Catch the Phish parses strings exclusively. It never opens an HTTP handshake, loads attacker scripts, or reveals your identity to adversary beacons.
-              </p>
-              <div className="p-3 rounded-[10px] bg-[#101012] border border-[#29292D] text-[11px] font-mono text-[#35C98A] flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Immune to Zero-Day Drive-Bys</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Thin Divider */}
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="h-[1px] bg-[#29292D]" />
-        </div>
-
-        {/* ==========================================================================
-            SECTION 3: THE THREAT FINGERPRINT SHOWCASE
-            ========================================================================== */}
-        <section id="threat-fingerprint" className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-10">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 scroll-reveal">
-            <div className="space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F5F5F5]">
-                The Threat Fingerprint
-              </h2>
-              <p className="text-xs sm:text-sm text-[#92929A] max-w-lg">
-                Instead of opaque binary warnings, Catch the Phish unbundles every flagged threat into transparent, plain-English security evidence.
-              </p>
-            </div>
-
-            {/* Scenario Switcher Controls */}
-            <div className="flex items-center gap-1.5 p-1 bg-[#151517] border border-[#29292D] rounded-[10px] text-xs font-mono">
-              <button
-                onClick={() => setActiveScenario('microsoft')}
-                className={`px-3 py-1.5 rounded-[8px] transition-all cursor-pointer ${
-                  activeScenario === 'microsoft'
-                    ? 'bg-[#1B1B1F] text-[#FF6B35] font-semibold border border-[#29292D]'
-                    : 'text-[#92929A] hover:text-[#F5F5F5]'
-                }`}
-              >
-                Microsoft Phish
-              </button>
-              <button
-                onClick={() => setActiveScenario('paypal')}
-                className={`px-3 py-1.5 rounded-[8px] transition-all cursor-pointer ${
-                  activeScenario === 'paypal'
-                    ? 'bg-[#1B1B1F] text-[#FF6B35] font-semibold border border-[#29292D]'
-                    : 'text-[#92929A] hover:text-[#F5F5F5]'
-                }`}
-              >
-                PayPal Lookalike
-              </button>
-              <button
-                onClick={() => setActiveScenario('google')}
-                className={`px-3 py-1.5 rounded-[8px] transition-all cursor-pointer ${
-                  activeScenario === 'google'
-                    ? 'bg-[#1B1B1F] text-[#35C98A] font-semibold border border-[#29292D]'
-                    : 'text-[#92929A] hover:text-[#F5F5F5]'
-                }`}
-              >
-                Safe Enterprise
-              </button>
-            </div>
-          </div>
-
-          {/* Cinematic 3D Tilting Dossier Container */}
-          <div className="cinematic-viewport">
+          <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-10 lg:gap-8 relative z-20">
+            {/* ----------------------------------------------------------------
+                LEFT: HEADLINE, SUBHEADING & CALLS TO ACTION
+                ---------------------------------------------------------------- */}
             <div 
-              ref={showcaseRef}
-              className="cinematic-tilt rounded-[18px] bg-[#151517] border border-[#29292D] p-6 sm:p-8 space-y-6 shadow-2xl"
-              style={{
-                transform: `rotateX(${showcaseTilt.rotateX}deg) scale(${showcaseTilt.scale})`,
-                boxShadow: `0 24px 60px -20px rgba(0, 0, 0, 0.7)`
-              }}
+              className={`lg:col-span-7 flex flex-col items-start text-left space-y-6 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                mounted 
+                  ? 'opacity-100 translate-y-0 filter-none' 
+                  : 'opacity-0 translate-y-6 blur-[3px]'
+              }`}
             >
-              {/* Header Stage Tracker */}
-              <div className="pb-4 border-b border-[#29292D]">
-                <ThreatTrace stage={4} isScanning={false} />
+              {/* Eyebrow Pill Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F5F9FF] border border-[#DBEAFE] text-xs font-sans text-[#2563EB] shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse" />
+                <span className="font-semibold tracking-wide">Next-Gen Cybersecurity Platform</span>
               </div>
 
-              {/* Analyzed Target URL Header */}
-              <div className="p-4 rounded-[12px] bg-[#101012] border border-[#29292D] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
-                <div className="space-y-1 overflow-hidden">
-                  <span className="text-[#686870] uppercase text-[10px] block">Analyzed Destination</span>
-                  <span className="text-[#F5F5F5] break-all select-all font-mono">
-                    {currentData.url}
-                  </span>
-                </div>
-                <div className={`inline-flex items-center gap-2 self-start sm:self-center px-3 py-1 rounded-full text-xs font-semibold shrink-0 border ${
-                  currentData.status === 'safe'
-                    ? 'bg-[#101F18] border-[#35C98A]/40 text-[#35C98A]'
-                    : 'bg-[#241315] border-[#FF5C5C]/40 text-[#FF5C5C]'
-                }`}>
-                  {currentData.status === 'safe' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
-                  <span>{currentData.status === 'safe' ? 'SAFE' : 'HIGH RISK'} ({currentData.riskScore} / 100)</span>
-                </div>
-              </div>
+              {/* Exact Requested Headline */}
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] text-[#111827]">
+                Your Digital World.{' '}
+                <span className="bg-gradient-to-r from-[#2563EB] to-[#1E40AF] bg-clip-text text-transparent">
+                  Protected.
+                </span>
+              </h1>
 
-              {/* Two-Column Dossier Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* Left Column: Verdict Summary */}
-                <div className="lg:col-span-5 space-y-4">
-                  <div className="p-5 rounded-[14px] bg-[#101012] border border-[#29292D] space-y-4">
-                    <div>
-                      <span className="text-[11px] font-mono text-[#686870] uppercase">Detection Verdict</span>
-                      <h3 className="text-lg font-bold text-[#F5F5F5] mt-0.5">
-                        {currentData.verdict}
-                      </h3>
-                    </div>
+              {/* Exact Requested Subheading */}
+              <p className="text-base sm:text-lg md:text-xl text-[#64748B] leading-relaxed max-w-xl font-normal">
+                Detect digital threats before they become digital disasters. Stay one step ahead of phishing, scams, and malicious links.
+              </p>
 
-                    {/* Restrained Score Indicator */}
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between text-xs font-mono">
-                        <span className="text-[#92929A]">Risk Confidence</span>
-                        <span className={`font-bold ${currentData.status === 'safe' ? 'text-[#35C98A]' : 'text-[#FF5C5C]'}`}>
-                          {currentData.riskScore} / 100
-                        </span>
-                      </div>
-                      <div className="w-full h-1.5 bg-[#29292D] rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full transition-all duration-500 ${currentData.status === 'safe' ? 'bg-[#35C98A]' : 'bg-[#FF5C5C]'}`}
-                          style={{ width: `${currentData.riskScore}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="pt-3 border-t border-[#29292D] grid grid-cols-2 gap-2 text-[11px] font-mono">
-                      <div>
-                        <span className="text-[#686870] block">Target Brand:</span>
-                        <span className="text-[#F5F5F5] font-semibold">{currentData.brand}</span>
-                      </div>
-                      <div>
-                        <span className="text-[#686870] block">Host Distance:</span>
-                        <span className={currentData.status === 'safe' ? 'text-[#35C98A]' : 'text-[#FF5C5C]'}>
-                          {currentData.similarity}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column: Threat Findings */}
-                <div className="lg:col-span-7 space-y-3">
-                  {currentData.findings.map((f, i) => (
-                    <div key={i} className="p-4 rounded-[12px] bg-[#101012] border border-[#29292D] space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-[#F5F5F5] flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${
-                            f.severity === 'SAFE' ? 'bg-[#35C98A]' : f.severity === 'ELEVATED' ? 'bg-[#F2B84B]' : 'bg-[#FF5C5C]'
-                          }`} />
-                          {f.title}
-                        </span>
-                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
-                          f.severity === 'SAFE'
-                            ? 'text-[#35C98A] bg-[#35C98A]/10 border-[#35C98A]/30'
-                            : f.severity === 'ELEVATED'
-                            ? 'text-[#F2B84B] bg-[#F2B84B]/10 border-[#F2B84B]/30'
-                            : 'text-[#FF5C5C] bg-[#FF5C5C]/10 border-[#FF5C5C]/30'
-                        }`}>
-                          {f.severity}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#92929A] leading-relaxed">
-                        {f.desc}
-                      </p>
-                      <p className="text-[11px] text-[#686870] italic">
-                        Why it matters: {f.why}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Collapsible Technical Evidence Dossier */}
-              <div className="pt-2 border-t border-[#29292D]">
+              {/* Exact Requested CTA Buttons */}
+              <div className="pt-2 flex flex-wrap items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                {/* Button 1: Scan a Link (Primary Blue) */}
                 <button
                   type="button"
-                  onClick={() => setPreviewExpanded(!previewExpanded)}
-                  className="w-full py-2.5 px-4 rounded-[10px] bg-[#101012] hover:bg-[#1B1B1F] border border-[#29292D] flex items-center justify-between text-xs font-mono text-[#92929A] hover:text-[#F5F5F5] transition-colors cursor-pointer"
+                  onClick={handleScanLink}
+                  className="px-7 py-3.5 bg-[#2563EB] hover:bg-[#1E40AF] active:scale-95 text-white font-sans font-medium text-sm tracking-wide rounded-full transition-all duration-200 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:shadow-[0_6px_22px_rgba(37,99,235,0.45)] w-full sm:w-auto"
                 >
-                  <span className="flex items-center gap-2">
-                    <Terminal className="w-3.5 h-3.5 text-[#FF6B35]" />
-                    <span>Why was this flagged? (Technical Evidence Dossier)</span>
-                  </span>
-                  {previewExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  <span>Scan a Link</span>
+                  <ArrowRight className="w-4 h-4 text-white stroke-[2.2]" />
                 </button>
 
-                {previewExpanded && (
-                  <div className="mt-3 p-4 rounded-[12px] bg-[#101012] border border-[#29292D] space-y-3 text-xs font-mono text-[#92929A] scroll-reveal in-view">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                      <div className="p-2.5 rounded-[8px] bg-[#151517] border border-[#29292D]">
-                        <span className="text-[10px] text-[#686870] block">Target Domain:</span>
-                        <span className="text-[#F5F5F5] break-all">{currentData.url.split('/')[2]}</span>
-                      </div>
-                      <div className="p-2.5 rounded-[8px] bg-[#151517] border border-[#29292D]">
-                        <span className="text-[10px] text-[#686870] block">Shannon Entropy:</span>
-                        <span className="text-[#F5F5F5]">{currentData.entropy}</span>
-                      </div>
-                      <div className="p-2.5 rounded-[8px] bg-[#151517] border border-[#29292D]">
-                        <span className="text-[10px] text-[#686870] block">ML Random Forest:</span>
-                        <span className={currentData.status === 'safe' ? 'text-[#35C98A]' : 'text-[#FF5C5C]'}>
-                          {currentData.mlScore}
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-[8px] bg-[#151517] border border-[#29292D]">
-                        <span className="text-[10px] text-[#686870] block">Analysis Sandbox:</span>
-                        <span className="text-[#35C98A]">Zero-Execution Protocol</span>
-                      </div>
+                {/* Button 2: Explore Protection (White with blue border) */}
+                <button
+                  type="button"
+                  onClick={handleExploreProtection}
+                  className="px-6 py-3.5 bg-[#FFFFFF] hover:bg-[#F5F9FF] active:scale-95 border-2 border-[#2563EB] text-[#2563EB] font-sans font-medium text-sm tracking-wide rounded-full transition-all duration-200 inline-flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:shadow-sm w-full sm:w-auto"
+                >
+                  <span>Explore Protection</span>
+                </button>
+              </div>
+
+              {/* Social Proof / Security Highlights */}
+              <div className="pt-4 flex flex-wrap items-center gap-6 text-xs text-[#64748B] font-mono border-t border-[#E2E8F0] w-full">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
+                  <span>Zero-Execution Static Sandbox</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#2563EB]" />
+                  <span>34 Heuristic Features</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#2563EB]" />
+                  <span>99.8% Detection Rate</span>
+                </div>
+              </div>
+            </div>
+
+            {/* ----------------------------------------------------------------
+                RIGHT: SOPHISTICATED CYBERSECURITY VISUAL
+                ---------------------------------------------------------------- */}
+            <div 
+              className={`lg:col-span-5 relative w-full transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                mounted 
+                  ? 'opacity-100 scale-100 filter-none' 
+                  : 'opacity-0 scale-[0.97] blur-[4px]'
+              }`}
+              style={{ transitionDelay: '200ms' }}
+            >
+              <HeroCyberVisual 
+                setActivePage={setActivePage} 
+                onScrollDown={handleExploreProtection}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ====================================================================
+            3. SCANNER INTERFACE — THE VISUAL HIGHLIGHT SECTION
+            ==================================================================== */}
+        <section className="py-14 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#F5F9FF] border-y border-[#E2E8F0]">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#DBEAFE] text-xs font-mono text-[#2563EB] shadow-2xs uppercase tracking-wider font-semibold">
+                <Search className="w-3.5 h-3.5" />
+                <span>Instant Forensic Verification</span>
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#111827]">
+                Analyze Any Link in Real Time
+              </h2>
+              <p className="text-sm sm:text-base text-[#64748B] max-w-xl mx-auto">
+                Paste any suspicious link below. Our zero-execution engine extracts 34 structural features without ever visiting the destination.
+              </p>
+            </div>
+
+            {/* Live URL Scanner Component */}
+            <UrlScanner onScanComplete={handleScanComplete} />
+          </div>
+        </section>
+
+        {/* ====================================================================
+            4. PROTECTION MODULES — CLEAN WHITE CARDS ON LIGHT BLUE
+            ==================================================================== */}
+        <section id="protection-overview" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F5F9FF] border border-[#DBEAFE] text-xs font-mono text-[#2563EB] font-semibold tracking-wide">
+              <span>Comprehensive Defense</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#111827]">
+              Multi-Layer Threat Intelligence
+            </h2>
+            <p className="text-base text-[#64748B]">
+              Protection across every major vector attackers use to breach identities and digital assets.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {services.map((service) => {
+              const Icon = service.icon;
+              return (
+                <div
+                  key={service.id}
+                  onClick={() => setActivePage(service.route)}
+                  role="button"
+                  tabIndex={0}
+                  className="group p-6 rounded-2xl bg-white border border-[#E2E8F0] hover:border-[#2563EB]/40 shadow-sm hover:shadow-[0_12px_30px_rgba(37,99,235,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between cursor-pointer"
+                >
+                  <div>
+                    {/* Minimal Icon Box with Light Blue Background */}
+                    <div className="w-11 h-11 rounded-xl bg-[#F5F9FF] border border-[#DBEAFE] flex items-center justify-center text-[#2563EB] mb-5 group-hover:bg-[#2563EB] group-hover:text-white transition-all duration-200">
+                      <Icon className="w-5 h-5 stroke-[2]" />
                     </div>
+
+                    <span className="text-[10px] font-mono text-[#2563EB] font-bold tracking-wider uppercase">
+                      {service.badge}
+                    </span>
+
+                    <h3 className="text-lg font-bold text-[#111827] mt-1 tracking-tight group-hover:text-[#2563EB] transition-colors">
+                      {service.title}
+                    </h3>
+
+                    <p className="text-xs text-[#64748B] leading-relaxed mt-2.5">
+                      {service.description}
+                    </p>
                   </div>
-                )}
-              </div>
-            </div>
+
+                  <div className="mt-6 pt-4 border-t border-[#E2E8F0] flex items-center justify-between text-xs font-medium text-[#2563EB]">
+                    <span>Launch Module</span>
+                    <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
-        {/* Thin Divider */}
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="h-[1px] bg-[#29292D]" />
-        </div>
-
-        {/* ==========================================================================
-            SECTION 4: HOW IT WORKS (3 MINIMAL STEPS)
-            ========================================================================== */}
-        <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-14">
-          <div className="text-center space-y-3 max-w-xl mx-auto scroll-reveal">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F5F5F5]">
-              Security, without the guesswork.
-            </h2>
-            <p className="text-sm text-[#92929A] leading-relaxed">
-              Understand what makes a link suspicious, why it matters, and what to do next.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="card-apple p-6 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-3 scroll-reveal">
-              <div className="font-mono text-xs font-semibold text-[#FF6B35]">
-                01 — Submit
-              </div>
-              <h3 className="text-base font-semibold text-[#F5F5F5]">
-                Submit the link
+        {/* ====================================================================
+            5. ARCHITECTURE HIGHLIGHT BANNER
+            ==================================================================== */}
+        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#2563EB] to-[#1E40AF] text-white">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div className="space-y-1.5">
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight">
+                Built on Zero-Execution Verification Architecture
               </h3>
-              <p className="text-xs text-[#92929A] leading-relaxed">
-                Paste any link you want to investigate without ever visiting or rendering it in your personal browser.
+              <p className="text-sm text-blue-100 max-w-xl">
+                Unlike traditional scanners that fetch malicious payloads, Catch the Phish inspects structural patterns safely in an air-gapped lexical model.
               </p>
             </div>
-
-            <div className="card-apple p-6 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-3 scroll-reveal scroll-stagger-1">
-              <div className="font-mono text-xs font-semibold text-[#FF6B35]">
-                02 — Analyze
-              </div>
-              <h3 className="text-base font-semibold text-[#F5F5F5]">
-                Evaluate indicators
-              </h3>
-              <p className="text-xs text-[#92929A] leading-relaxed">
-                The engine extracts 34 lexical and structural features and tests brand typosquatting models.
-              </p>
-            </div>
-
-            <div className="card-apple p-6 rounded-[14px] bg-[#151517] border border-[#29292D] space-y-3 scroll-reveal scroll-stagger-2">
-              <div className="font-mono text-xs font-semibold text-[#FF6B35]">
-                03 — Understand
-              </div>
-              <h3 className="text-base font-semibold text-[#F5F5F5]">
-                Review the verdict
-              </h3>
-              <p className="text-xs text-[#92929A] leading-relaxed">
-                Receive an explainable security dossier clarifying exactly why the link is safe or dangerous.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ==========================================================================
-            ACT 5: FINAL ACTION CTA — WORKSTATION ENTRYWAY
-            ========================================================================== */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center space-y-6">
-          <div className="card-apple p-8 sm:p-12 rounded-[18px] bg-[#151517] border border-[#29292D] space-y-5 shadow-2xl scroll-reveal">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F5F5F5]">
-              Verify any suspicious URL in seconds.
-            </h2>
-            <p className="text-xs sm:text-sm text-[#92929A] max-w-md mx-auto leading-relaxed">
-              Zero network execution. Fast explainable insights. Backed by machine learning and first-principles cybersecurity engineering.
-            </p>
-            <div className="pt-2">
-              <button
-                onClick={() => setActivePage('scanner')}
-                className="btn-apple btn-apple-glow px-8 py-3.5 bg-[#FF6B35] hover:bg-[#ff7b49] active:scale-95 text-white font-semibold text-xs sm:text-sm rounded-[10px] inline-flex items-center gap-2 shadow-lg shadow-[#FF6B35]/25 cursor-pointer"
-              >
-                <span>Get Started in the Workstation</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.2]" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setActivePage('about')}
+              className="px-6 py-3 rounded-full bg-white text-[#2563EB] hover:bg-blue-50 font-semibold text-xs sm:text-sm tracking-wide shadow-md hover:shadow-lg transition-all shrink-0 cursor-pointer"
+            >
+              Explore Architecture
+            </button>
           </div>
         </section>
       </main>
 
-      {/* Landing Footer */}
+      {/* ======================================================================
+          6. FOOTER
+          ====================================================================== */}
       <LandingFooter setActivePage={setActivePage} />
     </div>
   );

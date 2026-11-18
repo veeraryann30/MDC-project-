@@ -4,19 +4,23 @@ Performs safe static URL analysis, feature extraction, ML inference,
 rule-based explainability generation, and audit logging.
 """
 
+import base64
+import asyncio
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
 from backend.app.database.session import get_db
 from backend.app.database.models import ScanRecord
 from backend.app.schemas.scan import ScanRequest, ScanResponse, RiskBreakdown, ThreatIndicator
+from backend.app.schemas.qr import QRScanResponse, QRJsonRequest
 from ml.features.extractor import extract_features
 from backend.app.services.rule_engine import RuleEngineService
 from backend.app.services.ml_service import MLService
 from backend.app.services.threat_intel import ThreatIntelService
 from backend.app.services.scorer import ScorerService
 from backend.app.services.link_origin_service import LinkOriginService
+from backend.app.services.qr_scanner_service import QRScannerService
 
 router = APIRouter()
 
@@ -101,4 +105,65 @@ def scan_url(payload: ScanRequest, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=500,
             detail=f"An error occurred while analyzing the URL: {str(e)}"
+        )
+
+
+@router.post("/scan/qr", response_model=QRScanResponse)
+@router.post("/qr", response_model=QRScanResponse)
+async def scan_qr_file(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Decodes QR code from an uploaded image (PNG, JPG, JPEG) or PDF document.
+    Extracts embedded URL or payload, performs zero-execution lexical analysis,
+    SSRF validation, ML inference, and generates an explainable security report.
+    """
+    try:
+        if hasattr(file, "file") and hasattr(file.file, "read"):
+            contents = file.file.read()
+        elif hasattr(file, "read"):
+            r = file.read()
+            contents = await r if asyncio.iscoroutine(r) else r
+        else:
+            contents = bytes(file)
+
+        filename = file.filename or "uploaded_qr_file"
+        result = QRScannerService.analyze_qr_file(
+            file_name=filename,
+            file_bytes=contents,
+            db=db
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to process QR code file: {str(e)}"
+        )
+
+
+@router.post("/scan/qr-json", response_model=QRScanResponse)
+@router.post("/qr/json", response_model=QRScanResponse)
+def scan_qr_json(
+    payload: QRJsonRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Base64 payload support for QR Code detection.
+    """
+    try:
+        b64_data = payload.file_base64
+        if "," in b64_data:
+            b64_data = b64_data.split(",", 1)[1]
+        file_bytes = base64.b64decode(b64_data)
+        result = QRScannerService.analyze_qr_file(
+            file_name=payload.filename,
+            file_bytes=file_bytes,
+            db=db
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid base64 payload: {str(e)}"
         )

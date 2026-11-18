@@ -2,8 +2,8 @@ import React from 'react';
 import { Check } from 'lucide-react';
 
 /**
- * THREAT TRACE — Signature Analysis Stage Tracker (SHADOW UI)
- * Visualizes the 4 stages of URL verification:
+ * THREAT TRACE — Signature Analysis Stage Tracker
+ * Visualizes the 4 stages of URL verification in modern light theme:
  * URL RECEIVED → URL ANALYSIS → INDICATOR CHECKS → REPORT
  */
 export default function ThreatTrace({ 
@@ -26,13 +26,13 @@ export default function ThreatTrace({
   if (compact) {
     return (
       <div className={`flex items-center gap-2 text-xs font-mono ${className}`}>
-        <div className="relative w-24 h-1 bg-[#29292D] rounded-full overflow-hidden">
+        <div className="relative w-24 h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
           <div 
-            className="absolute top-0 bottom-0 left-0 bg-[#FF6B35] transition-all duration-300 ease-out"
+            className="absolute top-0 bottom-0 left-0 bg-[#2563EB] transition-all duration-300 ease-out"
             style={{ width: isScanning ? `${progressPercent}%` : (stage >= 4 ? '100%' : '0%') }}
           />
         </div>
-        <span className="text-[#92929A] text-[11px]">
+        <span className="text-[#64748B] text-[11px]">
           {isScanning ? stages[currentStage - 1]?.label : 'Ready'}
         </span>
       </div>
@@ -44,11 +44,11 @@ export default function ThreatTrace({
       {/* Top track container */}
       <div className="relative flex items-center justify-between">
         {/* Background Connecting Line */}
-        <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#29292D] z-0" />
+        <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 h-[2px] bg-[#E2E8F0] z-0" />
 
-        {/* Active Animated Progress Line */}
+        {/* Active Animated Progress Line in Primary Blue */}
         <div 
-          className="absolute left-3 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#FF6B35] transition-all duration-300 ease-out z-0"
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-[2px] bg-[#2563EB] transition-all duration-300 ease-out z-0"
           style={{ 
             width: isScanning || stage >= 4 
               ? `calc(${progressPercent}% * (100% - 24px) / 100)` 
@@ -60,7 +60,6 @@ export default function ThreatTrace({
         {stages.map((st) => {
           const isCompleted = stage > st.id || (stage === 4 && st.id === 4);
           const isActive = stage === st.id && isScanning;
-          const isPending = stage < st.id;
 
           return (
             <div 
@@ -71,14 +70,14 @@ export default function ThreatTrace({
               <div 
                 className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 text-[10px] font-mono font-medium ${
                   isCompleted
-                    ? 'bg-[#151517] border border-[#35C98A] text-[#35C98A]'
+                    ? 'bg-[#F0FDF4] border-2 border-[#16A34A] text-[#16A34A] shadow-xs'
                     : isActive
-                    ? 'bg-[#151517] border-2 border-[#FF6B35] text-[#FF6B35] shadow-[0_0_8px_rgba(255,107,53,0.3)]'
-                    : 'bg-[#101012] border border-[#29292D] text-[#686870]'
+                    ? 'bg-white border-2 border-[#2563EB] text-[#2563EB] shadow-[0_0_10px_rgba(37,99,235,0.4)] scale-110'
+                    : 'bg-[#F5F9FF] border border-[#E2E8F0] text-[#64748B]'
                 }`}
               >
                 {isCompleted ? (
-                  <Check className="w-3 h-3 stroke-[2.5]" />
+                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                 ) : (
                   <span>{st.id}</span>
                 )}
@@ -89,10 +88,10 @@ export default function ThreatTrace({
                 <span 
                   className={`text-[11px] font-mono tracking-tight block transition-colors duration-150 ${
                     isActive
-                      ? 'text-[#F5F5F5] font-semibold'
+                      ? 'text-[#2563EB] font-bold'
                       : isCompleted
-                      ? 'text-[#92929A]'
-                      : 'text-[#686870]'
+                      ? 'text-[#16A34A] font-medium'
+                      : 'text-[#64748B]'
                   }`}
                 >
                   <span className="hidden sm:inline">{st.label}</span>

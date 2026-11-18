@@ -3,115 +3,524 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
   :root {
-    --bg-main: #0B0B0C;
-    --bg-secondary: #101012;
-    --bg-card: #151517;
-    --bg-elevated: #1B1B1F;
-    --border-subtle: #29292D;
-    --text-primary: #F5F5F5;
-    --text-secondary: #92929A;
-    --text-muted: #686870;
-    --accent-orange: #FF6B35;
-    --status-safe: #35C98A;
-    --status-warning: #F2B84B;
-    --status-danger: #FF5C5C;
+    --bg-main: #FFFFFF;
+    --bg-secondary: #F5F9FF;
+    --bg-card: #FFFFFF;
+    --bg-elevated: #F8FAFC;
+    --border-subtle: #E2E8F0;
+    --border-hover: #DBEAFE;
+    --text-primary: #111827;
+    --text-secondary: #64748B;
+    --text-muted: #94A3B8;
+    --primary-blue: #2563EB;
+    --deep-blue: #1E40AF;
+    --light-blue: #DBEAFE;
+    --status-safe: #16A34A;
+    --status-warning: #F59E0B;
+    --status-danger: #DC2626;
     --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-cinematic: cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   body {
-    @apply bg-[#0B0B0C] text-[#F5F5F5] antialiased selection:bg-[#FF6B35]/30 selection:text-white font-sans;
+    @apply bg-[#FFFFFF] text-[#111827] antialiased selection:bg-[#2563EB] selection:text-white font-sans;
     min-height: 100vh;
+    background-color: #FFFFFF;
+    color: #111827;
   }
 }
 
-/* SHADOW UI Surfaces & Components */
+/* Hero Abstract Curve Glow & Apple Ambient Animations */
+@keyframes hero-subtle-drift {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.025); }
+}
+
+@keyframes hero-curve-pulse {
+  0%, 100% { opacity: 0.38; }
+  50% { opacity: 0.68; }
+}
+
+@keyframes hero-edge-pulse {
+  0%, 100% { 
+    opacity: 0.35; 
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.25)) drop-shadow(0 0 16px rgba(255, 255, 255, 0.15));
+  }
+  50% { 
+    opacity: 0.85; 
+    filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.65)) drop-shadow(0 0 28px rgba(230, 240, 255, 0.35));
+  }
+}
+
+/* Travelling light beam animations along curved edges */
+@keyframes hero-travel-tl-aura {
+  0% { stroke-dashoffset: 220; }
+  65% { stroke-dashoffset: -1040; }
+  100% { stroke-dashoffset: -1040; }
+}
+
+@keyframes hero-travel-tl-core {
+  0% { stroke-dashoffset: 180; }
+  65% { stroke-dashoffset: -1000; }
+  100% { stroke-dashoffset: -1000; }
+}
+
+@keyframes hero-travel-tl-center {
+  0% { stroke-dashoffset: 140; }
+  65% { stroke-dashoffset: -960; }
+  100% { stroke-dashoffset: -960; }
+}
+
+@keyframes hero-travel-br-aura {
+  0% { stroke-dashoffset: 220; }
+  65% { stroke-dashoffset: -1040; }
+  100% { stroke-dashoffset: -1040; }
+}
+
+@keyframes hero-travel-br-core {
+  0% { stroke-dashoffset: 180; }
+  65% { stroke-dashoffset: -1000; }
+  100% { stroke-dashoffset: -1000; }
+}
+
+@keyframes hero-travel-br-center {
+  0% { stroke-dashoffset: 140; }
+  65% { stroke-dashoffset: -960; }
+  100% { stroke-dashoffset: -960; }
+}
+
+.animate-hero-subtle-drift {
+  animation: hero-subtle-drift 18s cubic-bezier(0.25, 1, 0.5, 1) infinite alternate;
+}
+
+.animate-hero-curve-pulse {
+  animation: hero-curve-pulse 8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.animate-hero-edge-pulse {
+  animation: hero-edge-pulse 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: opacity, filter;
+}
+
+.animate-hero-travel-tl-aura {
+  stroke-dasharray: 220 2000;
+  stroke-dashoffset: 220;
+  animation: hero-travel-tl-aura 7.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  will-change: stroke-dashoffset;
+}
+
+.animate-hero-travel-tl-core {
+  stroke-dasharray: 140 2000;
+  stroke-dashoffset: 180;
+  animation: hero-travel-tl-core 7.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  will-change: stroke-dashoffset;
+}
+
+.animate-hero-travel-tl-center {
+  stroke-dasharray: 60 2000;
+  stroke-dashoffset: 140;
+  animation: hero-travel-tl-center 7.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  will-change: stroke-dashoffset;
+}
+
+.animate-hero-travel-br-aura {
+  stroke-dasharray: 220 2000;
+  stroke-dashoffset: 220;
+  animation: hero-travel-br-aura 8.5s cubic-bezier(0.25, 1, 0.5, 1) 2.2s infinite both;
+  will-change: stroke-dashoffset;
+}
+
+.animate-hero-travel-br-core {
+  stroke-dasharray: 140 2000;
+  stroke-dashoffset: 180;
+  animation: hero-travel-br-core 8.5s cubic-bezier(0.25, 1, 0.5, 1) 2.2s infinite both;
+  will-change: stroke-dashoffset;
+}
+
+.animate-hero-travel-br-center {
+  stroke-dasharray: 60 2000;
+  stroke-dashoffset: 140;
+  animation: hero-travel-br-center 8.5s cubic-bezier(0.25, 1, 0.5, 1) 2.2s infinite both;
+  will-change: stroke-dashoffset;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-subtle-drift,
+  .animate-hero-curve-pulse,
+  .animate-hero-edge-pulse,
+  .animate-hero-travel-tl-aura,
+  .animate-hero-travel-tl-core,
+  .animate-hero-travel-tl-center,
+  .animate-hero-travel-br-aura,
+  .animate-hero-travel-br-core,
+  .animate-hero-travel-br-center {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Apple-Inspired 4K Hero 3D Animations & Keyframes
+   ========================================================================== */
+
+/* 1. Left Hand Organic Floating & Subtle Reaching */
+@keyframes hand-left-organic {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  35% {
+    transform: translate3d(8px, -12px, 0) rotate(0.8deg) scale(1.008);
+  }
+  70% {
+    transform: translate3d(-3px, 6px, 0) rotate(-0.5deg) scale(0.995);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+/* 2. Right Hand Organic Floating & Pointing Reach */
+@keyframes hand-right-organic {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  40% {
+    transform: translate3d(-10px, -14px, 0) rotate(-0.9deg) scale(1.01);
+  }
+  75% {
+    transform: translate3d(4px, 5px, 0) rotate(0.4deg) scale(0.994);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+/* 3. Central Hologram Security Card 3D Floating & Rotation */
+@keyframes card-hologram-float {
+  0% {
+    transform: translate3d(0, 0, 0) rotateZ(-7deg) rotateX(2deg) rotateY(-3deg);
+  }
+  50% {
+    transform: translate3d(0, -16px, 0) rotateZ(-6deg) rotateX(-2deg) rotateY(2.5deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotateZ(-7deg) rotateX(2deg) rotateY(-3deg);
+  }
+}
+
+/* 4. Card White Neon Glow Breathing Effect */
+@keyframes card-neon-breathe {
+  0%, 100% {
+    box-shadow: 0 0 24px rgba(255, 255, 255, 0.28), 0 0 50px rgba(255, 255, 255, 0.08), inset 0 0 16px rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.65);
+  }
+  50% {
+    box-shadow: 0 0 45px rgba(255, 255, 255, 0.52), 0 0 85px rgba(255, 255, 255, 0.18), inset 0 0 28px rgba(255, 255, 255, 0.26);
+    border-color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* 5. Animated Diagonal Light Sweep / Shimmer Across Card */
+@keyframes card-shimmer {
+  0% {
+    transform: translateX(-150%) translateY(-150%) rotate(45deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateX(150%) translateY(150%) rotate(45deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(150%) translateY(150%) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+/* 6. Shield Icon Luminescent Bloom */
+@keyframes shield-neon-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.65)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.25));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 35px rgba(255, 255, 255, 0.55));
+    transform: scale(1.03);
+  }
+}
+
+/* 7. Surface Ground Glow Puddle Breathing */
+@keyframes ground-glow-pulse {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scaleX(1) scaleY(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scaleX(1.08) scaleY(1.05);
+  }
+}
+
+/* 8. Subtle Scroll Down Indicator Bounce */
+@keyframes subtle-scroll-bounce {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
+.animate-hand-left-organic {
+  animation: hand-left-organic 6.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
+
+.animate-hand-right-organic {
+  animation: hand-right-organic 5.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
+
+.animate-card-hologram-float {
+  animation: card-hologram-float 5.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.animate-card-neon-breathe {
+  animation: card-neon-breathe 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: box-shadow, border-color;
+}
+
+.animate-card-shimmer {
+  animation: card-shimmer 4.5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.animate-shield-glow {
+  animation: shield-neon-pulse 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: filter, transform;
+}
+
+.animate-ground-glow-pulse {
+  animation: ground-glow-pulse 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: opacity, transform;
+}
+
+.animate-subtle-bounce {
+  animation: subtle-scroll-bounce 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Reduced Motion Override for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-hand-left-organic,
+  .animate-hand-right-organic,
+  .animate-card-hologram-float,
+  .animate-card-neon-breathe,
+  .animate-card-shimmer,
+  .animate-shield-glow,
+  .animate-ground-glow-pulse,
+  .animate-subtle-bounce {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* White & Blue Surfaces & Components */
 .shadow-card {
-  background: #151517;
-  border: 1px solid #29292D;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 14px;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .shadow-card:hover {
-  border-color: #38383E;
+  border-color: #BFDBFE;
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.08);
 }
 
 .shadow-elevated {
-  background: #1B1B1F;
-  border: 1px solid #29292D;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
   border-radius: 14px;
 }
 
 .shadow-input {
-  background: #151517;
-  border: 1px solid #29292D;
-  border-radius: 12px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 9999px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .shadow-input:focus {
-  border-color: #FF6B35;
+  border-color: #2563EB;
   outline: none;
-  box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.35);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .shadow-button {
-  border-radius: 10px;
+  border-radius: 12px;
   font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .shadow-container {
-  border-radius: 18px;
+  border-radius: 16px;
 }
 
 /* Legacy utility compatibility */
 .cyber-card {
-  background: #151517;
-  border: 1px solid #29292D;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 14px;
-  transition: border-color 0.2s ease;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cyber-card:hover {
-  border-color: #38383E;
+  border-color: #BFDBFE;
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.08);
 }
 
 .cyber-card-elevated {
-  background: #1B1B1F;
-  border: 1px solid #29292D;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
   border-radius: 14px;
 }
 
 /* Minimal glass panel */
 .glass-panel {
-  background: rgba(16, 16, 18, 0.90);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #29292D;
+  border: 1px solid #E2E8F0;
   border-radius: 14px;
+  box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.05);
 }
 
-/* Minimal subtle scrollbars */
+/* ==========================================================================
+   APPLE-GRADE SMOOTH SCROLLING & TACTILE CLICK ANIMATIONS
+   ========================================================================== */
+
+/* Apple macOS Fluid Minimal Floating Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B0B0C;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #29292D;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #38383E;
+  background: rgba(255, 255, 255, 0.42);
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Apple Tactile Spring Press Physics */
+button,
+a,
+[role="button"],
+.apple-interactive {
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.18s ease,
+              border-color 0.18s ease,
+              color 0.18s ease,
+              opacity 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active:not(:disabled),
+a:active,
+[role="button"]:active {
+  transform: scale(0.965) translateY(0.5px) !important;
+  transition-duration: 0.08s !important;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+/* Slightly more subtle physical compression for large surface cards */
+.shadow-card:active,
+.shadow-elevated:active,
+[data-card]:active {
+  transform: scale(0.988) translateY(0.5px) !important;
+  transition-duration: 0.08s !important;
+}
+
+/* Apple Dynamic Specular Click Flash / Radial Wave */
+@keyframes apple-specular-flash {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.42;
+  }
+  45% {
+    opacity: 0.28;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.4);
+    opacity: 0;
+  }
+}
+
+.apple-click-ripple {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(
+    circle, 
+    rgba(255, 255, 255, 0.45) 0%, 
+    rgba(255, 255, 255, 0.2) 40%, 
+    rgba(255, 255, 255, 0.05) 65%, 
+    transparent 80%
+  );
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%) scale(0);
+  animation: apple-specular-flash 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+  z-index: 50;
+}
+
+html.light .apple-click-ripple {
+  background: radial-gradient(
+    circle, 
+    rgba(0, 0, 0, 0.18) 0%, 
+    rgba(0, 0, 0, 0.08) 45%, 
+    transparent 75%
+  );
+  mix-blend-mode: multiply;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button,
+  a,
+  [role="button"],
+  .apple-interactive {
+    transition: none !important;
+  }
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: none !important;
+  }
+  .apple-click-ripple {
+    display: none !important;
+  }
 }
 
 /* ==========================================================================
@@ -124,13 +533,57 @@
    - Cards become clean white with subtle blue-slate borders and shadows
    ========================================================================== */
 
+/* ==========================================================================
+   DARK MODE SYSTEM: DEEP PURE BLACK & MONOCHROMATIC (Apple Pro Style)
+   ========================================================================== */
+
+html.dark,
+html.dark body {
+  background-color: #000000 !important;
+  color: #f5f5f7 !important;
+  background-image: none !important;
+}
+
+html.dark ::selection {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+html.dark header {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  border-color: #2c2c2e !important;
+}
+
+html.dark aside {
+  background-color: #000000 !important;
+  border-color: #2c2c2e !important;
+}
+
+html.dark footer {
+  background-color: #000000 !important;
+  border-color: #2c2c2e !important;
+}
+
+html.dark .shadow-card,
+html.dark .cyber-card {
+  background-color: #121214 !important;
+  border-color: #2c2c2e !important;
+}
+
+html.dark input[type="text"],
+html.dark input[type="search"],
+html.dark textarea,
+html.dark select {
+  background-color: #0a0a0c !important;
+  color: #f5f5f7 !important;
+  border-color: #2c2c2e !important;
+}
+
 html.light,
 html.light body {
   background-color: #F8FAFC !important;
-  color: #0F172A !important;
-  background-image: 
-    radial-gradient(ellipse 90% 60% at 50% -15%, rgba(37, 99, 235, 0.08), transparent 70%),
-    radial-gradient(circle at 10% 90%, rgba(59, 130, 246, 0.04) 0%, transparent 40%) !important;
+  color: #111827 !important;
+  background-image: none !important;
 }
 
 /* Selection */
@@ -141,256 +594,193 @@ html.light ::selection {
 
 /* Scrollbars */
 html.light ::-webkit-scrollbar-track {
-  background: #F1F5F9 !important;
+  background: transparent !important;
 }
 html.light ::-webkit-scrollbar-thumb {
-  background: #CBD5E1 !important;
+  background: rgba(15, 23, 42, 0.18) !important;
+  border: 1.5px solid transparent !important;
+  background-clip: padding-box !important;
+  border-radius: 9999px;
 }
 html.light ::-webkit-scrollbar-thumb:hover {
-  background: #2563EB !important;
+  background: rgba(15, 23, 42, 0.35) !important;
 }
 
-/* App Canvas & Full Screen Shells */
+/* ==========================================================================
+   LIGHT MODE DESIGN SYSTEM — APPLE / LINEAR / STRIPE SPECIFICATION
+   Primary Background: #FFFFFF
+   Secondary Background: #F5F9FF
+   Primary Blue: #2563EB
+   Deep Blue: #1E40AF
+   Light Blue: #DBEAFE
+   Primary text: #111827
+   Secondary text: #64748B
+   Borders: #E2E8F0
+   Success: #16A34A
+   Warning: #F59E0B
+   Danger: #DC2626
+   ========================================================================== */
+
+/* Full Screen Canvas & Base Backgrounds */
 html.light .min-h-screen,
+html.light .bg-\[\#000000\],
+html.light .bg-\[\#0a0a0c\],
 html.light .bg-\[\#0B0B0C\],
-html.light .bg-\[\#0B0B0C\]\/90,
-html.light .bg-\[\#0B0B0C\]\/80,
-html.light .bg-\[\#0B0B0C\]\/60,
-html.light .bg-\[\#0B0B0C\]\/40 {
-  background-color: #F8FAFC !important;
-  color: #0F172A !important;
-}
-
-/* Navbar & Header */
-html.light header {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-bottom-color: #E2E8F0 !important;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
-}
-
-/* Sidebar */
-html.light aside {
-  background-color: #FFFFFF !important;
-  border-right-color: #E2E8F0 !important;
-  box-shadow: 1px 0 3px rgba(15, 23, 42, 0.03) !important;
-}
-
-/* Footer */
-html.light footer {
-  background-color: #FFFFFF !important;
-  border-top-color: #E2E8F0 !important;
-}
-
-/* Base Surfaces & Cards in Light Mode */
-html.light .shadow-card,
-html.light .cyber-card,
-html.light .glass-panel,
-html.light .bg-\[\#151517\],
-html.light .bg-\[\#151517\]\/90,
-html.light .bg-\[\#151517\]\/80,
-html.light .bg-\[\#151517\]\/60 {
-  background-color: #FFFFFF !important;
-  border-color: #E2E8F0 !important;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
-}
-
-html.light .shadow-card:hover,
-html.light .cyber-card:hover,
-html.light .glass-panel-hover:hover,
-html.light .bg-\[\#151517\]:hover {
-  border-color: #CBD5E1 !important;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.08) !important;
-}
-
-/* Elevated and Nested Sub-Panels */
-html.light .shadow-elevated,
-html.light .cyber-card-elevated,
-html.light .bg-\[\#1B1B1F\],
-html.light .hover\:bg-\[\#1B1B1F\]:hover,
-html.light .hover\:bg-\[\#151517\]:hover,
-html.light .hover\:bg-\[\#151517\]\/60:hover {
-  background-color: #F1F5F9 !important;
-}
-
-html.light .bg-\[\#101012\],
-html.light .bg-\[\#101012\]\/90,
-html.light .bg-\[\#101012\]\/80,
-html.light .bg-\[\#101012\]\/60,
-html.light .bg-\[\#101012\]\/40,
+html.light .bg-\[\#050505\],
 html.light .bg-\[\#06080E\],
-html.light .bg-\[\#101522\],
-html.light .bg-\[\#05070B\] {
-  background-color: #F8FAFC !important;
-  border-color: #E2E8F0 !important;
-}
-
-/* Dark surface utility class overrides */
-html.light .bg-\[\#050608\],
 html.light .bg-\[\#07090E\],
 html.light .bg-\[\#070B14\],
 html.light .bg-\[\#090C13\],
-html.light .bg-\[\#0B0F17\] {
+html.light .bg-\[\#0B0F17\],
+html.light .bg-\[\#0A0A0C\],
+html.light .bg-\[\#0C0C0E\],
+html.light .bg-\[\#000000\]\/95,
+html.light .bg-\[\#000000\]\/90,
+html.light .bg-\[\#000000\]\/85,
+html.light .bg-\[\#000000\]\/80,
+html.light .bg-\[\#000000\]\/60 {
+  background-color: #F5F9FF !important;
+  color: #111827 !important;
+}
+
+/* Primary Surfaces & Dashboard Cards */
+html.light header,
+html.light aside,
+html.light footer,
+html.light .bg-\[\#121214\],
+html.light .bg-\[\#121214\]\/80,
+html.light .bg-\[\#121214\]\/65,
+html.light .bg-\[\#151517\],
+html.light .bg-\[\#151517\]\/90,
+html.light .bg-\[\#151517\]\/80,
+html.light .bg-\[\#101012\],
+html.light .bg-\[\#121215\],
+html.light .bg-\[\#141418\],
+html.light .bg-\[\#18181C\],
+html.light .bg-\[\#101013\],
+html.light .bg-\[\#0E0E10\],
+html.light .bg-\[\#1C1C20\],
+html.light .bg-\[\#16161A\],
+html.light .bg-\[\#1A1A1F\],
+html.light .bg-\[\#1F1F24\],
+html.light .bg-\[\#1F1F25\],
+html.light .bg-\[\#18181D\],
+html.light .bg-\[\#141417\],
+html.light .bg-\[\#0E0E11\],
+html.light .shadow-card,
+html.light .cyber-card,
+html.light .glass-panel,
+html.light .scanner-card-container,
+html.light .dashboard-service-card,
+html.light .bg-zinc-900,
+html.light .bg-zinc-950,
+html.light .bg-slate-900,
+html.light .bg-slate-950 {
   background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  color: #111827 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Elevated Sub-Surfaces & Hover Surfaces */
+html.light .bg-\[\#1a1a1e\],
+html.light .bg-\[\#1b1b1f\],
+html.light .bg-\[\#1c1c1e\],
+html.light .bg-\[\#202026\],
+html.light .bg-\[\#18181c\]\/85,
+html.light .hover\:bg-\[\#121214\]:hover,
+html.light .hover\:bg-\[\#1a1a1e\]:hover,
+html.light .hover\:bg-\[\#1b1b1f\]:hover,
+html.light .hover\:bg-\[\#2c2c2e\]:hover,
+html.light .hover\:bg-\[\#16161A\]:hover,
+html.light .hover\:bg-\[\#18181C\]:hover,
+html.light .hover\:bg-\[\#1F1F25\]:hover,
+html.light .hover\:bg-\[\#202026\]:hover,
+html.light .hover\:bg-white\/5:hover,
+html.light .hover\:bg-white\/10:hover {
+  background-color: #F5F9FF !important;
   border-color: #E2E8F0 !important;
 }
 
-/* Borders */
+/* All Subtle Borders */
+html.light .border-\[\#2c2c2e\],
+html.light .border-\[\#303030\],
 html.light .border-\[\#29292D\],
-html.light .border-\[\#29292D\]\/60,
+html.light .border-\[\#38383E\],
+html.light .border-\[\#444748\],
 html.light .border-\[\#1C2230\],
+html.light .border-\[\#242428\],
+html.light .border-\[\#1D1D22\],
+html.light .border-\[\#1F1F24\],
+html.light .border-zinc-800,
+html.light .border-zinc-700,
+html.light .border-slate-800,
+html.light .border-slate-700,
+html.light .border-white\/10,
+html.light .border-white\/20,
+html.light .border-white\/30,
+html.light .border-white\/40,
+html.light .border-white\/\[0\.08\],
+html.light .divide-\[\#2c2c2e\] > * + *,
 html.light .divide-\[\#29292D\] > * + * {
   border-color: #E2E8F0 !important;
 }
 
-html.light .border-\[\#38383E\],
+html.light .hover\:border-white\/30:hover,
+html.light .hover\:border-white\/25:hover,
+html.light .hover\:border-\[\#444748\]:hover,
 html.light .hover\:border-\[\#38383E\]:hover {
-  border-color: #CBD5E1 !important;
+  border-color: #BFDBFE !important;
 }
 
 /* Typography in Light Mode */
+html.light .text-\[\#f5f5f7\],
 html.light .text-\[\#F5F5F5\],
+html.light .text-white,
+html.light .text-zinc-100,
+html.light .text-zinc-200,
+html.light .text-slate-100,
+html.light .text-slate-200,
 html.light h1,
 html.light h2,
 html.light h3,
 html.light h4,
 html.light h5,
 html.light h6 {
-  color: #0F172A !important;
+  color: #111827 !important;
 }
 
+/* Secondary & Muted Typography */
+html.light .text-\[\#86868b\],
 html.light .text-\[\#92929A\],
-html.light .text-slate-300,
-html.light .text-slate-400,
-html.light .hover\:text-\[\#F5F5F5\]:hover {
-  color: #475569 !important;
-}
-
+html.light .text-\[\#a1a1a6\],
+html.light .text-\[\#a2a2a2\],
 html.light .text-\[\#686870\],
-html.light .text-slate-500 {
+html.light .text-\[\#D0D0D4\],
+html.light .text-\[\#A0A0A8\],
+html.light .text-zinc-400,
+html.light .text-zinc-300,
+html.light .text-slate-400,
+html.light .text-slate-500,
+html.light .text-slate-300 {
   color: #64748B !important;
 }
 
-html.light code {
-  background-color: #F1F5F9 !important;
-  color: #1E293B !important;
-  border-color: #E2E8F0 !important;
+html.light .text-\[\#444748\],
+html.light .text-zinc-500 {
+  color: #94A3B8 !important;
 }
 
-/* Pill and badge containers */
-html.light .bg-black\/60,
-html.light .bg-black\/70,
-html.light .bg-black\/80,
-html.light .bg-black\/90 {
-  background-color: #EFF6FF !important;
-  border-color: #BFDBFE !important;
-}
-
-/* Cyber Blue Accent System (Replacing Orange in Light Mode) */
-html.light .text-\[\#FF6B35\],
-html.light .text-\[\#FF6B00\],
-html.light .text-orange-400,
-html.light .text-orange-500,
-html.light .text-amber-400 {
-  color: #2563EB !important;
-}
-
-html.light .text-orange-300 {
-  color: #1D4ED8 !important;
-}
-
-html.light .border-\[\#FF6B35\],
-html.light .border-\[\#FF6B35\]\/50,
-html.light .border-\[\#FF6B35\]\/40,
-html.light .border-\[\#FF6B35\]\/30,
-html.light .border-orange-500\/50,
-html.light .border-orange-500\/40,
-html.light .border-orange-500\/30,
-html.light .border-orange-500\/20,
-html.light .border-orange-500 {
-  border-color: rgba(37, 99, 235, 0.35) !important;
-}
-
-html.light .bg-\[\#FF6B35\]\/10,
-html.light .bg-\[\#FF6B35\]\/15,
-html.light .bg-\[\#FF6B35\]\/20,
-html.light .bg-\[\#FF6B35\]\/30,
-html.light .bg-orange-950\/40,
-html.light .bg-orange-950\/70,
-html.light .bg-orange-950\/80,
-html.light .bg-orange-950\/20,
-html.light .bg-orange-950 {
-  background-color: #EFF6FF !important;
-  border-color: #BFDBFE !important;
-  color: #1D4ED8 !important;
-}
-
-html.light .bg-\[\#FF6B35\],
-html.light .bg-\[\#ff7b49\],
-html.light .hover\:bg-\[\#ff7b49\]:hover,
-html.light .hover\:bg-\[\#FF6B35\]:hover,
-html.light .bg-\[\#FF6B00\],
-html.light .bg-orange-500 {
-  background-color: #2563EB !important;
-  color: #FFFFFF !important;
-}
-
-html.light button.bg-\[\#FF6B35\]:hover,
-html.light button.bg-\[\#ff7b49\]:hover,
-html.light button.bg-\[\#FF6B00\]:hover {
-  background-color: #1D4ED8 !important;
-  color: #FFFFFF !important;
-}
-
-/* Preserve crisp white text inside colored action buttons */
-html.light button.bg-\[\#FF6B35\],
-html.light button.bg-\[\#FF6B35\] span,
-html.light button.bg-\[\#FF6B35\] svg,
-html.light button.bg-\[\#ff7b49\],
-html.light button.bg-\[\#ff7b49\] span,
-html.light button.bg-\[\#ff7b49\] svg,
-html.light a.bg-\[\#FF6B35\],
-html.light a.bg-\[\#FF6B35\] span,
-html.light a.bg-\[\#FF6B35\] svg,
-html.light .bg-\[\#2563EB\],
-html.light .bg-\[\#2563EB\] span,
-html.light .bg-\[\#2563EB\] svg,
-html.light .bg-\[\#1D4ED8\],
-html.light .bg-\[\#1D4ED8\] span,
-html.light .bg-\[\#1D4ED8\] svg {
-  color: #FFFFFF !important;
-}
-
-/* Buttons with gradients */
-html.light .from-orange-500.to-amber-500 {
-  --tw-gradient-from: #2563EB var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: #3B82F6 var(--tw-gradient-to-position) !important;
-  color: #FFFFFF !important;
-}
-
-html.light .from-orange-400.to-amber-400 {
-  --tw-gradient-from: #1D4ED8 var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: #2563EB var(--tw-gradient-to-position) !important;
-  color: #FFFFFF !important;
-}
-
-html.light button.bg-gradient-to-r.from-orange-500.to-amber-500 {
-  color: #FFFFFF !important;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
-}
-
-html.light button.bg-gradient-to-r.from-orange-500.to-amber-500 svg {
-  fill: #FFFFFF !important;
-}
-
-/* Form Controls & Inputs */
+/* Forms, Inputs & Textareas */
 html.light input[type="text"],
 html.light input[type="search"],
 html.light textarea,
 html.light select,
-html.light .shadow-input {
+html.light .scanner-input-field {
   background-color: #FFFFFF !important;
-  border-color: #CBD5E1 !important;
-  color: #0F172A !important;
+  border-color: #E5E7EB !important;
+  color: #111827 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
 }
 
 html.light input::placeholder,
@@ -401,107 +791,449 @@ html.light textarea::placeholder {
 html.light input:focus,
 html.light select:focus,
 html.light textarea:focus,
-html.light .shadow-input:focus,
-html.light .focus\:border-\[\#FF6B35\]:focus {
+html.light .scanner-input-field:focus {
   border-color: #2563EB !important;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+  outline: none !important;
 }
 
-/* SVG Radar Dome & Ambient Graphics */
-html.light svg.text-\[\#FF6B35\],
-html.light svg.text-\[\#FF6B00\],
-html.light .text-\[\#FF6B35\] svg,
-html.light .text-\[\#FF6B00\] svg {
+/* ==========================================================================
+   SIDEBAR REDESIGN (Apple / Linear Specification)
+   - White background, thin #E5E7EB border
+   - Consistent minimalist icons
+   - Active navigation item with subtle light-blue background (#EFF6FF)
+   - Blue accent (#2563EB) for active text & active icon
+   - Clean hover states
+   ========================================================================== */
+html.light aside {
+  background-color: #FFFFFF !important;
+  border-right-color: #E5E7EB !important;
+  box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.02) !important;
+}
+
+html.light aside button {
+  color: #64748B !important;
+}
+
+html.light aside button:hover {
+  background-color: #F1F5F9 !important;
+  color: #111827 !important;
+}
+
+html.light aside button:hover svg {
+  color: #111827 !important;
+}
+
+html.light aside button.bg-white,
+html.light aside .sidebar-nav-item-active {
+  background-color: #EFF6FF !important;
+  color: #2563EB !important;
+  font-weight: 600 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html.light aside button.bg-white svg,
+html.light aside .sidebar-nav-item-active svg {
   color: #2563EB !important;
 }
 
-html.light .bg-\[\#FF6B35\]\/15,
-html.light .bg-\[\#FF6B00\]\/15 {
-  background-color: rgba(37, 99, 235, 0.08) !important;
+/* ==========================================================================
+   HEADER REDESIGN (Apple / Stripe Specification)
+   - White background with thin bottom border
+   - Page title left aligned
+   - Search input on light background (#F1F5F9)
+   - About Project as subtle outlined button
+   - Small green/orange engine status indicator
+   ========================================================================== */
+html.light header {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-bottom-color: #E5E7EB !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
 }
 
-/* Logo SVG Colors in Light Mode */
-html.light .logo-svg path[fill="#151517"] {
-  fill: #EFF6FF !important;
-  stroke: #BFDBFE !important;
+html.light header input {
+  background-color: #F1F5F9 !important;
+  border-color: #E5E7EB !important;
+  color: #111827 !important;
 }
-html.light .logo-svg path[fill="#101012"] {
+
+html.light header form button {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+}
+
+html.light header form button:hover {
+  background-color: #1D4ED8 !important;
+}
+
+html.light .topnav-about-btn {
+  background-color: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  color: #111827 !important;
+}
+
+html.light .topnav-about-btn:hover {
+  background-color: #F1F5F9 !important;
+}
+
+html.light .topnav-about-btn.bg-white {
+  background-color: #EFF6FF !important;
+  border-color: #BFDBFE !important;
+  color: #2563EB !important;
+}
+
+html.light .topnav-engine-status {
+  background-color: #F1F5F9 !important;
+  border-color: #E5E7EB !important;
+  color: #64748B !important;
+}
+
+html.light .topnav-theme-btn {
+  background-color: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  color: #111827 !important;
+}
+
+html.light .topnav-theme-btn:hover {
+  background-color: #F1F5F9 !important;
+}
+
+/* ==========================================================================
+   URL SCANNER REDESIGN (Vercel / Stripe Specification)
+   - Clean white scanner container with subtle border
+   - Large URL input field
+   - Blue Scan URL button (#2563EB)
+   - Compact test vectors underneath
+   ========================================================================== */
+html.light .scanner-tabs-toggle {
+  background-color: #F1F5F9 !important;
+  border-color: #E5E7EB !important;
+}
+
+html.light .scanner-tabs-toggle button {
+  color: #64748B !important;
+}
+
+html.light .scanner-tabs-toggle button:hover {
+  color: #111827 !important;
+}
+
+html.light .bg-\[\#0a0a0c\].rounded-full,
+html.light .bg-\[\#0a0a0c\].rounded-lg {
+  background-color: #F1F5F9 !important;
+  border-color: #E5E7EB !important;
+}
+
+html.light .bg-\[\#0a0a0c\].rounded-full button.bg-white,
+html.light .bg-\[\#0a0a0c\].rounded-lg button.bg-white {
+  background-color: #FFFFFF !important;
+  color: #111827 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .w-full.h-1\.5.bg-\[\#1a1a1e\],
+html.light div[class*="bg-[#1a1a1e]"].h-1\.5,
+html.light div[class*="bg-[#1a1a1e]"].h-2,
+html.light div[class*="bg-[#1a1a1e]"].h-1 {
+  background-color: #E2E8F0 !important;
+}
+
+html.light .scanner-tab-active,
+html.light .scanner-tabs-toggle button.bg-white {
+  background-color: #FFFFFF !important;
+  color: #111827 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+  font-weight: 600 !important;
+}
+
+html.light .scanner-submit-btn,
+html.light button.btn-scan-primary,
+html.light button.bg-white.scanner-submit-btn {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25) !important;
+}
+
+html.light .scanner-submit-btn:hover,
+html.light button.btn-scan-primary:hover {
+  background-color: #1D4ED8 !important;
+  color: #FFFFFF !important;
+}
+
+html.light .scanner-submit-btn *,
+html.light button.btn-scan-primary * {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
+html.light .scanner-header-label {
+  color: #111827 !important;
+}
+
+html.light .scanner-header-icon {
+  color: #2563EB !important;
+}
+
+html.light .test-vector-badge {
+  background-color: #F1F5F9 !important;
+  border-color: #E5E7EB !important;
+  color: #64748B !important;
+}
+
+html.light .test-vector-badge:hover {
+  background-color: #E2E8F0 !important;
+  color: #111827 !important;
+}
+
+/* Preserve crisp white text on blue/colored buttons */
+html.light button.bg-\[\#2563EB\],
+html.light button.bg-\[\#2563EB\] *,
+html.light button.bg-blue-600,
+html.light button.bg-blue-600 *,
+html.light .btn-primary-blue,
+html.light .btn-primary-blue * {
+  color: #FFFFFF !important;
+}
+
+/* Hero CTA Buttons */
+html.light .hero-cta-primary {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important;
+}
+html.light .hero-cta-primary:hover {
+  background-color: #1D4ED8 !important;
+}
+html.light .hero-cta-primary * {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+html.light .hero-cta-secondary {
+  background-color: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  color: #111827 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+html.light .hero-cta-secondary:hover {
+  background-color: #F1F5F9 !important;
+}
+html.light .hero-cta-secondary * {
+  color: #111827 !important;
+  stroke: #111827 !important;
+}
+
+/* App-level Scanning Notification Banner */
+html.light .app-scanning-banner {
+  background-color: #EFF6FF !important;
+  border-bottom-color: #BFDBFE !important;
+  color: #2563EB !important;
+}
+
+/* Landing Navbar in Light Mode */
+html.light header.landing-nav {
+  color: #111827 !important;
+}
+html.light header.landing-nav.bg-black\/85 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-bottom-color: #E5E7EB !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+html.light header.landing-nav .brand-name {
+  color: #111827 !important;
+}
+html.light header.landing-nav .brand-icon-box {
+  background-color: #EFF6FF !important;
+  border-color: #BFDBFE !important;
+}
+html.light header.landing-nav .brand-icon-box svg {
+  color: #2563EB !important;
+}
+html.light header.landing-nav nav button {
+  color: #64748B !important;
+}
+html.light header.landing-nav nav button:hover {
+  background-color: #F1F5F9 !important;
+  color: #111827 !important;
+}
+html.light header.landing-nav nav button.bg-\[\#1c1c1e\] {
+  background-color: #EFF6FF !important;
+  color: #2563EB !important;
+  border-color: #BFDBFE !important;
+}
+html.light header.landing-nav .landing-theme-btn,
+html.light header.landing-nav .landing-github-btn {
+  background-color: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  color: #111827 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+html.light header.landing-nav .landing-theme-btn:hover,
+html.light header.landing-nav .landing-github-btn:hover {
+  background-color: #F1F5F9 !important;
+}
+html.light header.landing-nav .landing-github-btn svg {
+  fill: #111827 !important;
+  color: #111827 !important;
+}
+
+html.light .app-scanning-banner span.animate-ping {
+  background-color: #2563EB !important;
+}
+
+/* ==========================================================================
+   DASHBOARD SERVICES HUB IN LIGHT MODE
+   - Hide dark wallpaper canvas, present clean crisp SaaS card grid
+   ========================================================================== */
+html.light .hero-background-canvas {
+  display: none !important;
+}
+
+html.light .dashboard-service-card {
+  background-color: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light .dashboard-service-card:hover {
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.08) !important;
+}
+
+html.light .dashboard-icon-box {
+  background-color: #EFF6FF !important;
+  border-color: #BFDBFE !important;
+  color: #2563EB !important;
+}
+
+html.light .dashboard-icon-box svg {
+  color: #2563EB !important;
+}
+
+html.light .dashboard-arrow-btn {
+  background-color: #F1F5F9 !important;
+  border-color: #E5E7EB !important;
+  color: #64748B !important;
+}
+
+html.light .dashboard-service-card:hover .dashboard-arrow-btn {
+  background-color: #2563EB !important;
+  border-color: #2563EB !important;
+  color: #FFFFFF !important;
+}
+
+html.light .dashboard-service-card:hover .dashboard-arrow-btn svg {
+  color: #FFFFFF !important;
+}
+
+/* ==========================================================================
+   RESULTS & THREAT CLASSIFICATION TOKENS IN LIGHT MODE
+   - SAFE: Green (#16A34A) with light green surface (#F0FDF4)
+   - SUSPICIOUS: Amber (#D97706) with warm amber surface (#FFFBEB)
+   - MALICIOUS: Red (#DC2626) with light red surface (#FEF2F2)
+   ========================================================================== */
+
+/* Safe (Green #16A34A) */
+html.light .bg-\[\#101F18\],
+html.light .bg-\[\#35C98A\]\/10,
+html.light .bg-emerald-950\/80,
+html.light .bg-emerald-950,
+html.light .bg-emerald-500\/10 {
+  background-color: #F0FDF4 !important;
+  color: #16A34A !important;
+  border-color: #BBF7D0 !important;
+}
+
+html.light .text-\[\#35C98A\],
+html.light .text-emerald-400,
+html.light .text-emerald-300 {
+  color: #16A34A !important;
+}
+
+html.light .border-\[\#35C98A\]\/40,
+html.light .border-\[\#35C98A\]\/30,
+html.light .border-emerald-500\/30 {
+  border-color: #BBF7D0 !important;
+}
+
+/* Suspicious (Amber #F59E0B / #D97706) */
+html.light .bg-\[\#221B10\],
+html.light .bg-\[\#F2B84B\]\/10,
+html.light .bg-amber-950\/80,
+html.light .bg-amber-950,
+html.light .bg-yellow-500\/10 {
+  background-color: #FFFBEB !important;
+  color: #D97706 !important;
+  border-color: #FDE68A !important;
+}
+
+html.light .text-\[\#F2B84B\],
+html.light .text-amber-400,
+html.light .text-amber-300,
+html.light .text-yellow-400 {
+  color: #D97706 !important;
+}
+
+html.light .border-\[\#F2B84B\]\/40,
+html.light .border-\[\#F2B84B\]\/30,
+html.light .border-yellow-500\/30 {
+  border-color: #FDE68A !important;
+}
+
+/* Malicious / High Risk (Red #DC2626) */
+html.light .bg-\[\#241315\],
+html.light .bg-\[\#FF5C5C\]\/10,
+html.light .bg-rose-950\/80,
+html.light .bg-rose-950,
+html.light .bg-rose-950\/20,
+html.light .bg-red-500\/10 {
+  background-color: #FEF2F2 !important;
+  color: #DC2626 !important;
+  border-color: #FECACA !important;
+}
+
+html.light .text-\[\#FF5C5C\],
+html.light .text-rose-400,
+html.light .text-rose-300,
+html.light .text-red-400 {
+  color: #DC2626 !important;
+}
+
+html.light .border-\[\#FF5C5C\]\/40,
+html.light .border-\[\#FF5C5C\]\/50,
+html.light .border-\[\#FF5C5C\]\/30,
+html.light .border-red-500\/30 {
+  border-color: #FECACA !important;
+}
+
+/* Brand Logo Colors in Light Mode */
+html.light .logo-svg path[stroke="#303030"] {
+  stroke: #E5E7EB !important;
+  fill: #EFF6FF !important;
+}
+html.light .logo-svg path[stroke="#4A4A4A"] {
+  stroke: #BFDBFE !important;
   fill: #DBEAFE !important;
-  stroke: #93C5FD !important;
 }
 html.light .logo-svg path[stroke="#F5F5F5"] {
-  stroke: #1E3A8A !important;
+  stroke: #2563EB !important;
+}
+html.light .logo-svg circle[fill="#F5F5F5"] {
+  fill: #2563EB !important;
 }
 html.light .logo-svg circle[fill="#FF6B35"] {
   fill: #2563EB !important;
 }
 
-/* Cybersecurity Status Badges in Light Mode */
-html.light .bg-\[\#101F18\],
-html.light .bg-\[\#35C98A\]\/10,
-html.light .bg-emerald-950\/80,
-html.light .bg-emerald-950 {
-  background-color: #DCFCE7 !important;
-  color: #15803D !important;
-  border-color: #86EFAC !important;
-}
-
-html.light .text-\[\#35C98A\],
-html.light .text-emerald-300,
-html.light .text-emerald-400 {
-  color: #16A34A !important;
-}
-html.light .border-\[\#35C98A\]\/40,
-html.light .border-\[\#35C98A\]\/30 {
-  border-color: #86EFAC !important;
-}
-
-html.light .bg-\[\#221B10\],
-html.light .bg-\[\#F2B84B\]\/10,
-html.light .bg-amber-950\/80,
-html.light .bg-amber-950 {
-  background-color: #FEF3C7 !important;
-  color: #B45309 !important;
-  border-color: #FCD34D !important;
-}
-
-html.light .text-\[\#F2B84B\],
-html.light .text-amber-300,
-html.light .text-amber-400 {
-  color: #D97706 !important;
-}
-html.light .border-\[\#F2B84B\]\/40,
-html.light .border-\[\#F2B84B\]\/30 {
-  border-color: #FCD34D !important;
-}
-
-html.light .bg-\[\#241315\],
-html.light .bg-\[\#FF5C5C\]\/10,
-html.light .bg-rose-950\/80,
-html.light .bg-rose-950,
-html.light .bg-rose-950\/20 {
-  background-color: #FEE2E2 !important;
-  color: #B91C1C !important;
-  border-color: #FCA5A5 !important;
-}
-
-html.light .text-\[\#FF5C5C\],
-html.light .text-rose-300,
-html.light .text-rose-400 {
-  color: #DC2626 !important;
-}
-html.light .border-\[\#FF5C5C\]\/40,
-html.light .border-\[\#FF5C5C\]\/50,
-html.light .border-\[\#FF5C5C\]\/30 {
-  border-color: #FCA5A5 !important;
-}
-
-/* Modals, Dropdowns & Popovers */
+/* Modals, Popovers & Dialogs */
 html.light div.rounded-2xl.bg-\[\#0B0F17\],
-html.light div.bg-\[\#0B0F17\] {
+html.light div.bg-\[\#0B0F17\],
+html.light div.rounded-2xl.bg-\[\#121214\],
+html.light div.bg-\[\#121214\] {
   background-color: #FFFFFF !important;
-  border-color: #E2E8F0 !important;
-  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
+  border-color: #E5E7EB !important;
+  color: #111827 !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04) !important;
 }
 
 /* Table rows and charts hover */
@@ -510,7 +1242,7 @@ html.light tbody tr:hover {
 }
 
 html.light .recharts-cartesian-grid line {
-  stroke: #E2E8F0 !important;
+  stroke: #E5E7EB !important;
 }
 html.light .recharts-text {
   fill: #64748B !important;
@@ -521,49 +1253,63 @@ html.light .recharts-text {
    GPU-accelerated, responsive, 60fps view-driven reveals & parallax effects
    ========================================================================== */
 
-/* Base scroll reveal entrance */
+/* Base scroll reveal entrance with Apple optical blur falloff */
 .scroll-reveal {
   opacity: 0;
-  transform: translateY(24px) scale(0.99);
-  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translateY(24px);
+  filter: blur(3px);
+  transition: opacity 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.72s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
 }
 
 .scroll-reveal.in-view {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
+  filter: blur(0);
 }
 
 /* Horizontal reveals */
 .scroll-reveal-left {
   opacity: 0;
   transform: translateX(-24px);
-  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  filter: blur(3px);
+  transition: opacity 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.72s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
 }
 
 .scroll-reveal-left.in-view {
   opacity: 1;
   transform: translateX(0);
+  filter: blur(0);
 }
 
 .scroll-reveal-right {
   opacity: 0;
   transform: translateX(24px);
-  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  filter: blur(3px);
+  transition: opacity 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.72s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
 }
 
 .scroll-reveal-right.in-view {
   opacity: 1;
   transform: translateX(0);
+  filter: blur(0);
 }
 
 /* Stagger delays for grid items & cards */
-.scroll-stagger-1 { transition-delay: 0.05s; }
-.scroll-stagger-2 { transition-delay: 0.12s; }
-.scroll-stagger-3 { transition-delay: 0.19s; }
-.scroll-stagger-4 { transition-delay: 0.26s; }
+.scroll-stagger-1 { transition-delay: 0.06s; }
+.scroll-stagger-2 { transition-delay: 0.14s; }
+.scroll-stagger-3 { transition-delay: 0.22s; }
+.scroll-stagger-4 { transition-delay: 0.30s; }
+.scroll-stagger-5 { transition-delay: 0.38s; }
+.scroll-stagger-6 { transition-delay: 0.46s; }
 
 /* Native CSS Scroll-Driven Animation (Hardware timeline) */
 @supports (animation-timeline: view()) {
@@ -661,22 +1407,25 @@ html.light .card-apple:hover {
 }
 
 /* ==========================================================================
-   SMOOTH PAGE REDIRECTION TRANSITION
+   SMOOTH PAGE REDIRECTION TRANSITION (Apple Fluid View Transitions)
    ========================================================================== */
 .page-view-wrapper {
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
 }
 
 .page-view-enter {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
+  filter: blur(0);
 }
 
 .page-view-exit {
   opacity: 0;
-  transform: translateY(6px) scale(0.995);
+  transform: translateY(8px);
+  filter: blur(2px);
   pointer-events: none;
 }
 
@@ -792,6 +1541,72 @@ html.theme-transitioning *::after {
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   ABOUT THE PROJECT — ARCHITECTURAL FLOWCHART & ANIMATIONS
+   Apple + Linear + Stripe + Vercel Standards
+   ========================================================================== */
+
+/* Animated Signal Pulse Travelling Along Pipeline Wires */
+@keyframes signalFlow {
+  0% {
+    top: -10%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    top: 110%;
+    opacity: 0;
+  }
+}
+
+.flow-signal-runner {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 14px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(255, 107, 53, 0) 0%, #FF6B35 50%, rgba(255, 107, 53, 0) 100%);
+  box-shadow: 0 0 10px #FF6B35;
+  animation: signalFlow 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+html.light .flow-signal-runner {
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0) 0%, #2563EB 50%, rgba(37, 99, 235, 0) 100%);
+  box-shadow: 0 0 10px #2563EB;
+}
+
+@keyframes lineDashMove {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.flow-dash-animated {
+  stroke-dasharray: 4 4;
+  animation: lineDashMove 1s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-signal-runner {
+    animation: none !important;
+    display: none !important;
+  }
+  .flow-dash-animated {
+    animation: none !important;
+    stroke-dasharray: none !important;
+  }
+}
+
 
 
 

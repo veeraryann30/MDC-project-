@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 
-export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
+export default function Settings({ theme = 'light', setTheme, toggleTheme }) {
   const [activeTab, setActiveTab] = useState('scan');
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [clearStatus, setClearStatus] = useState('');
@@ -22,10 +22,10 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
       }
     }
     return {
-      theme: 'tactical-orange',
-      accentColor: 'orange',
+      theme: 'light',
+      accentColor: 'blue',
       compactDensity: false,
-      enableGridBg: true,
+      enableGridBg: false,
       heuristicSensitivity: 'strict',
       mlWeight: 45,
       heuristicWeight: 35,
@@ -109,16 +109,16 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-[#29292D]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-[#E2E8F0]">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#151517] border border-[#29292D] text-[#FF6B35] text-xs font-mono">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#DBEAFE] text-[#2563EB] text-xs font-mono font-semibold shadow-2xs">
             <SettingsIcon className="w-3.5 h-3.5" />
-            <span>Operational Configuration Console</span>
+            <span>OPERATIONAL CONFIGURATION CONSOLE</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-[#F5F5F5] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] tracking-tight">
             System Settings
           </h1>
-          <p className="text-xs text-[#92929A]">
+          <p className="text-xs sm:text-sm text-[#64748B]">
             Tune heuristic engine thresholds, privacy policies, alerting behavior, and inspection rules.
           </p>
         </div>
@@ -127,17 +127,17 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
         <div className="flex items-center gap-3">
           <button
             onClick={handleResetDefaults}
-            className="px-3.5 py-2 rounded-[10px] bg-[#151517] border border-[#29292D] hover:border-[#686870] text-[#92929A] hover:text-[#F5F5F5] text-xs font-mono transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-white border border-[#E2E8F0] hover:border-[#2563EB]/40 text-[#64748B] hover:text-[#111827] text-xs font-mono transition-colors cursor-pointer shadow-2xs"
           >
             Reset Defaults
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 rounded-[10px] bg-[#FF6B35] hover:bg-[#e05a2b] text-black text-xs font-semibold uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1E40AF] text-white text-xs font-semibold tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow"
           >
             {savedSuccess ? (
               <>
-                <CheckCircle2 className="w-4 h-4 text-black" />
+                <CheckCircle2 className="w-4 h-4 text-white" />
                 <span>Saved!</span>
               </>
             ) : (
@@ -151,7 +151,7 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-1.5 p-1 bg-[#101012] border border-[#29292D] rounded-[12px] overflow-x-auto">
+      <div className="flex items-center gap-1.5 p-1.5 bg-white border border-[#E2E8F0] rounded-2xl shadow-2xs overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -159,13 +159,13 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-[8px] text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 isActive
-                  ? 'bg-[#151517] text-[#FF6B35] border border-[#29292D] font-semibold'
-                  : 'text-[#92929A] hover:text-[#F5F5F5] border border-transparent'
+                  ? 'bg-[#DBEAFE]/80 text-[#2563EB] font-bold shadow-2xs'
+                  : 'text-[#64748B] hover:text-[#111827] hover:bg-[#F5F9FF]'
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? 'text-[#FF6B35]' : 'text-[#686870]'}`} />
+              <Icon className={`w-4 h-4 ${isActive ? 'text-[#2563EB]' : 'text-[#64748B]'}`} />
               <span>{tab.label}</span>
             </button>
           );
@@ -448,53 +448,53 @@ export default function Settings({ theme = 'dark', setTheme, toggleTheme }) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Option 1: Dark Mode - SHADOW UI */}
-              <div 
-                onClick={(e) => {
-                  handleChange('theme', 'dark');
-                  if (toggleTheme) toggleTheme(e, 'dark');
-                  else if (setTheme) setTheme('dark');
-                }}
-                className={`p-4 rounded-[12px] border cursor-pointer transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-[#1B1B1F] border-[#FF6B35]' 
-                    : 'bg-[#101012] border-[#29292D] hover:border-[#686870]'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-[#F5F5F5]">Dark Mode (SHADOW UI)</span>
-                  <span className="w-3.5 h-3.5 rounded-full bg-[#FF6B35]" />
-                </div>
-                <p className="text-[11px] text-[#92929A] leading-relaxed">
-                  Deep dark canvas (#0B0B0C), restrained brand accent (#FF6B35), and high-contrast security indicators.
-                </p>
-                <div className="mt-3 flex items-center gap-1.5 text-[10px] font-mono text-[#FF6B35]">
-                  <span>{theme === 'dark' ? '● Currently Active' : 'Select Dark Theme'}</span>
-                </div>
-              </div>
-
-              {/* Option 2: Light Mode - Cyber Blue & White */}
+              {/* Option 1: Light Mode - Premium White & Blue (Primary) */}
               <div 
                 onClick={(e) => {
                   handleChange('theme', 'light');
                   if (toggleTheme) toggleTheme(e, 'light');
                   else if (setTheme) setTheme('light');
                 }}
-                className={`p-4 rounded-[12px] border cursor-pointer transition-colors ${
+                className={`p-5 rounded-2xl border cursor-pointer transition-all duration-200 shadow-2xs ${
                   theme === 'light'
-                    ? 'bg-[#1B1B1F] border-blue-500' 
-                    : 'bg-[#101012] border-[#29292D] hover:border-[#686870]'
+                    ? 'bg-[#F5F9FF] border-[#2563EB] shadow-xs' 
+                    : 'bg-white border-[#E2E8F0] hover:border-[#2563EB]/40'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-[#F5F5F5]">Light Mode (Cyber Blue & White)</span>
-                  <span className="w-3.5 h-3.5 rounded-full bg-blue-600" />
+                  <span className="text-sm font-bold text-[#111827]">Light Theme (White & Blue)</span>
+                  <span className="w-4 h-4 rounded-full bg-[#2563EB] shadow-xs" />
                 </div>
-                <p className="text-[11px] text-[#92929A] leading-relaxed">
-                  Clean white and soft slate canvas, royal cyber blue accents (#2563EB), and high-readability telemetry cards.
+                <p className="text-xs text-[#64748B] leading-relaxed">
+                  Apple & Stripe-grade design system: #FFFFFF primary, #F5F9FF secondary, #2563EB electric blue accents, and clean borders.
                 </p>
-                <div className="mt-3 flex items-center gap-1.5 text-[10px] font-mono text-blue-500">
+                <div className="mt-3 flex items-center gap-1.5 text-xs font-mono text-[#2563EB] font-bold">
                   <span>{theme === 'light' ? '● Currently Active' : 'Select Light Theme'}</span>
+                </div>
+              </div>
+
+              {/* Option 2: Dark Mode */}
+              <div 
+                onClick={(e) => {
+                  handleChange('theme', 'dark');
+                  if (toggleTheme) toggleTheme(e, 'dark');
+                  else if (setTheme) setTheme('dark');
+                }}
+                className={`p-5 rounded-2xl border cursor-pointer transition-all duration-200 shadow-2xs ${
+                  theme === 'dark'
+                    ? 'bg-[#F5F9FF] border-[#2563EB] shadow-xs' 
+                    : 'bg-white border-[#E2E8F0] hover:border-[#2563EB]/40'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-bold text-[#111827]">Dark Mode</span>
+                  <span className="w-4 h-4 rounded-full bg-[#111827]" />
+                </div>
+                <p className="text-xs text-[#64748B] leading-relaxed">
+                  Deep monochromatic canvas (#000000), low-light SOC console display, and high-contrast indicators.
+                </p>
+                <div className="mt-3 flex items-center gap-1.5 text-xs font-mono text-[#64748B]">
+                  <span>{theme === 'dark' ? '● Currently Active' : 'Select Dark Theme'}</span>
                 </div>
               </div>
             </div>

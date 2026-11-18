@@ -68,89 +68,104 @@ export default function FeatureInspector({ features = {}, details = {} }) {
   });
 
   return (
-    <div className="rounded-2xl bg-[#090C13] border border-[#1C2230] p-5 sm:p-6 shadow-sm">
+    <div className="rounded-2xl bg-white border border-[#E2E8F0] p-5 sm:p-6 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2">
-            <Database className="w-5 h-5 text-orange-400" />
-            <h3 className="font-bold text-white text-base">
+            <Database className="w-5 h-5 text-[#2563EB]" />
+            <h3 className="font-bold text-[#111827] text-base">
               Feature Extraction Inspector
             </h3>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Raw numerical feature vector supplied to the Random Forest classifier.
+          <p className="text-xs text-[#64748B] mt-1">
+            Raw lexical and topological features passed to the random forest inference classifier.
           </p>
         </div>
 
         {/* Search */}
-        <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+        <div className="relative w-full sm:w-64">
+          <Search className="w-3.5 h-3.5 text-[#64748B] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search features..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 pr-3 py-1.5 bg-[#06080E] border border-[#1C2230] rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors w-full sm:w-48"
+            placeholder="Search feature..."
+            className="w-full pl-9 pr-3 py-1.5 bg-[#F5F9FF] border border-[#E2E8F0] rounded-xl text-xs text-[#111827] placeholder-[#94A3B8] font-mono focus:outline-none focus:border-[#2563EB]"
           />
         </div>
       </div>
 
-      {/* Categories Filter Tabs */}
-      <div className="flex flex-wrap gap-1.5 mb-6 border-b border-[#1C2230] pb-3">
-        {categories.map((c) => (
+      {/* Category Pills */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-4 border-b border-[#E2E8F0]">
+        {categories.map((cat) => (
           <button
-            key={c.id}
-            onClick={() => setFilter(c.id)}
-            className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
-              filter === c.id
-                ? 'bg-orange-500/20 text-orange-300 border border-orange-500/40'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            key={cat.id}
+            onClick={() => setFilter(cat.id)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
+              filter === cat.id
+                ? 'bg-[#DBEAFE] text-[#2563EB] font-bold shadow-2xs'
+                : 'bg-[#F5F9FF] text-[#64748B] hover:text-[#111827] hover:bg-[#E2E8F0]'
             }`}
           >
-            {c.label}
+            {cat.label}
           </button>
         ))}
       </div>
 
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {filteredFeatures.map((key) => {
-          const val = features[key];
-          const meta = featureMetadata[key] || { category: 'lexical', desc: key };
-          const isFlagged = (typeof val === 'number' && (
-            (key.startsWith('has_') && val === 1 && key !== 'has_https') ||
-            (key === 'is_ip_address' && val === 1) ||
-            (key === 'brand_impersonation_detected' && val === 1) ||
-            (key === 'has_suspicious_tld' && val === 1)
-          ));
+      {/* Features Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-xs">
+          <thead>
+            <tr className="border-b border-[#E2E8F0] text-[11px] font-mono text-[#64748B] uppercase">
+              <th className="py-2.5 px-3">Feature Name</th>
+              <th className="py-2.5 px-3">Extracted Value</th>
+              <th className="py-2.5 px-3">Category</th>
+              <th className="py-2.5 px-3">Specification</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[#E2E8F0] font-mono">
+            {filteredFeatures.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="py-8 text-center text-[#64748B] text-xs">
+                  No features found matching the query.
+                </td>
+              </tr>
+            ) : (
+              filteredFeatures.map((key) => {
+                const val = features[key];
+                const meta = featureMetadata[key] || { category: 'general', desc: 'Custom structural attribute' };
+                const isBoolean = typeof val === 'boolean' || val === 0 || val === 1;
 
-          return (
-            <div
-              key={key}
-              className={`p-3 rounded-xl border transition-all ${
-                isFlagged 
-                  ? 'bg-rose-950/20 border-rose-800/40 hover:border-rose-700/60'
-                  : 'bg-[#06080E] border-[#1C2230] hover:border-slate-600'
-              }`}
-            >
-              <div className="flex items-center justify-between gap-2 mb-1">
-                <span className="font-mono text-xs text-slate-300 font-semibold truncate" title={key}>
-                  {key}
-                </span>
-                <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold ${
-                  isFlagged 
-                    ? 'bg-rose-950 text-rose-300 border border-rose-800' 
-                    : 'bg-[#090C13] text-orange-400 border border-[#1C2230]'
-                }`}>
-                  {typeof val === 'number' ? (Number.isInteger(val) ? val : val.toFixed(3)) : String(val)}
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                {meta.desc}
-              </p>
-            </div>
-          );
-        })}
+                return (
+                  <tr key={key} className="hover:bg-[#F5F9FF] transition-colors">
+                    <td className="py-2.5 px-3 font-semibold text-[#111827]">
+                      {key}
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                        val === true || val === 1
+                          ? 'bg-[#FEF2F2] text-[#DC2626] border border-[#FECACA]'
+                          : val === false || val === 0
+                          ? 'bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0]'
+                          : 'bg-[#EFF6FF] text-[#2563EB] border border-[#DBEAFE]'
+                      }`}>
+                        {typeof val === 'number' ? (Number.isInteger(val) ? val : val.toFixed(4)) : String(val)}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <span className="text-[10px] uppercase tracking-wider text-[#64748B] bg-[#F5F9FF] px-2 py-0.5 rounded border border-[#E2E8F0]">
+                        {meta.category}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-[#64748B] text-[11px] font-sans">
+                      {meta.desc}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

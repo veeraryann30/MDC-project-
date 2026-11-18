@@ -1,218 +1,242 @@
-import React, { useState } from 'react';
-import { Menu, X, ArrowRight, Shield, Sun, Moon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Menu, X, ShieldCheck, Sun, Moon, ArrowRight } from 'lucide-react';
 import Logo from '../common/Logo';
 
+/**
+ * LandingNavbar
+ * Premium Minimal Light Navigation Bar
+ * Features:
+ * - White background with subtle bottom border (#E2E8F0)
+ * - Catch the Phish logo on the left
+ * - Minimal navigation links with blue active indicator
+ * - Rounded blue CTA button (#2563EB)
+ * - Sticky navbar with smooth transition on scroll
+ */
 export default function LandingNavbar({ 
+  activePage = 'home',
   setActivePage, 
-  onScanButtonClick,
-  onSectionNavigate,
-  theme = 'dark',
+  openAboutModal,
+  theme = 'light',
   toggleTheme
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const handleNavClick = (target) => {
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 15);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleNavClick = (pageId) => {
     setMobileMenuOpen(false);
-    if (target === 'scanner') {
-      setActivePage('scanner');
-    } else if (target === 'how-it-works') {
-      const el = document.getElementById('how-it-works');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    } else if (target === 'threat-fingerprint') {
-      const el = document.getElementById('threat-fingerprint');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    } else if (target === 'threat-guide') {
-      setActivePage('learn');
-    } else if (target === 'about') {
-      setActivePage('about');
-    } else if (target === 'dashboard') {
-      setActivePage('dashboard');
+    if (pageId === 'home') {
+      if (activePage === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (setActivePage) {
+        setActivePage('home');
+      }
+    } else if (pageId === 'scan') {
+      if (setActivePage) setActivePage('scanner');
+    } else if (pageId === 'how-it-works') {
+      if (openAboutModal) {
+        openAboutModal();
+      } else if (setActivePage) {
+        setActivePage('about');
+      }
+    } else if (pageId === 'features') {
+      if (setActivePage) {
+        setActivePage('dashboard');
+      }
+    } else if (pageId === 'about') {
+      if (openAboutModal) {
+        openAboutModal();
+      } else if (setActivePage) {
+        setActivePage('about');
+      }
     }
   };
 
-  const handleLogoClick = () => {
-    setMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
-    <header className="sticky top-0 z-50 h-[72px] bg-[#0B0B0C]/90 backdrop-blur-md border-b border-[#29292D] transition-colors">
+    <header 
+      className={`landing-nav sticky top-0 z-50 h-[68px] transition-all duration-300 ${
+        scrolled 
+          ? 'bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] shadow-[0_4px_20px_-4px_rgba(37,99,235,0.06)]' 
+          : 'bg-white/80 backdrop-blur-sm border-b border-[#E2E8F0]'
+      }`}
+    >
       <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Left: Brand Logo & Wordmark */}
+        {/* ====================================================================
+            LEFT: LOGO
+            ==================================================================== */}
         <div 
-          onClick={handleLogoClick}
-          className="cursor-pointer group flex items-center transition-transform duration-200 active:scale-95"
+          onClick={() => handleNavClick('home')}
+          className="cursor-pointer group flex items-center gap-2 select-none transition-opacity hover:opacity-95"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleNavClick('home')}
+          aria-label="Catch the Phish Homepage"
         >
-          <Logo size="md" withWordmark={true} />
+          <Logo size="sm" withWordmark={true} withTagline={false} />
         </div>
 
-        {/* Center / Right Links */}
-        <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#92929A]">
+        {/* ====================================================================
+            CENTER: MINIMAL NAVIGATION LINKS WITH BLUE ACTIVE INDICATOR
+            ==================================================================== */}
+        <nav className="hidden md:flex items-center gap-1 text-xs font-sans">
+          {/* Home */}
           <button
-            onClick={() => handleNavClick('scanner')}
-            className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
+            type="button"
+            onClick={() => handleNavClick('home')}
+            className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
+              activePage === 'home'
+                ? 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold'
+                : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]'
+            }`}
+          >
+            Home
+          </button>
+
+          {/* Scanner */}
+          <button
+            type="button"
+            onClick={() => handleNavClick('scan')}
+            className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
+              activePage === 'scanner' || activePage === 'qr-scanner'
+                ? 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold'
+                : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]'
+            }`}
           >
             Scanner
           </button>
+
+          {/* Services / Features */}
           <button
+            type="button"
+            onClick={() => handleNavClick('features')}
+            className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
+              activePage === 'dashboard'
+                ? 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold'
+                : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]'
+            }`}
+          >
+            Services
+          </button>
+
+          {/* How it Works */}
+          <button
+            type="button"
             onClick={() => handleNavClick('how-it-works')}
-            className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 rounded-full text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] font-medium transition-all duration-200 cursor-pointer"
           >
-            How It Works
+            How it Works
           </button>
+
+          {/* Architecture / About */}
           <button
-            onClick={() => handleNavClick('threat-fingerprint')}
-            className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
-          >
-            Threat Fingerprint
-          </button>
-          <button
-            onClick={() => handleNavClick('threat-guide')}
-            className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
-          >
-            Threat Guide
-          </button>
-          <button
+            type="button"
             onClick={() => handleNavClick('about')}
-            className="hover:text-[#F5F5F5] transition-colors cursor-pointer"
+            className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
+              activePage === 'about'
+                ? 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold'
+                : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]'
+            }`}
           >
             About
           </button>
-          <button
-            onClick={() => handleNavClick('dashboard')}
-            className="hover:text-[#F5F5F5] transition-colors text-xs font-mono uppercase tracking-wider px-2 py-1 rounded border border-[#29292D] hover:border-[#38383E] text-[#92929A] cursor-pointer"
-          >
-            Dashboard
-          </button>
         </nav>
 
-        {/* Far Right: Compact Orange CTA Button & Theme Switcher */}
-        <div className="hidden sm:flex items-center gap-2.5">
+        {/* ====================================================================
+            RIGHT: THEME TOGGLE, GITHUB & ROUNDED BLUE CTA BUTTON
+            ==================================================================== */}
+        <div className="hidden md:flex items-center gap-2.5">
           {toggleTheme && (
             <button
+              type="button"
               onClick={(e) => toggleTheme(e)}
-              className="p-2 rounded-[10px] bg-[#151517] border border-[#29292D] text-[#92929A] hover:text-[#F5F5F5] transition-colors cursor-pointer relative overflow-hidden group"
-              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-              aria-label="Toggle theme"
+              className="p-2 rounded-full bg-[#F5F9FF] hover:bg-[#DBEAFE]/50 border border-[#E2E8F0] hover:border-[#2563EB]/40 text-[#64748B] hover:text-[#2563EB] transition-all cursor-pointer flex items-center justify-center group landing-theme-btn"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label="Toggle color theme"
             >
-              <span className="relative flex items-center justify-center w-4 h-4">
-                <Sun 
-                  className={`w-4 h-4 text-[#FF6B35] absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    theme === 'dark' 
-                      ? 'rotate-0 scale-100 opacity-100' 
-                      : 'rotate-90 scale-0 opacity-0 pointer-events-none'
-                  }`} 
-                />
-                <Moon 
-                  className={`w-4 h-4 text-[#2563EB] absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    theme === 'light' 
-                      ? 'rotate-0 scale-100 opacity-100' 
-                      : '-rotate-90 scale-0 opacity-0 pointer-events-none'
-                  }`} 
-                />
-              </span>
+              {theme === 'dark' ? (
+                <Moon className="w-3.5 h-3.5 text-[#2563EB] transition-transform group-hover:scale-110" />
+              ) : (
+                <Sun className="w-3.5 h-3.5 text-amber-500 transition-transform group-hover:scale-110" />
+              )}
             </button>
           )}
 
+          {/* Rounded Blue CTA Button */}
           <button
-            onClick={() => setActivePage('scanner')}
-            className="px-4 py-2 bg-[#FF6B35] hover:bg-[#ff7b49] active:scale-95 text-white text-xs font-semibold rounded-[10px] transition-all duration-200 cursor-pointer shadow-sm hover:shadow-[0_0_16px_rgba(255,107,53,0.35)] flex items-center gap-1.5"
+            type="button"
+            onClick={() => handleNavClick('scan')}
+            className="px-4 py-2 rounded-full bg-[#2563EB] hover:bg-[#1E40AF] active:scale-95 text-white font-sans font-medium text-xs tracking-wide transition-all duration-200 inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_10px_rgba(37,99,235,0.28)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.4)]"
           >
-            <span>Get Started</span>
-            <ArrowRight className="w-3.5 h-3.5 stroke-[2.2]" />
+            <span>Scan a Link</span>
+            <ArrowRight className="w-3.5 h-3.5 text-white stroke-[2.2]" />
           </button>
         </div>
 
-        {/* Mobile Hamburger Button */}
+        {/* ====================================================================
+            MOBILE HAMBURGER BUTTON & CTA
+            ==================================================================== */}
         <div className="flex md:hidden items-center gap-2">
-          {toggleTheme && (
-            <button
-              onClick={(e) => toggleTheme(e)}
-              className="p-2 rounded-lg text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517] border border-[#29292D] transition-colors relative overflow-hidden group"
-              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-              aria-label="Toggle theme"
-            >
-              <span className="relative flex items-center justify-center w-4 h-4">
-                <Sun 
-                  className={`w-4 h-4 text-[#FF6B35] absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    theme === 'dark' 
-                      ? 'rotate-0 scale-100 opacity-100' 
-                      : 'rotate-90 scale-0 opacity-0 pointer-events-none'
-                  }`} 
-                />
-                <Moon 
-                  className={`w-4 h-4 text-[#2563EB] absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    theme === 'light' 
-                      ? 'rotate-0 scale-100 opacity-100' 
-                      : '-rotate-90 scale-0 opacity-0 pointer-events-none'
-                  }`} 
-                />
-              </span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => handleNavClick('scan')}
+            className="px-3 py-1.5 rounded-full bg-[#2563EB] hover:bg-[#1E40AF] text-white font-sans font-medium text-xs cursor-pointer active:scale-95 transition-transform"
+          >
+            Scan Link
+          </button>
 
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg text-[#92929A] hover:text-[#F5F5F5] hover:bg-[#151517] border border-[#29292D] transition-colors"
-            aria-label="Toggle menu"
+            className="p-1.5 rounded-lg bg-[#F5F9FF] border border-[#E2E8F0] text-[#111827] hover:border-[#2563EB]/30 cursor-pointer"
+            aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* ====================================================================
+          MOBILE DRAWER MENU
+          ==================================================================== */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#101012] border-b border-[#29292D] px-5 py-4 space-y-3 shadow-2xl">
+        <div className="md:hidden bg-white/95 backdrop-blur-xl border-b border-[#E2E8F0] px-4 py-4 space-y-2 shadow-lg animate-in slide-in-from-top duration-200">
           <button
-            onClick={() => handleNavClick('scanner')}
-            className="w-full text-left py-2 text-sm text-[#F5F5F5] font-medium"
+            onClick={() => handleNavClick('home')}
+            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#111827] hover:bg-[#F5F9FF] hover:text-[#2563EB] transition-colors"
           >
-            Scanner Workstation
+            Home
+          </button>
+          <button
+            onClick={() => handleNavClick('scan')}
+            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] transition-colors"
+          >
+            Scanner
+          </button>
+          <button
+            onClick={() => handleNavClick('features')}
+            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] transition-colors"
+          >
+            Services
           </button>
           <button
             onClick={() => handleNavClick('how-it-works')}
-            className="w-full text-left py-2 text-sm text-[#92929A] hover:text-[#F5F5F5]"
+            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] transition-colors"
           >
-            How It Works
-          </button>
-          <button
-            onClick={() => handleNavClick('threat-fingerprint')}
-            className="w-full text-left py-2 text-sm text-[#92929A] hover:text-[#F5F5F5]"
-          >
-            Threat Fingerprint
-          </button>
-          <button
-            onClick={() => handleNavClick('threat-guide')}
-            className="w-full text-left py-2 text-sm text-[#92929A] hover:text-[#F5F5F5]"
-          >
-            Threat Guide
+            How it Works
           </button>
           <button
             onClick={() => handleNavClick('about')}
-            className="w-full text-left py-2 text-sm text-[#92929A] hover:text-[#F5F5F5]"
+            className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] transition-colors"
           >
-            About
+            About Architecture
           </button>
-          <button
-            onClick={() => handleNavClick('dashboard')}
-            className="w-full text-left py-2 text-sm text-[#92929A] hover:text-[#F5F5F5]"
-          >
-            SOC Dashboard
-          </button>
-
-          <div className="pt-2 border-t border-[#29292D]">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setActivePage('scanner');
-              }}
-              className="w-full py-2.5 bg-[#FF6B35] hover:bg-[#ff7b49] active:scale-95 text-white text-xs font-semibold rounded-[10px] text-center transition-all cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="w-3.5 h-3.5 stroke-[2.2]" />
-            </button>
-          </div>
         </div>
       )}
     </header>

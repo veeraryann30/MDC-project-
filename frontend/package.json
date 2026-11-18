@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "autoprefixer": "^10.6.1",
+    "cytoscape": "^3.35.0",
+    "jsqr": "^1.4.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.46.0",
     "postcss": "^8.5.28",
