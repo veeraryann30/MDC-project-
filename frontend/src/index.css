@@ -47,7 +47,7 @@
     --ctp-border-strong: #3a3a42;
     --ctp-text: #f4f4f5;
     --ctp-text-2: #a1a1aa;
-    --ctp-text-muted: #71717a;
+    --ctp-text-muted: #8b8b95;
     --ctp-accent: #22d3ee;
     --ctp-accent-ink: #04222a;
     --ctp-safe: #34d399;
@@ -121,7 +121,8 @@ html.dark footer.ctp-dark h4 { color: var(--ctp-text) !important; }
 html.light header.landing-nav nav button:hover { background-color: transparent !important; }
 html.light header.landing-nav.ctp-dark nav button:hover,
 html.light header.landing-nav.ctp-dark nav button:focus-visible { color: var(--ctp-text) !important; }
-html.light header.landing-nav:not(.ctp-dark) nav button.text-\[\#2563EB\] { color: #2563EB !important; }
+html.light header.landing-nav:not(.ctp-dark) nav button { color: #475569 !important; }
+html.light header.landing-nav:not(.ctp-dark) nav button.text-\[\#2563EB\] { color: #1D4ED8 !important; }
 html.light header.landing-nav.ctp-dark nav button.text-ctp-text { color: var(--ctp-text) !important; }
 html.light header.landing-nav.ctp-dark .landing-theme-btn {
   background-color: var(--ctp-surface) !important;
@@ -171,6 +172,13 @@ html.dark .ctp-dark input::placeholder { color: var(--ctp-text-muted) !important
   animation: ctp-indeterminate 1.3s var(--ctp-ease-in-out) infinite;
 }
 @keyframes ctp-indeterminate { from { left: -30%; } to { left: 102%; } }
+
+/* Consistent, on-brand keyboard focus ring across the redesigned (dark) surfaces. */
+.ctp-dark :focus-visible,
+.ctp-dark:focus-visible {
+  outline: 2px solid var(--ctp-accent);
+  outline-offset: 3px;
+}
 
 @keyframes ctp-drift {
   0%, 100% { transform: translate3d(0, 0, 0); }

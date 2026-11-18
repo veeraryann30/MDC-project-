@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { id: 'home', label: 'Home', action: 'home', active: ['home'] },
   { id: 'scanner', label: 'Scanner', action: 'scan', active: ['scanner', 'qr-scanner'] },
   { id: 'services', label: 'Services', action: 'features', active: ['dashboard'] },
-  { id: 'how', label: 'How it Works', action: 'how-it-works', active: [] },
+  { id: 'how', label: 'How it Works', action: 'how-it-works', active: [], lgOnly: true },
   { id: 'about', label: 'About', mobileLabel: 'About Architecture', action: 'about', active: ['about'] },
 ];
 
@@ -117,7 +117,7 @@ export default function LandingNavbar({
                 onMouseEnter={() => setHoverId(item.id)}
                 onFocus={() => setHoverId(item.id)}
                 onBlur={() => setHoverId(null)}
-                className={`relative px-3.5 py-1.5 rounded-full font-medium transition-colors duration-200 cursor-pointer ${
+                className={`relative whitespace-nowrap px-3.5 py-1.5 rounded-full font-medium transition-colors duration-200 cursor-pointer ${item.lgOnly ? 'hidden lg:inline-block' : ''} ${
                   dark ? (pillOn || isActive ? 'text-ctp-text' : 'text-ctp-text-2') : (pillOn || isActive ? 'text-[#2563EB]' : 'text-[#64748B]')
                 } ${isActive ? 'font-semibold' : ''}`}
               >
@@ -159,8 +159,8 @@ export default function LandingNavbar({
             type="button"
             onClick={() => handleNavClick('scan')}
             className={dark
-              ? 'px-4 py-2 rounded-full bg-ctp-text hover:bg-ctp-accent text-ctp-bg hover:text-ctp-accent-ink active:scale-95 font-sans font-medium text-xs tracking-wide transition-colors duration-200 inline-flex items-center gap-1.5 cursor-pointer'
-              : 'px-4 py-2 rounded-full bg-[#2563EB] hover:bg-[#1E40AF] active:scale-95 text-white font-sans font-medium text-xs tracking-wide transition-all duration-200 inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_10px_rgba(37,99,235,0.28)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.4)]'}
+              ? 'whitespace-nowrap px-4 py-2 rounded-full bg-ctp-text hover:bg-ctp-accent text-ctp-bg hover:text-ctp-accent-ink active:scale-95 font-sans font-medium text-xs tracking-wide transition-colors duration-200 inline-flex items-center gap-1.5 cursor-pointer'
+              : 'whitespace-nowrap px-4 py-2 rounded-full bg-[#2563EB] hover:bg-[#1E40AF] active:scale-95 text-white font-sans font-medium text-xs tracking-wide transition-all duration-200 inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_10px_rgba(37,99,235,0.28)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.4)]'}
           >
             <span>Scan a Link</span>
             <ArrowRight className={`w-3.5 h-3.5 stroke-[2.2] ${dark ? '' : 'text-white'}`} />

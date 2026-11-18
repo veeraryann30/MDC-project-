@@ -42,11 +42,24 @@ export default function HeroShield() {
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)');
     const rm = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setEnable3D(mq.matches && !rm.matches && canUseWebGL());
+    // Wait until the browser is idle so the heavy Three.js chunk never competes with first paint.
+    let idleId;
+    const update = () => {
+      const ok = mq.matches && !rm.matches && canUseWebGL();
+      if (!ok) { setEnable3D(false); return; }
+      const start = () => setEnable3D(true);
+      idleId = 'requestIdleCallback' in window
+        ? window.requestIdleCallback(start, { timeout: 2000 })
+        : window.setTimeout(start, 600);
+    };
     update();
     mq.addEventListener('change', update);
     rm.addEventListener('change', update);
     return () => {
+      if (idleId !== undefined) {
+        if ('cancelIdleCallback' in window) window.cancelIdleCallback(idleId);
+        window.clearTimeout(idleId);
+      }
       mq.removeEventListener('change', update);
       rm.removeEventListener('change', update);
     };

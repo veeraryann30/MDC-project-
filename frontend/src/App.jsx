@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, lazy, Suspense } from 'react';
 import { flushSync } from 'react-dom';
 import Sidebar from './components/layout/Sidebar';
 import TopNavbar from './components/layout/TopNavbar';
@@ -8,22 +8,29 @@ import LandingFooter from './components/layout/LandingFooter';
 import ScrollController from './components/layout/ScrollController';
 import AboutModal from './components/common/AboutModal';
 
-// Pages
-import Dashboard from './pages/Dashboard';
-import Scanner from './pages/Scanner';
-import Results from './pages/Results';
-import History from './pages/History';
-import ThreatIntel from './pages/ThreatIntel';
-import Analytics from './pages/Analytics';
-import Learn from './pages/Learn';
-import Settings from './pages/Settings';
+// Pages. Home loads eagerly (landing); every other page is split into its own chunk
+// so the first visit does not download charts, maps and graph libraries it may never use.
 import Home from './pages/Home';
-import About from './pages/About';
-import PhishTrace from './pages/PhishTrace';
-import MessageScanner from './pages/MessageScanner';
-import InvestmentScanner from './pages/InvestmentScanner';
-import EmailScanner from './pages/EmailScanner';
-import ScamDNA from './pages/ScamDNA';
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Scanner = lazy(() => import('./pages/Scanner'));
+const Results = lazy(() => import('./pages/Results'));
+const History = lazy(() => import('./pages/History'));
+const ThreatIntel = lazy(() => import('./pages/ThreatIntel'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+const Learn = lazy(() => import('./pages/Learn'));
+const Settings = lazy(() => import('./pages/Settings'));
+const About = lazy(() => import('./pages/About'));
+const PhishTrace = lazy(() => import('./pages/PhishTrace'));
+const MessageScanner = lazy(() => import('./pages/MessageScanner'));
+const InvestmentScanner = lazy(() => import('./pages/InvestmentScanner'));
+const EmailScanner = lazy(() => import('./pages/EmailScanner'));
+const ScamDNA = lazy(() => import('./pages/ScamDNA'));
+
+const PageFallback = () => (
+  <div className="py-24 text-center text-xs font-mono text-[#94A3B8]" role="status" aria-live="polite">
+    Loading…
+  </div>
+);
 
 import { api } from './services/api';
 
@@ -309,7 +316,9 @@ export default function App() {
           toggleTheme={toggleTheme} 
         />
         <div className={`page-view-wrapper ${isTransitioning ? 'page-view-exit' : 'page-view-enter'}`}>
-          <About setActivePage={navigateToPage} theme={theme} toggleTheme={toggleTheme} />
+          <Suspense fallback={<PageFallback />}>
+            <About setActivePage={navigateToPage} theme={theme} toggleTheme={toggleTheme} />
+          </Suspense>
         </div>
         <LandingFooter setActivePage={navigateToPage} />
       </div>
@@ -379,7 +388,9 @@ export default function App() {
         <main className={`flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 page-view-wrapper ${
           isTransitioning ? 'page-view-exit' : 'page-view-enter'
         }`}>
-          {renderPage()}
+          <Suspense fallback={<PageFallback />}>
+            {renderPage()}
+          </Suspense>
         </main>
 
         {/* Footer */}
