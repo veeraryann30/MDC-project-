@@ -12,6 +12,22 @@ export default {
         mono: ['"JetBrains Mono"', '"SF Mono"', 'Menlo', 'Consolas', 'monospace'],
       },
       colors: {
+        // v2 redesign tokens (theme-aware CSS variables, see index.css)
+        ctp: {
+          bg: 'var(--ctp-bg)',
+          surface: 'var(--ctp-surface)',
+          'surface-2': 'var(--ctp-surface-2)',
+          border: 'var(--ctp-border)',
+          'border-strong': 'var(--ctp-border-strong)',
+          text: 'var(--ctp-text)',
+          'text-2': 'var(--ctp-text-2)',
+          muted: 'var(--ctp-text-muted)',
+          accent: 'var(--ctp-accent)',
+          'accent-ink': 'var(--ctp-accent-ink)',
+          safe: 'var(--ctp-safe)',
+          warn: 'var(--ctp-warn)',
+          danger: 'var(--ctp-danger)',
+        },
         // Sophisticated White & Blue Design System
         brand: {
           bg: '#FFFFFF',

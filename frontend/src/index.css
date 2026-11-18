@@ -31,6 +31,83 @@
   }
 }
 
+/* ==========================================================================
+   Design foundation (v2 redesign) — tokens only, not yet applied to pages.
+   Charcoal / monochrome with a single restrained cyan accent.
+   Existing pages keep their current look until each phase migrates them.
+   ========================================================================== */
+@layer base {
+  :root,
+  html.dark {
+    --ctp-bg: #0a0a0b;
+    --ctp-surface: #111113;
+    --ctp-surface-2: #17171a;
+    --ctp-border: #26262b;
+    --ctp-border-strong: #3a3a42;
+    --ctp-text: #f4f4f5;
+    --ctp-text-2: #a1a1aa;
+    --ctp-text-muted: #71717a;
+    --ctp-accent: #22d3ee;
+    --ctp-accent-ink: #04222a;
+    --ctp-safe: #34d399;
+    --ctp-warn: #fbbf24;
+    --ctp-danger: #f87171;
+    --ctp-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+  }
+
+  html.light {
+    --ctp-bg: #ffffff;
+    --ctp-surface: #f7f7f8;
+    --ctp-surface-2: #efeff1;
+    --ctp-border: #e4e4e7;
+    --ctp-border-strong: #d1d1d6;
+    --ctp-text: #0a0a0b;
+    --ctp-text-2: #52525b;
+    --ctp-text-muted: #71717a;
+    --ctp-accent: #0e7490;
+    --ctp-accent-ink: #ffffff;
+    --ctp-safe: #059669;
+    --ctp-warn: #b45309;
+    --ctp-danger: #dc2626;
+    --ctp-shadow: 0 24px 60px -28px rgba(10, 10, 11, 0.25);
+  }
+
+  :root {
+    /* Motion */
+    --ctp-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ctp-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ctp-dur-fast: 160ms;
+    --ctp-dur-base: 320ms;
+    --ctp-dur-slow: 700ms;
+    /* Type scale (fluid) */
+    --ctp-text-display: clamp(2.5rem, 1.4rem + 5vw, 5.5rem);
+    --ctp-text-h1: clamp(2rem, 1.3rem + 3vw, 3.5rem);
+    --ctp-text-h2: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
+    --ctp-text-body: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+  }
+
+  html {
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* Lenis smooth scroll (enabled from src/lib/smoothScroll.js) */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Global reduced-motion safety net */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Hero Abstract Curve Glow & Apple Ambient Animations */
 @keyframes hero-subtle-drift {
   0% { transform: scale(1); }

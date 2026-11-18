@@ -1,15 +1,24 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Catch the Phish | Don't trust the link. Verify it.</title>
     <meta name="description" content="Explainable Phishing URL Intelligence Platform combining real-time lexical inspection, brand impersonation analysis, and machine learning." />
+    <script>
+      // Apply the saved theme before first paint to avoid a flash of the wrong theme.
+      try {
+        var t = localStorage.getItem('catch_the_phish_theme') || 'light';
+        var r = document.documentElement;
+        r.classList.remove('light', 'dark');
+        r.classList.add(t === 'dark' ? 'dark' : 'light');
+      } catch (e) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-[#0B0B0C] text-[#F5F5F5] antialiased selection:bg-[#FF6B35]/30 selection:text-white font-sans">
+  <body class="antialiased font-sans">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
