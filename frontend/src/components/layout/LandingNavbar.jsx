@@ -17,8 +17,12 @@ export default function LandingNavbar({
   setActivePage, 
   openAboutModal,
   theme = 'light',
-  toggleTheme
+  toggleTheme,
+  tone = 'light'
 }) {
+  const dark = tone === 'dark';
+  const activeCls = dark ? 'bg-ctp-surface-2 text-ctp-text font-semibold' : 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold';
+  const idleCls = dark ? 'text-ctp-text-2 hover:text-ctp-text hover:bg-ctp-surface-2' : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -61,10 +65,14 @@ export default function LandingNavbar({
 
   return (
     <header 
-      className={`landing-nav sticky top-0 z-50 h-[68px] transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] shadow-[0_4px_20px_-4px_rgba(37,99,235,0.06)]' 
-          : 'bg-white/80 backdrop-blur-sm border-b border-[#E2E8F0]'
+      className={`landing-nav ${dark ? `ctp-dark ${scrolled ? 'is-scrolled' : ''}` : ''} sticky top-0 z-50 h-[68px] transition-all duration-300 ${
+        dark
+          ? (scrolled
+              ? 'bg-[color-mix(in_srgb,var(--ctp-bg)_85%,transparent)] backdrop-blur-md border-b border-ctp-border'
+              : 'bg-[color-mix(in_srgb,var(--ctp-bg)_35%,transparent)] backdrop-blur-sm border-b border-transparent')
+          : (scrolled
+              ? 'bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] shadow-[0_4px_20px_-4px_rgba(37,99,235,0.06)]'
+              : 'bg-white/80 backdrop-blur-sm border-b border-[#E2E8F0]')
       }`}
     >
       <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -79,7 +87,7 @@ export default function LandingNavbar({
           onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleNavClick('home')}
           aria-label="Catch the Phish Homepage"
         >
-          <Logo size="sm" withWordmark={true} withTagline={false} />
+          <Logo size="sm" withWordmark={true} withTagline={false} tone={tone} />
         </div>
 
         {/* ====================================================================
@@ -91,9 +99,7 @@ export default function LandingNavbar({
             type="button"
             onClick={() => handleNavClick('home')}
             className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
-              activePage === 'home'
-                ? 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold'
-                : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]'
+              activePage === 'home' ? activeCls : idleCls
             }`}
           >
             Home
@@ -104,9 +110,7 @@ export default function LandingNavbar({
             type="button"
             onClick={() => handleNavClick('scan')}
             className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
-              activePage === 'scanner' || activePage === 'qr-scanner'
-                ? 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold'
-                : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]'
+              activePage === 'scanner' || activePage === 'qr-scanner' ? activeCls : idleCls
             }`}
           >
             Scanner
@@ -117,9 +121,7 @@ export default function LandingNavbar({
             type="button"
             onClick={() => handleNavClick('features')}
             className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
-              activePage === 'dashboard'
-                ? 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold'
-                : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]'
+              activePage === 'dashboard' ? activeCls : idleCls
             }`}
           >
             Services
@@ -129,7 +131,7 @@ export default function LandingNavbar({
           <button
             type="button"
             onClick={() => handleNavClick('how-it-works')}
-            className="px-3.5 py-1.5 rounded-full text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF] font-medium transition-all duration-200 cursor-pointer"
+            className={`px-3.5 py-1.5 rounded-full ${idleCls} font-medium transition-all duration-200 cursor-pointer`}
           >
             How it Works
           </button>
@@ -139,9 +141,7 @@ export default function LandingNavbar({
             type="button"
             onClick={() => handleNavClick('about')}
             className={`px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 cursor-pointer ${
-              activePage === 'about'
-                ? 'bg-[#DBEAFE]/70 text-[#2563EB] font-semibold'
-                : 'text-[#64748B] hover:text-[#2563EB] hover:bg-[#F5F9FF]'
+              activePage === 'about' ? activeCls : idleCls
             }`}
           >
             About
@@ -156,7 +156,7 @@ export default function LandingNavbar({
             <button
               type="button"
               onClick={(e) => toggleTheme(e)}
-              className="p-2 rounded-full bg-[#F5F9FF] hover:bg-[#DBEAFE]/50 border border-[#E2E8F0] hover:border-[#2563EB]/40 text-[#64748B] hover:text-[#2563EB] transition-all cursor-pointer flex items-center justify-center group landing-theme-btn"
+              className={`p-2 rounded-full ${dark ? 'bg-ctp-surface hover:bg-ctp-surface-2 border border-ctp-border text-ctp-text-2 hover:text-ctp-text' : 'bg-[#F5F9FF] hover:bg-[#DBEAFE]/50 border border-[#E2E8F0] hover:border-[#2563EB]/40 text-[#64748B] hover:text-[#2563EB]'} transition-all cursor-pointer flex items-center justify-center group landing-theme-btn`}
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               aria-label="Toggle color theme"
             >
@@ -172,10 +172,12 @@ export default function LandingNavbar({
           <button
             type="button"
             onClick={() => handleNavClick('scan')}
-            className="px-4 py-2 rounded-full bg-[#2563EB] hover:bg-[#1E40AF] active:scale-95 text-white font-sans font-medium text-xs tracking-wide transition-all duration-200 inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_10px_rgba(37,99,235,0.28)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.4)]"
+            className={dark
+              ? 'px-4 py-2 rounded-full bg-ctp-text hover:bg-ctp-accent text-ctp-bg hover:text-ctp-accent-ink active:scale-95 font-sans font-medium text-xs tracking-wide transition-colors duration-200 inline-flex items-center gap-1.5 cursor-pointer'
+              : 'px-4 py-2 rounded-full bg-[#2563EB] hover:bg-[#1E40AF] active:scale-95 text-white font-sans font-medium text-xs tracking-wide transition-all duration-200 inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_10px_rgba(37,99,235,0.28)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.4)]'}
           >
             <span>Scan a Link</span>
-            <ArrowRight className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+            <ArrowRight className={`w-3.5 h-3.5 stroke-[2.2] ${dark ? '' : 'text-white'}`} />
           </button>
         </div>
 
@@ -186,7 +188,7 @@ export default function LandingNavbar({
           <button
             type="button"
             onClick={() => handleNavClick('scan')}
-            className="px-3 py-1.5 rounded-full bg-[#2563EB] hover:bg-[#1E40AF] text-white font-sans font-medium text-xs cursor-pointer active:scale-95 transition-transform"
+            className={`px-3 py-1.5 rounded-full ${dark ? 'bg-ctp-text text-ctp-bg' : 'bg-[#2563EB] hover:bg-[#1E40AF] text-white'} font-sans font-medium text-xs cursor-pointer active:scale-95 transition-transform`}
           >
             Scan Link
           </button>
@@ -194,7 +196,7 @@ export default function LandingNavbar({
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-1.5 rounded-lg bg-[#F5F9FF] border border-[#E2E8F0] text-[#111827] hover:border-[#2563EB]/30 cursor-pointer"
+            className={`p-1.5 rounded-lg ${dark ? 'bg-ctp-surface border border-ctp-border text-ctp-text' : 'bg-[#F5F9FF] border border-[#E2E8F0] text-[#111827] hover:border-[#2563EB]/30'} cursor-pointer`}
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -206,7 +208,7 @@ export default function LandingNavbar({
           MOBILE DRAWER MENU
           ==================================================================== */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-xl border-b border-[#E2E8F0] px-4 py-4 space-y-2 shadow-lg animate-in slide-in-from-top duration-200">
+        <div className={`md:hidden ${dark ? 'bg-ctp-bg border-b border-ctp-border [&_button]:!text-ctp-text-2 [&_button:hover]:!bg-ctp-surface-2 [&_button:hover]:!text-ctp-text' : 'bg-white/95 border-b border-[#E2E8F0]'} backdrop-blur-xl px-4 py-4 space-y-2 shadow-lg animate-in slide-in-from-top duration-200`}>
           <button
             onClick={() => handleNavClick('home')}
             className="w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-[#111827] hover:bg-[#F5F9FF] hover:text-[#2563EB] transition-colors"

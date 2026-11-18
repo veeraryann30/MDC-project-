@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight, ShieldCheck, Search, Link2, Mail, QrCode, MessageSquare, Lock, Cpu, Sparkles, CheckCircle2, ChevronRight, Zap } from 'lucide-react';
 import LandingNavbar from '../components/layout/LandingNavbar';
 import LandingFooter from '../components/layout/LandingFooter';
-import HeroCyberVisual from '../components/home/HeroCyberVisual';
+import HeroSection from '../components/home/HeroSection';
 import UrlScanner from '../components/scanner/UrlScanner';
 
 /**
@@ -86,106 +86,12 @@ export default function Home({ setActivePage, setScanResult, theme, toggleTheme,
         openAboutModal={openAboutModal}
         theme={theme} 
         toggleTheme={toggleTheme} 
+        tone="dark"
       />
 
       <main className="flex-1 relative z-10 flex flex-col">
-        {/* ====================================================================
-            2. HERO SECTION — PREMIUM WHITE & BLUE CYBERSECURITY PLATFORM
-            ==================================================================== */}
-        <section className="relative pt-10 sm:pt-16 md:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto overflow-hidden">
-          {/* Subtle Ambient Blue Flare */}
-          <div 
-            className="absolute top-12 left-1/2 -translate-x-1/2 w-[700px] sm:w-[950px] h-[450px] bg-gradient-to-b from-[#DBEAFE]/40 via-[#F5F9FF]/20 to-transparent rounded-full filter blur-[100px] pointer-events-none" 
-            aria-hidden="true" 
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-10 lg:gap-8 relative z-20">
-            {/* ----------------------------------------------------------------
-                LEFT: HEADLINE, SUBHEADING & CALLS TO ACTION
-                ---------------------------------------------------------------- */}
-            <div 
-              className={`lg:col-span-7 flex flex-col items-start text-left space-y-6 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                mounted 
-                  ? 'opacity-100 translate-y-0 filter-none' 
-                  : 'opacity-0 translate-y-6 blur-[3px]'
-              }`}
-            >
-              {/* Eyebrow Pill Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F5F9FF] border border-[#DBEAFE] text-xs font-sans text-[#2563EB] shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse" />
-                <span className="font-semibold tracking-wide">Next-Gen Cybersecurity Platform</span>
-              </div>
-
-              {/* Exact Requested Headline */}
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] text-[#111827]">
-                Your Digital World.{' '}
-                <span className="bg-gradient-to-r from-[#2563EB] to-[#1E40AF] bg-clip-text text-transparent">
-                  Protected.
-                </span>
-              </h1>
-
-              {/* Exact Requested Subheading */}
-              <p className="text-base sm:text-lg md:text-xl text-[#64748B] leading-relaxed max-w-xl font-normal">
-                Detect digital threats before they become digital disasters. Stay one step ahead of phishing, scams, and malicious links.
-              </p>
-
-              {/* Exact Requested CTA Buttons */}
-              <div className="pt-2 flex flex-wrap items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                {/* Button 1: Scan a Link (Primary Blue) */}
-                <button
-                  type="button"
-                  onClick={handleScanLink}
-                  className="px-7 py-3.5 bg-[#2563EB] hover:bg-[#1E40AF] active:scale-95 text-white font-sans font-medium text-sm tracking-wide rounded-full transition-all duration-200 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(37,99,235,0.3)] hover:shadow-[0_6px_22px_rgba(37,99,235,0.45)] w-full sm:w-auto"
-                >
-                  <span>Scan a Link</span>
-                  <ArrowRight className="w-4 h-4 text-white stroke-[2.2]" />
-                </button>
-
-                {/* Button 2: Explore Protection (White with blue border) */}
-                <button
-                  type="button"
-                  onClick={handleExploreProtection}
-                  className="px-6 py-3.5 bg-[#FFFFFF] hover:bg-[#F5F9FF] active:scale-95 border-2 border-[#2563EB] text-[#2563EB] font-sans font-medium text-sm tracking-wide rounded-full transition-all duration-200 inline-flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:shadow-sm w-full sm:w-auto"
-                >
-                  <span>Explore Protection</span>
-                </button>
-              </div>
-
-              {/* Social Proof / Security Highlights */}
-              <div className="pt-4 flex flex-wrap items-center gap-6 text-xs text-[#64748B] font-mono border-t border-[#E2E8F0] w-full">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
-                  <span>Zero-Execution Static Sandbox</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#2563EB]" />
-                  <span>34 Heuristic Features</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#2563EB]" />
-                  <span>99.8% Detection Rate</span>
-                </div>
-              </div>
-            </div>
-
-            {/* ----------------------------------------------------------------
-                RIGHT: SOPHISTICATED CYBERSECURITY VISUAL
-                ---------------------------------------------------------------- */}
-            <div 
-              className={`lg:col-span-5 relative w-full transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                mounted 
-                  ? 'opacity-100 scale-100 filter-none' 
-                  : 'opacity-0 scale-[0.97] blur-[4px]'
-              }`}
-              style={{ transitionDelay: '200ms' }}
-            >
-              <HeroCyberVisual 
-                setActivePage={setActivePage} 
-                onScrollDown={handleExploreProtection}
-              />
-            </div>
-          </div>
-        </section>
+        {/* 2. HERO - dark cinematic section with lazy 3D shield (see components/home/HeroSection) */}
+        <HeroSection onScan={handleScanLink} onExplore={handleExploreProtection} />
 
         {/* ====================================================================
             3. SCANNER INTERFACE — THE VISUAL HIGHLIGHT SECTION

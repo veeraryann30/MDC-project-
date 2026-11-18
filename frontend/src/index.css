@@ -38,7 +38,8 @@
    ========================================================================== */
 @layer base {
   :root,
-  html.dark {
+  html.dark,
+  .ctp-dark {
     --ctp-bg: #0a0a0b;
     --ctp-surface: #111113;
     --ctp-surface-2: #17171a;
@@ -91,6 +92,37 @@
     -webkit-text-size-adjust: 100%;
   }
 }
+
+/* Dark redesign sections must win over the legacy html.light !important overrides. */
+html.light .ctp-dark h1,
+html.light .ctp-dark h2,
+html.light .ctp-dark h3 { color: var(--ctp-text) !important; }
+header.landing-nav.ctp-dark {
+  background-color: color-mix(in srgb, var(--ctp-bg) 35%, transparent) !important;
+  border-bottom-color: transparent !important;
+  box-shadow: none !important;
+}
+header.landing-nav.ctp-dark.is-scrolled {
+  background-color: color-mix(in srgb, var(--ctp-bg) 85%, transparent) !important;
+  border-bottom-color: var(--ctp-border) !important;
+}
+html.light header.landing-nav.ctp-dark { color: var(--ctp-text) !important; }
+html.light header.landing-nav.ctp-dark nav button { color: var(--ctp-text-2) !important; }
+html.light header.landing-nav.ctp-dark nav button:hover { background-color: var(--ctp-surface-2) !important; color: var(--ctp-text) !important; }
+html.light header.landing-nav.ctp-dark nav button.bg-ctp-surface-2 { color: var(--ctp-text) !important; }
+html.light header.landing-nav.ctp-dark .landing-theme-btn {
+  background-color: var(--ctp-surface) !important;
+  border-color: var(--ctp-border) !important;
+  color: var(--ctp-text-2) !important;
+  box-shadow: none !important;
+}
+html.light header.landing-nav.ctp-dark .landing-theme-btn:hover { background-color: var(--ctp-surface-2) !important; }
+
+@keyframes ctp-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-40px, 30px, 0); }
+}
+.ctp-drift { animation: ctp-drift 18s ease-in-out infinite; will-change: transform; }
 
 /* Lenis smooth scroll (enabled from src/lib/smoothScroll.js) */
 html.lenis, html.lenis body { height: auto; }

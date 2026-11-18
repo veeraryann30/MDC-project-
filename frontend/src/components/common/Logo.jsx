@@ -9,7 +9,8 @@ export default function Logo({
   withWordmark = true, 
   withTagline = false,
   uppercase = true,
-  className = '' 
+  tone = 'light',
+  className = ''
 }) {
   const iconSizes = {
     sm: 'w-4 h-4',
@@ -72,7 +73,7 @@ export default function Logo({
       {/* Brand Wordmark */}
       {withWordmark && (
         <div className="flex flex-col leading-none">
-          <div className={`font-bold font-sans ${uppercase ? 'uppercase tracking-[0.08em]' : 'tracking-tight'} text-[#111827] ${textSizes[size] || textSizes.md}`}>
+          <div className={`font-bold font-sans ${uppercase ? 'uppercase tracking-[0.08em]' : 'tracking-tight'} ${tone === 'dark' ? 'text-ctp-text' : 'text-[#111827]'} ${textSizes[size] || textSizes.md}`}>
             Catch the Phish<span className="text-[10px] text-[#2563EB] ml-0.5 font-normal">™</span>
           </div>
           {withTagline && (
