@@ -8,7 +8,9 @@
 
 // In production the API URL must be provided at build time (VITE_API_URL). The localhost
 // default is for `npm run dev` only and can never end up in a production bundle.
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8000/api' : '');
+// Trim whitespace / BOM defensively: a stray invisible character would turn the URL into a relative path.
+const CONFIGURED_API_URL = (import.meta.env.VITE_API_URL || '').replace(/^\uFEFF/, '').trim().replace(/\/+$/, '');
+const API_BASE_URL = CONFIGURED_API_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8000/api' : '');
 
 const UNREACHABLE_MESSAGE =
   'The analysis service could not be reached. If it has been idle it may be waking up — please try again in a minute.';

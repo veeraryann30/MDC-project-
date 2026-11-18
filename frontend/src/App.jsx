@@ -238,10 +238,10 @@ export default function App() {
       case 'dashboard':
         return <Dashboard setActivePage={navigateToPage} setScanResult={setScanResult} />;
       case 'scanner':
-        return <Scanner setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="URL" />;
+        return <Scanner key="scanner-url" setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="URL" />;
       case 'qr-scanner':
       case 'qr':
-        return <Scanner setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="QR" />;
+        return <Scanner key="scanner-qr" setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="QR" />;
       case 'message-scanner':
         return <MessageScanner setActivePage={navigateToPage} />;
       case 'job-scanner':
