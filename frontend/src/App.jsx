@@ -306,28 +306,29 @@ export default function App() {
   // Dedicated full-screen Apple / Linear / Stripe "About the Project" Experience
   if (activePage === 'about') {
     return (
-      <div className="min-h-screen bg-[#FFFFFF] text-[#111827] font-sans selection:bg-[#2563EB] selection:text-white antialiased relative">
+      <div className="ctp-dark ctp-console min-h-screen font-sans antialiased relative">
         {redirectionBeam}
         <ScrollController activePage={activePage} theme={theme} />
-        <LandingNavbar 
+        <LandingNavbar
           activePage="about"
-          setActivePage={navigateToPage} 
-          theme={theme} 
-          toggleTheme={toggleTheme} 
+          setActivePage={navigateToPage}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          tone="dark"
         />
         <div className={`page-view-wrapper ${isTransitioning ? 'page-view-exit' : 'page-view-enter'}`}>
           <Suspense fallback={<PageFallback />}>
             <About setActivePage={navigateToPage} theme={theme} toggleTheme={toggleTheme} />
           </Suspense>
         </div>
-        <LandingFooter setActivePage={navigateToPage} />
+        <LandingFooter setActivePage={navigateToPage} tone="dark" />
       </div>
     );
   }
 
   // Security Operations Console Layout (Dashboard, Scanner, Results, Records, Intelligence, etc.)
   return (
-    <div className="min-h-screen bg-[#F5F9FF] text-[#111827] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white antialiased relative">
+    <div className="ctp-dark ctp-console min-h-screen flex flex-col font-sans antialiased relative">
       {redirectionBeam}
 
       {/* Sidebar Navigation */}

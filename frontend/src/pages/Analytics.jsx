@@ -163,11 +163,11 @@ export default function Analytics() {
                   dataKey="value"
                 >
                   {distributionData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} stroke="#FFFFFF" strokeWidth={2} />
+                    <Cell key={`cell-${index}`} fill={entry.color} stroke="#111113" strokeWidth={2} />
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0', borderRadius: '12px', color: '#111827', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  contentStyle={{ backgroundColor: '#17171a', borderColor: '#26262b', borderRadius: '12px', color: '#f4f4f5', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -203,17 +203,17 @@ export default function Analytics() {
               <AreaChart data={activityData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="analyticsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2563EB" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#22d3ee" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                <XAxis dataKey="time" stroke="#64748B" tick={{ fontSize: 10, fill: '#64748B' }} />
-                <YAxis domain={[0, 100]} stroke="#64748B" tick={{ fontSize: 10, fill: '#64748B' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#26262b" />
+                <XAxis dataKey="time" stroke="#a1a1aa" tick={{ fontSize: 10, fill: '#a1a1aa' }} />
+                <YAxis domain={[0, 100]} stroke="#a1a1aa" tick={{ fontSize: 10, fill: '#a1a1aa' }} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0', borderRadius: '12px', color: '#111827', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  contentStyle={{ backgroundColor: '#17171a', borderColor: '#26262b', borderRadius: '12px', color: '#f4f4f5', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                 />
-                <Area type="monotone" dataKey="score" stroke="#2563EB" fillOpacity={1} fill="url(#analyticsGradient)" strokeWidth={2} />
+                <Area type="monotone" dataKey="score" stroke="#22d3ee" fillOpacity={1} fill="url(#analyticsGradient)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -230,14 +230,14 @@ export default function Analytics() {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topIndicatorsData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-              <XAxis dataKey="name" stroke="#64748B" tick={{ fontSize: 11, fill: '#64748B' }} />
-              <YAxis stroke="#64748B" tick={{ fontSize: 11, fill: '#64748B' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#26262b" vertical={false} />
+              <XAxis dataKey="name" stroke="#a1a1aa" tick={{ fontSize: 11, fill: '#a1a1aa' }} />
+              <YAxis stroke="#a1a1aa" tick={{ fontSize: 11, fill: '#a1a1aa' }} />
               <Tooltip 
-                contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0', borderRadius: '12px', color: '#111827', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                itemStyle={{ color: '#2563EB' }}
+                contentStyle={{ backgroundColor: '#17171a', borderColor: '#26262b', borderRadius: '12px', color: '#f4f4f5', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                itemStyle={{ color: '#22d3ee' }}
               />
-              <Bar dataKey="count" fill="#2563EB" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="count" fill="#22d3ee" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

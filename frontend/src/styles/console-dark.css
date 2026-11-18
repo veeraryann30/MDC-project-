@@ -1,0 +1,263 @@
+/* ==========================================================================
+   Console dark theme (scoped to .ctp-console)
+   --------------------------------------------------------------------------
+   The console pages (dashboard, history, analytics, settings, scanners ...)
+   were written with hard-coded white & blue Tailwind classes. Rather than
+   rewrite ~800 class names, this layer remaps those legacy colours onto the
+   redesign tokens, only inside <div class="ctp-console">. Remove the wrapper
+   class in App.jsx and the console returns to its old look.
+   Attribute selectors ([class~="..."]) avoid escaping Tailwind's [#hex] syntax.
+   `:root` is used for specificity so these beat the legacy `html.light ... !important` rules.
+   ========================================================================== */
+
+:root .ctp-console.ctp-dark {
+  background-color: var(--ctp-bg) !important;
+  color: var(--ctp-text) !important;
+  color-scheme: dark;
+}
+html.light body:has(.ctp-console),
+html.dark body:has(.ctp-console) { background-color: var(--ctp-bg) !important; }
+
+/* ---------- Surfaces ---------- */
+:root .ctp-console [class~="bg-white"],
+:root .ctp-console [class~="bg-white/95"],
+:root .ctp-console [class~="bg-white/90"],
+:root .ctp-console [class~="bg-white/80"],
+:root .ctp-console [class~="bg-[#FFFFFF]"],
+:root .ctp-console [class~="bg-[#101012]"],
+:root .ctp-console [class~="bg-[#151517]"],
+:root .ctp-console [class~="bg-[#121214]"],
+:root .ctp-console [class~="bg-[#0a0a0c]"],
+:root .ctp-console [class~="bg-[#1a1a1e]"],
+:root .ctp-console .shadow-card,
+:root .ctp-console .cyber-card,
+:root .ctp-console .glass-panel,
+:root .ctp-console .scanner-card-container {
+  background-color: var(--ctp-surface) !important;
+  border-color: var(--ctp-border);
+}
+
+:root .ctp-console [class~="bg-[#F5F9FF]"],
+:root .ctp-console [class~="bg-[#F5F9FF]/40"],
+:root .ctp-console [class~="bg-[#F8FAFC]"],
+:root .ctp-console [class~="bg-[#EFF6FF]"],
+:root .ctp-console [class~="bg-[#E2E8F0]"],
+:root .ctp-console [class~="bg-slate-100"],
+:root .ctp-console [class~="bg-slate-50"],
+:root .ctp-console [class~="bg-gray-50"],
+:root .ctp-console [class~="bg-gray-100"] {
+  background-color: var(--ctp-surface-2) !important;
+}
+:root .ctp-console [class~="hover:bg-[#F5F9FF]"]:hover,
+:root .ctp-console [class~="hover:bg-[#F5F9FF]/60"]:hover,
+:root .ctp-console [class~="hover:bg-[#E2E8F0]"]:hover,
+:root .ctp-console [class~="hover:bg-slate-50"]:hover,
+:root .ctp-console [class~="hover:bg-slate-100"]:hover {
+  background-color: var(--ctp-surface-2) !important;
+}
+
+/* Accent tints (light-blue chips, selected states) */
+:root .ctp-console [class~="bg-[#DBEAFE]"],
+:root .ctp-console [class~="bg-[#DBEAFE]/80"],
+:root .ctp-console [class~="bg-[#DBEAFE]/70"],
+:root .ctp-console [class~="bg-blue-50"],
+:root .ctp-console [class~="bg-blue-100"],
+:root .ctp-console [class~="hover:bg-[#DBEAFE]"]:hover,
+:root .ctp-console [class~="hover:bg-[#DBEAFE]/60"]:hover {
+  background-color: color-mix(in srgb, var(--ctp-accent) 14%, transparent) !important;
+}
+
+/* Solid accent (primary buttons) */
+:root .ctp-console [class~="bg-[#2563EB]"],
+:root .ctp-console [class~="bg-blue-600"],
+:root .ctp-console [class~="bg-gradient-to-r"][class~="from-[#2563EB]"],
+:root .ctp-console [class~="bg-gradient-to-br"][class~="from-[#2563EB]"] {
+  background-image: none !important;
+  background-color: var(--ctp-accent) !important;
+  color: var(--ctp-accent-ink) !important;
+}
+:root .ctp-console [class~="bg-[#2563EB]"] *,
+:root .ctp-console [class~="bg-blue-600"] *,
+:root .ctp-console [class~="from-[#2563EB]"] * { color: var(--ctp-accent-ink) !important; }
+:root .ctp-console [class~="hover:bg-[#1E40AF]"]:hover,
+:root .ctp-console [class~="hover:from-[#1E40AF]"]:hover {
+  background-color: color-mix(in srgb, var(--ctp-accent) 88%, white) !important;
+}
+:root .ctp-console [class~="bg-[#16A34A]"] { background-color: var(--ctp-safe) !important; }
+:root .ctp-console [class~="bg-[#DC2626]"] { background-color: var(--ctp-danger) !important; }
+:root .ctp-console [class~="bg-[#F59E0B]"] { background-color: var(--ctp-warn) !important; }
+
+/* Status tints */
+:root .ctp-console [class~="bg-[#FEF2F2]"],
+:root .ctp-console [class~="bg-red-50"] { background-color: color-mix(in srgb, var(--ctp-danger) 12%, transparent) !important; }
+:root .ctp-console [class~="bg-[#F0FDF4]"],
+:root .ctp-console [class~="bg-emerald-50"],
+:root .ctp-console [class~="bg-emerald-50/60"],
+:root .ctp-console [class~="bg-green-50"] { background-color: color-mix(in srgb, var(--ctp-safe) 12%, transparent) !important; }
+:root .ctp-console [class~="bg-[#FFFBEB]"],
+:root .ctp-console [class~="bg-amber-50"] { background-color: color-mix(in srgb, var(--ctp-warn) 12%, transparent) !important; }
+
+/* ---------- Borders & dividers ---------- */
+:root .ctp-console [class~="border-[#E2E8F0]"],
+:root .ctp-console [class~="border-gray-200"],
+:root .ctp-console [class~="border-gray-300"],
+:root .ctp-console [class~="border-slate-200"],
+:root .ctp-console [class~="border-[#29292D]"],
+:root .ctp-console [class~="border-[#2c2c2e]"],
+:root .ctp-console [class~="border-b-[#E2E8F0]"] { border-color: var(--ctp-border) !important; }
+:root .ctp-console [class~="divide-[#E2E8F0]"] > :not([hidden]) ~ :not([hidden]) { border-color: var(--ctp-border) !important; }
+:root .ctp-console [class~="border-[#BFDBFE]"],
+:root .ctp-console [class~="border-[#DBEAFE]"],
+:root .ctp-console [class~="hover:border-[#BFDBFE]"]:hover { border-color: color-mix(in srgb, var(--ctp-accent) 30%, transparent) !important; }
+:root .ctp-console [class~="border-[#2563EB]"],
+:root .ctp-console [class~="focus:border-[#2563EB]"]:focus,
+:root .ctp-console [class~="hover:border-[#2563EB]"]:hover { border-color: var(--ctp-accent) !important; }
+:root .ctp-console [class~="hover:border-[#2563EB]/40"]:hover { border-color: color-mix(in srgb, var(--ctp-accent) 45%, transparent) !important; }
+:root .ctp-console [class~="hover:border-[#686870]"]:hover { border-color: var(--ctp-border-strong) !important; }
+:root .ctp-console [class~="border-[#FECACA]"],
+:root .ctp-console [class~="border-red-200"],
+:root .ctp-console [class~="border-red-300"] { border-color: color-mix(in srgb, var(--ctp-danger) 35%, transparent) !important; }
+:root .ctp-console [class~="border-[#BBF7D0]"],
+:root .ctp-console [class~="border-emerald-200"],
+:root .ctp-console [class~="border-emerald-300"],
+:root .ctp-console [class~="border-green-200"] { border-color: color-mix(in srgb, var(--ctp-safe) 35%, transparent) !important; }
+:root .ctp-console [class~="border-[#FDE68A]"],
+:root .ctp-console [class~="border-amber-200"] { border-color: color-mix(in srgb, var(--ctp-warn) 35%, transparent) !important; }
+:root .ctp-console [class*="focus:ring-[#2563EB]"]:focus { --tw-ring-color: color-mix(in srgb, var(--ctp-accent) 22%, transparent) !important; }
+
+/* ---------- Text ---------- */
+:root .ctp-console h1,
+:root .ctp-console h2,
+:root .ctp-console h3,
+:root .ctp-console h4,
+:root .ctp-console h5,
+:root .ctp-console h6,
+:root .ctp-console [class~="text-[#111827]"],
+:root .ctp-console [class~="text-white"],
+:root .ctp-console [class~="text-black"],
+:root .ctp-console [class~="text-gray-700"],
+:root .ctp-console [class~="text-slate-800"],
+:root .ctp-console [class~="text-slate-900"],
+:root .ctp-console [class~="hover:text-[#111827]"]:hover { color: var(--ctp-text) !important; }
+
+:root .ctp-console [class~="text-[#64748B]"],
+:root .ctp-console [class~="text-[#475569]"],
+:root .ctp-console [class~="text-slate-500"],
+:root .ctp-console [class~="text-slate-600"],
+:root .ctp-console [class~="text-gray-500"],
+:root .ctp-console [class~="text-gray-600"],
+:root .ctp-console [class~="text-[#F5F5F5]"] { color: var(--ctp-text-2) !important; }
+:root .ctp-console [class~="text-[#94A3B8]"],
+:root .ctp-console [class~="text-[#92929A]"],
+:root .ctp-console [class~="text-[#686870]"],
+:root .ctp-console [class~="text-[#86868b]"],
+:root .ctp-console [class~="text-slate-400"] { color: var(--ctp-text-muted) !important; }
+
+:root .ctp-console [class~="text-[#2563EB]"],
+:root .ctp-console [class~="text-[#1E40AF]"],
+:root .ctp-console [class~="text-[#1D4ED8]"],
+:root .ctp-console [class~="text-[#0284C7]"],
+:root .ctp-console [class~="text-blue-600"],
+:root .ctp-console [class~="hover:text-[#2563EB]"]:hover,
+:root .ctp-console [class~="hover:text-[#1E40AF]"]:hover,
+:root .ctp-console [class~="group-hover:text-[#2563EB]"] { color: var(--ctp-accent) !important; }
+:root .ctp-console [class~="text-[#16A34A]"],
+:root .ctp-console [class~="text-[#059669]"] { color: var(--ctp-safe) !important; }
+:root .ctp-console [class~="text-[#DC2626]"],
+:root .ctp-console [class~="hover:text-[#DC2626]"]:hover { color: var(--ctp-danger) !important; }
+:root .ctp-console [class~="text-[#F59E0B]"],
+:root .ctp-console [class~="text-[#D97706]"],
+:root .ctp-console [class~="text-amber-500"] { color: var(--ctp-warn) !important; }
+:root .ctp-console [class~="text-[#7C3AED]"] { color: #a78bfa !important; }
+:root .ctp-console [class~="text-[#FF6B35]"] { color: var(--ctp-warn) !important; }
+
+/* Text sitting on a solid accent background keeps the dark "ink" colour */
+:root .ctp-console [class~="bg-[#2563EB]"],
+:root .ctp-console [class~="bg-[#2563EB]"] [class~="text-white"] { color: var(--ctp-accent-ink) !important; }
+
+/* ---------- Form controls (beat html.light input/textarea/select overrides) ---------- */
+:root .ctp-console input[type="text"],
+:root .ctp-console input[type="search"],
+:root .ctp-console input[type="email"],
+:root .ctp-console input[type="password"],
+:root .ctp-console input[type="url"],
+:root .ctp-console input[type="number"],
+:root .ctp-console textarea,
+:root .ctp-console select,
+:root .ctp-console .scanner-input-field {
+  background-color: var(--ctp-bg) !important;
+  border-color: var(--ctp-border-strong) !important;
+  color: var(--ctp-text) !important;
+  box-shadow: none !important;
+}
+:root .ctp-console input::placeholder,
+:root .ctp-console textarea::placeholder { color: var(--ctp-text-muted) !important; }
+:root .ctp-console input:focus,
+:root .ctp-console textarea:focus,
+:root .ctp-console select:focus { border-color: var(--ctp-accent) !important; }
+:root .ctp-console option { background-color: var(--ctp-surface); color: var(--ctp-text); }
+
+/* ---------- Shadows, scrollbars, misc ---------- */
+:root .ctp-console [class*="shadow-"] { --tw-shadow-color: rgba(0, 0, 0, 0.5); }
+:root .ctp-console hr { border-color: var(--ctp-border); }
+:root .ctp-console ::selection { background: var(--ctp-accent); color: var(--ctp-accent-ink); }
+:root .ctp-console .leaflet-container { background: var(--ctp-surface); }
+:root .ctp-console .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9) saturate(0.6); }
+
+/* Leaflet popups/controls, range sliders */
+:root .ctp-console .leaflet-popup-content-wrapper,
+:root .ctp-console .leaflet-popup-tip { background: var(--ctp-surface-2); color: var(--ctp-text); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); }
+:root .ctp-console .leaflet-popup-content, :root .ctp-console .leaflet-popup-content * { color: var(--ctp-text); }
+:root .ctp-console .leaflet-bar a { background: var(--ctp-surface-2); color: var(--ctp-text); border-color: var(--ctp-border); }
+:root .ctp-console input[type="range"], :root .ctp-console input[type="checkbox"], :root .ctp-console input[type="radio"] { accent-color: var(--ctp-accent); }
+
+/* Recharts: beat the legacy html.light grid/text overrides */
+:root .ctp-console .recharts-cartesian-grid line { stroke: var(--ctp-border) !important; }
+:root .ctp-console .recharts-text, :root .ctp-console .recharts-cartesian-axis-tick-value { fill: var(--ctp-text-2) !important; }
+
+/* Nested full-height wrappers / page headers must not pick up the legacy light backgrounds. */
+:root .ctp-console .min-h-screen:not(.ctp-console) { background-color: transparent !important; }
+:root .ctp-console header:not([class*="sticky"]):not([class*="fixed"]):not(.landing-nav) { background-color: transparent !important; }
+
+/* Older status palette (#35C98A / #F2B84B / #FF5C5C) used in About and badges */
+:root .ctp-console [class~="text-[#35C98A]"] { color: var(--ctp-safe) !important; }
+:root .ctp-console [class~="text-[#F2B84B]"] { color: var(--ctp-warn) !important; }
+:root .ctp-console [class~="text-[#FF5C5C]"] { color: var(--ctp-danger) !important; }
+:root .ctp-console [class~="bg-[#35C98A]/10"] { background-color: color-mix(in srgb, var(--ctp-safe) 12%, transparent) !important; }
+:root .ctp-console [class~="bg-[#F2B84B]/10"] { background-color: color-mix(in srgb, var(--ctp-warn) 12%, transparent) !important; }
+:root .ctp-console [class~="bg-[#FF5C5C]/10"] { background-color: color-mix(in srgb, var(--ctp-danger) 12%, transparent) !important; }
+:root .ctp-console [class~="border-[#35C98A]"], :root .ctp-console [class~="border-[#35C98A]/30"] { border-color: color-mix(in srgb, var(--ctp-safe) 40%, transparent) !important; }
+:root .ctp-console [class~="border-[#F2B84B]/30"] { border-color: color-mix(in srgb, var(--ctp-warn) 40%, transparent) !important; }
+:root .ctp-console [class~="border-[#FF5C5C]/30"] { border-color: color-mix(in srgb, var(--ctp-danger) 40%, transparent) !important; }
+
+/* Opacity-suffixed legacy surfaces */
+:root .ctp-console [class~="bg-[#F5F9FF]/20"],
+:root .ctp-console [class~="bg-[#E2E8F0]/20"],
+:root .ctp-console [class~="bg-slate-50/20"],
+:root .ctp-console [class~="bg-[#F5F9FF]/30"],
+:root .ctp-console [class~="bg-[#E2E8F0]/30"],
+:root .ctp-console [class~="bg-slate-50/30"],
+:root .ctp-console [class~="bg-[#F5F9FF]/40"],
+:root .ctp-console [class~="bg-[#E2E8F0]/40"],
+:root .ctp-console [class~="bg-slate-50/40"],
+:root .ctp-console [class~="bg-[#F5F9FF]/50"],
+:root .ctp-console [class~="bg-[#E2E8F0]/50"],
+:root .ctp-console [class~="bg-slate-50/50"],
+:root .ctp-console [class~="bg-[#F5F9FF]/60"],
+:root .ctp-console [class~="bg-[#E2E8F0]/60"],
+:root .ctp-console [class~="bg-slate-50/60"],
+:root .ctp-console [class~="bg-[#F5F9FF]/70"],
+:root .ctp-console [class~="bg-[#E2E8F0]/70"],
+:root .ctp-console [class~="bg-slate-50/70"],
+:root .ctp-console [class~="bg-[#F5F9FF]/80"],
+:root .ctp-console [class~="bg-[#E2E8F0]/80"],
+:root .ctp-console [class~="bg-slate-50/80"] { background-color: var(--ctp-surface-2) !important; }
+:root .ctp-console [class~="bg-white/40"],
+:root .ctp-console [class~="bg-white/50"],
+:root .ctp-console [class~="bg-white/60"],
+:root .ctp-console [class~="bg-white/70"] { background-color: color-mix(in srgb, var(--ctp-surface) 80%, transparent) !important; }
+:root .ctp-console [class~="bg-[#DBEAFE]/20"],
+:root .ctp-console [class~="bg-[#DBEAFE]/30"],
+:root .ctp-console [class~="bg-[#DBEAFE]/40"],
+:root .ctp-console [class~="bg-[#DBEAFE]/50"] { background-color: color-mix(in srgb, var(--ctp-accent) 12%, transparent) !important; }
+
