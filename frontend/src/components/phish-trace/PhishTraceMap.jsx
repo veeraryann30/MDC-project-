@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { addBaseMap } from '../../lib/mapTiles';
 import { MapPin, Globe, Compass, Info, AlertCircle } from 'lucide-react';
 
 /**
@@ -34,11 +35,8 @@ export default function PhishTraceMap({ location, ip, isp, org, asn }) {
         attributionControl: false
       });
 
-      // CartoDB Positron light tile layer
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18,
-        subdomains: 'abcd'
-      }).addTo(map);
+      // OpenStreetMap base map (no API key); dark mode is a CSS filter on .ctp-map-tiles
+      addBaseMap(L, map);
 
       // Custom Glowing Radar Marker (Primary Blue #2563EB)
       const pulseIcon = L.divIcon({
@@ -56,11 +54,11 @@ export default function PhishTraceMap({ location, ip, isp, org, asn }) {
       });
 
       const popupContent = `
-        <div style="font-family: inherit; font-size: 11px; padding: 4px; line-height: 1.4; color: #111827;">
+        <div style="font-family: inherit; font-size: 11px; padding: 4px; line-height: 1.4; color: inherit;">
           <div style="font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; margin-bottom: 2px;">
             HOSTING SERVER NODE
           </div>
-          <div style="font-size: 13px; font-weight: 600; color: #111827;">
+          <div style="font-size: 13px; font-weight: 600; color: inherit;">
             ${location?.city || 'City Unavailable'}, ${location?.country || 'Country'}
           </div>
           <div style="font-family: monospace; font-size: 11px; color: #1E40AF; margin-top: 3px;">
@@ -125,7 +123,7 @@ export default function PhishTraceMap({ location, ip, isp, org, asn }) {
             Global Server Geolocation
           </span>
           <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white border border-[#E2E8F0] text-[#16A34A] font-medium">
-            CartoDB Positron
+            OpenStreetMap
           </span>
         </div>
         <div className="text-[11px] font-mono text-[#64748B]">

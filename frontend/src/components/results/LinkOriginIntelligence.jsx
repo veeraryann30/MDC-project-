@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { addBaseMap } from '../../lib/mapTiles';
 import { api } from '../../services/api';
 
 /**
@@ -106,11 +107,8 @@ export default function LinkOriginIntelligence({ originData: initialData, target
         attributionControl: false
       });
 
-      // CartoDB Positron light tiles for modern Apple/Stripe light theme aesthetic
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18,
-        subdomains: 'abcd'
-      }).addTo(map);
+      // OpenStreetMap base map (no API key); dark mode is a CSS filter on .ctp-map-tiles
+      addBaseMap(L, map);
 
       // Custom White & Blue glowing radar pulse pin
       const pulseIcon = L.divIcon({
@@ -132,7 +130,7 @@ export default function LinkOriginIntelligence({ originData: initialData, target
           <div style="font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; margin-bottom: 2px;">
             Approximate Server Node
           </div>
-          <div style="color: #111827; font-weight: 600; font-size: 12px;">
+          <div style="color: inherit; font-weight: 600; font-size: 12px;">
             ${data.location.city || 'City'}, ${data.location.country || 'Country'}
           </div>
           <div style="color: #64748B; font-family: monospace; font-size: 10px; margin-top: 3px;">
@@ -381,7 +379,7 @@ export default function LinkOriginIntelligence({ originData: initialData, target
               <span>Geographic Server Telemetry</span>
             </span>
             <span className="text-[#64748B] text-[11px]">
-              CartoDB Positron
+              OpenStreetMap
             </span>
           </div>
 

@@ -1700,6 +1700,19 @@ html.light .leaflet-bar {
   border-color: #CBD5E1 !important;
 }
 
+/* Dark-mode tile inversion lives in styles/console-dark.css (.leaflet-tile-pane). */
+.leaflet-control-attribution {
+  background: rgba(21, 21, 23, 0.78) !important;
+  color: #92929A !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a { color: #C9C9D1 !important; }
+html.light .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #475569 !important;
+}
+html.light .leaflet-control-attribution a { color: #2563EB !important; }
+
 /* ==========================================================================
    VIEW TRANSITIONS API: APPLE-STYLE CIRCULAR EXPANDING THEME REVEAL
    ========================================================================== */
