@@ -13,10 +13,10 @@ export default function Logo({
   className = ''
 }) {
   const iconSizes = {
-    sm: 'w-4 h-4',
-    md: 'w-6 h-6',
-    lg: 'w-8 h-8',
-    xl: 'w-9 h-9'
+    sm: 'w-5 h-5',
+    md: 'w-7 h-7',
+    lg: 'w-9 h-9',
+    xl: 'w-11 h-11'
   };
 
   const textSizes = {
@@ -30,44 +30,13 @@ export default function Logo({
     <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
       {/* Geometric Shield + Hook Glyph in Blue & White */}
       <div className={`relative ${iconSizes[size] || iconSizes.md} shrink-0 flex items-center justify-center`}>
-        <svg 
-          viewBox="0 0 32 32" 
-          fill="none" 
-          xmlns="http://www.w3.org/2000/svg"
+        <img
+          src="/logo-mark.svg"
+          alt=""
+          aria-hidden="true"
+          draggable="false"
           className="w-full h-full logo-svg drop-shadow-sm"
-        >
-          {/* Subtle outer geometric shield outline */}
-          <path 
-            d="M16 3L6 7.5V15.5C6 22.2 10.3 27.8 16 29.5C21.7 27.8 26 22.2 26 15.5V7.5L16 3Z" 
-            style={{ stroke: 'var(--ctp-border-strong)', fill: 'var(--ctp-surface)' }} 
-            strokeWidth="1.5" 
-            
-          />
-
-          {/* Inner protective contour */}
-          <path 
-            d="M16 6.2L8.5 9.8V15.5C8.5 20.8 11.8 25.2 16 26.8C20.2 25.2 23.5 20.8 23.5 15.5V9.8L16 6.2Z" 
-            style={{ stroke: 'var(--ctp-accent)', fill: 'var(--ctp-bg)' }} 
-            strokeWidth="1.2" 
-            
-          />
-
-          {/* Phishing Hook / Precision Cursor Glyph in Primary Blue */}
-          <path 
-            d="M16 11V18C16 19.6569 14.6569 21 13 21C11.3431 21 10 19.6569 10 18" 
-            style={{ stroke: 'var(--ctp-accent)' }} 
-            strokeWidth="2" 
-            strokeLinecap="round"
-          />
-
-          {/* Active Blue Detection Node */}
-          <circle 
-            cx="19.5" 
-            cy="13.5" 
-            r="2" 
-            style={{ fill: 'var(--ctp-accent)' }} 
-          />
-        </svg>
+        />
       </div>
 
       {/* Brand Wordmark */}
