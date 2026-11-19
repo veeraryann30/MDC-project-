@@ -20,7 +20,8 @@ services:
       - key: CORS_ORIGINS
         sync: false   # set in the dashboard, e.g. https://your-app.vercel.app
       - key: DATABASE_URL
-        value: sqlite:///./catch_the_phish.db   # ephemeral on Render free; use Postgres for persistence
+        sync: false   # set in the dashboard to your Postgres connection string (see docs/DEPLOYMENT.md).
+        # If left unset the app falls back to a local SQLite file, which Render's free plan wipes on every restart.
       - key: VIRUSTOTAL_API_KEY
         sync: false
       - key: GOOGLE_SAFE_BROWSING_API_KEY

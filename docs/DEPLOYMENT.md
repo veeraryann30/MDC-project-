@@ -15,12 +15,27 @@ you know its URL, then give that URL to the frontend.
 Notes
 - In production the backend **refuses to start** without a strong `AUTH_SECRET_KEY`, never seeds
   demo data, and never creates the demo admin account.
-- SQLite on Render's free plan is **ephemeral**: history resets on every deploy/restart. For
-  persistence create a Render PostgreSQL database and set `DATABASE_URL` (add `psycopg2-binary`
-  to `backend/requirements.txt`).
+- SQLite on Render's free plan is **ephemeral**: history and user feedback reset on every
+  deploy/restart. For persistence use PostgreSQL (see "Persistent database" below).
 - The free plan sleeps when idle; the first request after a pause takes ~30–60 s.
 - To create an administrator (needed for clearing global scan history), register a user, then
   change `role` to `admin` for that row in the database.
+
+## Persistent database (free Postgres)
+
+The backend uses SQLite by default and switches to Postgres whenever `DATABASE_URL` is a
+`postgres://` or `postgresql://` address. Tables are created automatically on startup.
+
+Recommended free option: **Neon** (https://neon.tech). Its free database does not expire.
+(Render's own free Postgres is deleted after 30 days.)
+
+1. Create a Neon project and copy its **connection string** (it ends in `?sslmode=require`).
+2. Render dashboard -> your service -> **Environment** -> set `DATABASE_URL` to that string.
+   Keep it secret: never commit it or paste it into chat or a file in this repository.
+3. Save. Render redeploys. Check `/api/health` and run one scan, then confirm the row appears
+   in the Neon dashboard's table viewer (`scan_records`).
+
+Existing SQLite history is not migrated; the new database starts empty.
 
 ## 2. Frontend on Vercel
 
