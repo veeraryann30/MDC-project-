@@ -508,8 +508,8 @@ export default function Settings({ theme = 'light', setTheme, toggleTheme }) {
                   Sound Effects
                 </h3>
                 <p className="text-xs text-[#92929A] mt-1 max-w-xl">
-                  Play a short sound when a scan finishes: a soft chime for safe, a gentle tone for suspicious and a low double pulse for dangerous.
-                  Off by default; sounds only play after a real scan result and never replace the visual warning.
+                  A soft click on buttons, tabs and cards, plus a short tone when a real scan finishes: a chime for safe, a gentle tone for suspicious and a low double pulse for dangerous.
+                  On by default after your first interaction; sounds never replace the visual warning.
                 </p>
               </div>
               <SoundToggle variant="switch" />

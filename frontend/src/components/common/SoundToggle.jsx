@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
-import { isSoundEnabled, setSoundEnabled, unlockAudio } from '../../lib/sound';
+import { isSoundEnabled, setSoundEnabled, unlockAudio, playClick } from '../../lib/sound';
 
 /**
- * Sound effects on/off switch. Off by default; turning it on is the explicit opt-in
- * (and the user gesture browsers require to allow audio). Persisted in localStorage.
+ * Sound effects on/off switch. On by default (audio starts after the first interaction,
+ * as browsers require). The choice is persisted in localStorage.
  */
 export default function SoundToggle({ variant = 'pill', className = '' }) {
   const [on, setOn] = useState(isSoundEnabled);
@@ -20,6 +20,7 @@ export default function SoundToggle({ variant = 'pill', className = '' }) {
     if (next) unlockAudio();
     setSoundEnabled(next);
     setOn(next);
+    if (next) playClick(); // confirmation; the global listener ran before the switch flipped
   };
 
   const Icon = on ? Volume2 : VolumeX;
