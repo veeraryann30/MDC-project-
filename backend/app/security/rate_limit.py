@@ -15,6 +15,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 WINDOW_SECONDS = 60
 AUTH_LIMIT_PER_MINUTE = 10  # login / register attempts
+BULK_COST = 5               # a bulk scan counts as this many requests
 
 
 def _client_ip(request: Request) -> str:
@@ -51,7 +52,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 content={"detail": "Too many requests. Please wait a moment and try again."},
                 headers={"Retry-After": str(retry_after)},
             )
-        hits.append(now)
+        # A bulk scan does up to 25 analyses, so it uses up more of the allowance than a single scan.
+        cost = BULK_COST if path.rstrip("/").endswith("/scan/bulk") else 1
+        hits.extend([now] * cost)
 
         # Keep memory bounded.
         if len(self._hits) > 5000:

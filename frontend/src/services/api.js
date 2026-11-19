@@ -56,7 +56,12 @@ async function request(path, { method = 'GET', json, body, auth = false, timeout
     let detail = '';
     try {
       const data = await response.json();
-      detail = typeof data?.detail === 'string' ? data.detail : '';
+      if (typeof data?.detail === 'string') {
+        detail = data.detail;
+      } else if (Array.isArray(data?.detail) && data.detail[0]?.msg) {
+        // FastAPI validation errors: show the first message without the "Value error, " prefix.
+        detail = String(data.detail[0].msg).replace(/^Value error,\s*/i, '');
+      }
     } catch {
       /* non-JSON error body */
     }
@@ -73,6 +78,16 @@ export const api = {
   // ==================== URL SCANNING & HISTORY ====================
   scanUrl(url) {
     return request('/scan', { method: 'POST', json: { url }, timeout: SCAN_TIMEOUT });
+  },
+
+  /** Up to 25 links at once. Returns { total, succeeded, failed, items[] }. */
+  scanBulk(urls) {
+    return request('/scan/bulk', { method: 'POST', json: { urls }, timeout: 120000 });
+  },
+
+  /** label: 'phishing' (report) or 'safe' (false positive) for a scan the backend returned an id for. */
+  sendFeedback(scanId, label, comment) {
+    return request('/feedback', { method: 'POST', json: { scan_id: scanId, label, comment }, timeout: 20000 });
   },
 
   getOriginIntelligence(url) {

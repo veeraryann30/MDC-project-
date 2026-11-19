@@ -8,7 +8,8 @@ from backend.app.api.endpoints import (
     phish_trace,
     auth,
     scam,
-    academy
+    academy,
+    feedback
 )
 
 api_router = APIRouter()
@@ -18,6 +19,7 @@ api_router.include_router(auth.router)
 
 # URL & Infrastructure Scanning (Module 1 - Preserved & Upgraded)
 api_router.include_router(scan.router, tags=["Scanner"])
+api_router.include_router(feedback.router, tags=["Feedback"])
 api_router.include_router(phish_trace.router, tags=["Phish Trace Infrastructure"])
 api_router.include_router(origin.router, tags=["Origin Intelligence"])
 

@@ -14,7 +14,7 @@ if BASE_DIR not in sys.path:
 
 from backend.app.core.config import settings
 from backend.app.database.session import engine, Base, SessionLocal
-from backend.app.database.models import ScanRecord, PhishTraceRecord, User, ScamAnalysisRecord, AcademyProgress
+from backend.app.database.models import ScanRecord, PhishTraceRecord, User, ScamAnalysisRecord, AcademyProgress, FeedbackRecord
 from backend.app.api.api import api_router
 from ml.features.extractor import extract_features
 from backend.app.services.rule_engine import RuleEngineService

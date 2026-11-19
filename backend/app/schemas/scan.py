@@ -20,6 +20,52 @@ class ScanRequest(BaseModel):
         return cleaned
 
 
+BULK_MAX_URLS = 25
+
+
+class BulkScanRequest(BaseModel):
+    urls: List[str] = Field(..., description=f"Up to {BULK_MAX_URLS} URLs to analyze statically")
+
+    @field_validator("urls")
+    @classmethod
+    def validate_urls(cls, v: List[str]) -> List[str]:
+        cleaned: List[str] = []
+        seen = set()
+        for raw in v:
+            item = (raw or "").strip()
+            if not item or item in seen:
+                continue
+            if len(item) > 2048:
+                raise ValueError("A URL exceeds the maximum safe length of 2048 characters.")
+            if any(c in item for c in ["\r", "\n", "\t"]):
+                raise ValueError("A URL contains illegal control characters.")
+            seen.add(item)
+            cleaned.append(item)
+        if not cleaned:
+            raise ValueError("Provide at least one URL.")
+        if len(cleaned) > BULK_MAX_URLS:
+            raise ValueError(f"Up to {BULK_MAX_URLS} links can be checked at once.")
+        return cleaned
+
+
+class BulkScanItem(BaseModel):
+    url: str
+    ok: bool
+    id: Optional[int] = None
+    domain: Optional[str] = None
+    risk_score: Optional[float] = None
+    classification: Optional[str] = None
+    top_reasons: List[str] = []
+    error: Optional[str] = None
+
+
+class BulkScanResponse(BaseModel):
+    total: int
+    succeeded: int
+    failed: int
+    items: List[BulkScanItem]
+
+
 class ThreatIndicator(BaseModel):
     id: str
     title: str

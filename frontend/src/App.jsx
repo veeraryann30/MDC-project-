@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from 'react';
 import { flushSync } from 'react-dom';
 import Sidebar from './components/layout/Sidebar';
 import TopNavbar from './components/layout/TopNavbar';
@@ -43,7 +43,7 @@ export default function App() {
       const hash = window.location.hash.replace('#', '').toLowerCase();
       if (hash === 'about' || hash === 'about-the-project') return 'about';
       if ([
-        'scanner', 'qr-scanner', 'qr', 'message-scanner', 'investment-scanner', 
+        'scanner', 'bulk-scanner', 'qr-scanner', 'qr', 'message-scanner', 'investment-scanner', 
         'email-scanner', 'scam-dna', 'phish-trace', 'dashboard', 'history', 
         'threat-intel', 'analytics', 'learn', 'settings', 'results'
       ].includes(hash)) {
@@ -231,6 +231,22 @@ export default function App() {
     }
   };
 
+  // Deep link used by the browser extension and bookmarklet: /?scan=<link> scans that link once.
+  // The link is only analysed as text (never opened), and the parameter is removed straight away.
+  const deepLinkHandled = useRef(false);
+  useEffect(() => {
+    if (deepLinkHandled.current) return;
+    deepLinkHandled.current = true;
+    const params = new URLSearchParams(window.location.search);
+    const link = (params.get('scan') || '').trim();
+    if (!link) return;
+    params.delete('scan');
+    const rest = params.toString();
+    window.history.replaceState(null, '', `${window.location.pathname}${rest ? `?${rest}` : ''}${window.location.hash}`);
+    if (link.length <= 2048 && !/[\r\n\t]/.test(link)) handleQuickScan(link);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const renderPage = () => {
     switch (activePage) {
       case 'home':
@@ -239,6 +255,8 @@ export default function App() {
         return <Dashboard setActivePage={navigateToPage} setScanResult={setScanResult} />;
       case 'scanner':
         return <Scanner key="scanner-url" setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="URL" />;
+      case 'bulk-scanner':
+        return <Scanner key="scanner-bulk" setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="BULK" />;
       case 'qr-scanner':
       case 'qr':
         return <Scanner key="scanner-qr" setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="QR" />;

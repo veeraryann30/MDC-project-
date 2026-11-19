@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import VerdictPanel from '../components/scanner/VerdictPanel';
 import LinkOriginIntelligence from '../components/results/LinkOriginIntelligence';
+import WhyRiskyPanel from '../components/results/WhyRiskyPanel';
+import FeedbackBar from '../components/results/FeedbackBar';
 
 /**
  * THREAT FINGERPRINT — Security Analysis Report
@@ -142,6 +144,10 @@ Verification Protocol: Zero-Execution Static Sandbox`;
         https={!!features.has_https}
       />
 
+      {/* 3. Plain-English reasons and next steps, then a way to tell us if the verdict is wrong */}
+      <WhyRiskyPanel result={result} />
+      <FeedbackBar scanId={result.id} />
+
       {/* 4. Two-Column Core Security Report */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* ================= LEFT COLUMN ================= */}
@@ -245,7 +251,7 @@ Verification Protocol: Zero-Execution Static Sandbox`;
                       </div>
 
                       <p className="text-xs text-[#64748B] leading-relaxed">
-                        {threat.description}
+                        {threat.description || threat.what_was_detected}
                       </p>
 
                       {threat.why_it_matters && (
@@ -287,7 +293,7 @@ Verification Protocol: Zero-Execution Static Sandbox`;
                         <span>{safe.title}</span>
                       </div>
                       <p className="text-[11px] text-[#64748B] leading-tight">
-                        {safe.description}
+                        {safe.description || safe.what_was_detected}
                       </p>
                     </div>
                   ))}

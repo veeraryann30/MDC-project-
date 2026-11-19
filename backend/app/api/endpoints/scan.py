@@ -15,7 +15,10 @@ from backend.app.core.config import settings
 
 from backend.app.database.session import get_db
 from backend.app.database.models import ScanRecord
-from backend.app.schemas.scan import ScanRequest, ScanResponse, RiskBreakdown, ThreatIndicator
+from backend.app.schemas.scan import (
+    ScanRequest, ScanResponse, RiskBreakdown, ThreatIndicator,
+    BulkScanRequest, BulkScanResponse, BulkScanItem,
+)
 from backend.app.schemas.qr import QRScanResponse, QRJsonRequest
 from ml.features.extractor import extract_features
 from backend.app.services.rule_engine import RuleEngineService
@@ -28,82 +31,85 @@ from backend.app.services.qr_scanner_service import QRScannerService
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-@router.post("/scan", response_model=ScanResponse)
-def scan_url(payload: ScanRequest, db: Session = Depends(get_db)):
-    raw_url = payload.url.strip()
+def _analyze_url(raw_url: str, db: Session, include_origin: bool = True) -> ScanResponse:
+    """Runs the full static analysis for one URL and persists it. Raises on failure (caller rolls back)."""
+    # 1. Feature Extraction (strictly static parsing without network fetching)
+    extracted = extract_features(raw_url)
+    features = extracted["features"]
+    details = extracted["details"]
+    domain = details["domain"]
 
-    try:
-        # 1. Feature Extraction (strictly static parsing without network fetching)
-        extracted = extract_features(raw_url)
-        features = extracted["features"]
-        details = extracted["details"]
-        domain = details["domain"]
+    # 2. Rule Engine & Explainability Generation
+    threats_detected, safe_indicators, rule_score = RuleEngineService.evaluate(features, details)
 
-        # 2. Rule Engine & Explainability Generation
-        threats_detected, safe_indicators, rule_score = RuleEngineService.evaluate(features, details)
+    # 3. Machine Learning Probability Prediction
+    ml_score, is_phish = MLService.predict(features)
 
-        # 3. Machine Learning Probability Prediction
-        ml_score, is_phish = MLService.predict(features)
+    # 4. Optional Threat Intelligence Check
+    intel = ThreatIntelService.check_url(raw_url, domain)
+    threat_intel_score = intel.get("threat_score", 0.0)
 
-        # 4. Optional Threat Intelligence Check
-        intel = ThreatIntelService.check_url(raw_url, domain)
-        threat_intel_score = intel.get("threat_score", 0.0)
+    # 5. Hybrid Risk Scoring & Classification (Risk score remains purely lexical/ML/heuristic)
+    risk_breakdown_dict = ScorerService.calculate_risk(
+        ml_score=ml_score,
+        rule_score=rule_score,
+        threat_intel_score=threat_intel_score,
+        threats_detected=threats_detected,
+        domain=domain
+    )
 
-        # 5. Hybrid Risk Scoring & Classification (Risk score remains purely lexical/ML/heuristic)
-        risk_breakdown_dict = ScorerService.calculate_risk(
-            ml_score=ml_score,
-            rule_score=rule_score,
-            threat_intel_score=threat_intel_score,
-            threats_detected=threats_detected,
-            domain=domain
-        )
+    final_score = risk_breakdown_dict["final_score"]
+    classification = risk_breakdown_dict["classification"]
 
-        final_score = risk_breakdown_dict["final_score"]
-        classification = risk_breakdown_dict["classification"]
-
-        # 6. Retrieve Link Origin Intelligence (Non-blocking: does not alter phishing risk score)
-        origin_intelligence = None
+    # 6. Retrieve Link Origin Intelligence (Non-blocking: does not alter phishing risk score).
+    #    Skipped for bulk scans to keep large batches fast.
+    origin_intelligence = None
+    if include_origin:
         try:
             origin_intelligence = LinkOriginService.analyze(raw_url)
         except Exception as origin_err:
             print(f"[!] LinkOriginService non-blocking warning: {origin_err}")
 
-        # 7. Persist scan in SQLite database for history & dashboard
-        scan_record = ScanRecord(
-            url=raw_url,
-            domain=domain,
-            risk_score=final_score,
-            classification=classification,
-            ml_score=ml_score,
-            rule_score=rule_score,
-            threat_intel_score=threat_intel_score,
-            detected_threats=threats_detected,
-            features=features,
-            detection_method="ML + Rule Heuristics + Threat Intel",
-            created_at=datetime.utcnow()
-        )
-        db.add(scan_record)
-        db.commit()
-        db.refresh(scan_record)
+    # 7. Persist scan in SQLite database for history & dashboard
+    scan_record = ScanRecord(
+        url=raw_url,
+        domain=domain,
+        risk_score=final_score,
+        classification=classification,
+        ml_score=ml_score,
+        rule_score=rule_score,
+        threat_intel_score=threat_intel_score,
+        detected_threats=threats_detected,
+        features=features,
+        detection_method="ML + Rule Heuristics + Threat Intel",
+        created_at=datetime.utcnow()
+    )
+    db.add(scan_record)
+    db.commit()
+    db.refresh(scan_record)
 
-        # 8. Construct response
-        response = ScanResponse(
-            id=scan_record.id,
-            url=raw_url,
-            domain=domain,
-            risk_score=final_score,
-            classification=classification,
-            breakdown=RiskBreakdown(**risk_breakdown_dict),
-            threats_detected=[ThreatIndicator(**t) for t in threats_detected],
-            safe_indicators=[ThreatIndicator(**s) for s in safe_indicators],
-            features=features,
-            details=details,
-            origin_intelligence=origin_intelligence,
-            detection_method="ML + Rule Heuristics + Threat Intel",
-            created_at=scan_record.created_at
-        )
-        return response
+    # 8. Construct response
+    return ScanResponse(
+        id=scan_record.id,
+        url=raw_url,
+        domain=domain,
+        risk_score=final_score,
+        classification=classification,
+        breakdown=RiskBreakdown(**risk_breakdown_dict),
+        threats_detected=[ThreatIndicator(**t) for t in threats_detected],
+        safe_indicators=[ThreatIndicator(**s) for s in safe_indicators],
+        features=features,
+        details=details,
+        origin_intelligence=origin_intelligence,
+        detection_method="ML + Rule Heuristics + Threat Intel",
+        created_at=scan_record.created_at
+    )
 
+
+@router.post("/scan", response_model=ScanResponse)
+def scan_url(payload: ScanRequest, db: Session = Depends(get_db)):
+    try:
+        return _analyze_url(payload.url.strip(), db)
     except Exception:
         logger.exception("URL scan failed")
         db.rollback()
@@ -112,6 +118,29 @@ def scan_url(payload: ScanRequest, db: Session = Depends(get_db)):
             detail="An error occurred while analyzing the URL."
         )
 
+
+@router.post("/scan/bulk", response_model=BulkScanResponse)
+def scan_bulk(payload: BulkScanRequest, db: Session = Depends(get_db)):
+    """Analyzes up to BULK_MAX_URLS links in one request. One bad link never fails the batch."""
+    items = []
+    for raw_url in payload.urls:
+        try:
+            result = _analyze_url(raw_url, db, include_origin=False)
+            items.append(BulkScanItem(
+                url=raw_url,
+                ok=True,
+                id=result.id,
+                domain=result.domain,
+                risk_score=result.risk_score,
+                classification=result.classification,
+                top_reasons=[t.title for t in result.threats_detected[:3]],
+            ))
+        except Exception:
+            logger.exception("Bulk scan item failed")
+            db.rollback()
+            items.append(BulkScanItem(url=raw_url, ok=False, error="This link could not be analyzed."))
+    succeeded = sum(1 for i in items if i.ok)
+    return BulkScanResponse(total=len(items), succeeded=succeeded, failed=len(items) - succeeded, items=items)
 
 @router.post("/scan/qr", response_model=QRScanResponse)
 @router.post("/qr", response_model=QRScanResponse)

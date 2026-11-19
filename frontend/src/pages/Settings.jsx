@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import SoundToggle from '../components/common/SoundToggle';
+import BrowserTools from '../components/common/BrowserTools';
 
 export default function Settings({ theme = 'light', setTheme, toggleTheme }) {
   const [activeTab, setActiveTab] = useState('scan');
@@ -515,6 +516,8 @@ export default function Settings({ theme = 'light', setTheme, toggleTheme }) {
               <SoundToggle variant="switch" />
             </div>
           </div>
+
+          <BrowserTools />
         </div>
       )}
 

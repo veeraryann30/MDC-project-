@@ -19,6 +19,23 @@ class ScanRecord(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
 
+class FeedbackRecord(Base):
+    """User verdict on a scan ("report as phishing" / "mark as safe"). Labelled data for later review."""
+    __tablename__ = "feedback_records"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    scan_id = Column(Integer, nullable=False, index=True)
+    url = Column(Text, nullable=False)
+    domain = Column(String(255), nullable=False, index=True)
+    verdict_at_scan = Column(String(50), nullable=False)   # what the system said: SAFE / SUSPICIOUS / PHISHING
+    risk_score_at_scan = Column(Float, nullable=False, default=0.0)
+    user_label = Column(String(20), nullable=False, index=True)  # phishing | safe
+    comment = Column(Text, nullable=True)
+    reporter_hash = Column(String(64), nullable=False, index=True)  # salted hash, never the raw IP
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+
 class PhishTraceRecord(Base):
     __tablename__ = "phish_trace_records"
 
