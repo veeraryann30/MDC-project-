@@ -98,6 +98,7 @@ class EmailScanResponse(BaseModel):
     risk_tier_label: str
     email_verdict: str
     confidence_score: float
+    sender_origin: Optional[Dict[str, Any]] = None
     headers: Dict[str, Any]
     sender_analysis: Dict[str, Any]
     auth_evidence: Dict[str, Any]

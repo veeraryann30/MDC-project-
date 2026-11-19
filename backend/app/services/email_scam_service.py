@@ -10,6 +10,7 @@ import email
 from email import policy
 from typing import Dict, Any, List, Optional
 from backend.app.services.nlp_engine import NLPEngine
+from backend.app.services.email_origin_service import EmailOriginService
 from backend.app.services.scam_dna_service import ScamDNAService
 from backend.app.services.scorer import ScorerService
 from ml.features.extractor import extract_features
@@ -231,12 +232,22 @@ class EmailScamService:
                 "Mark as Phishing in your email client and notify your security administrator."
             ]
 
+        # Estimated location of the sending MAIL SERVER (from Received headers); never blocks the analysis.
+        try:
+            sender_origin = EmailOriginService.analyze(msg)
+        except Exception:
+            sender_origin = {
+                "status": "unavailable",
+                "reason": "The sending server location could not be determined.",
+            }
+
         return {
             "risk_score": final_score,
             "risk_tier": tier_info["tier"],
             "risk_tier_label": tier_info["tier_label"],
             "email_verdict": verdict,
             "confidence_score": dna_result["confidence_score"],
+            "sender_origin": sender_origin,
             "headers": {
                 "from": from_hdr,
                 "reply_to": reply_to,

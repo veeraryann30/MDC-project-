@@ -2,8 +2,22 @@ import React, { useState } from 'react';
 import { Mail, Upload, Send, Sparkles, AlertCircle, RefreshCw, FileText, Paperclip, CheckCircle } from 'lucide-react';
 import { api } from '../services/api';
 import ScamResultCard from '../components/common/ScamResultCard';
+import SenderOriginCard from '../components/email/SenderOriginCard';
 
 const SAMPLE_EMAILS = [
+  {
+    label: "PayPal Spoof + Routing Headers",
+    text: `Received: from mail.relay-hub.net (mail.relay-hub.net [203.0.113.25]) by mx.example-inbox.com with ESMTPS; Thu, 14 Nov 2026 10:05:12 +0000
+Received: from [192.168.0.14] (unknown [45.33.32.156]) by mail.relay-hub.net with ESMTP; Thu, 14 Nov 2026 10:05:08 +0000
+From: "PayPal Account Security" <service@paypa1-security-alert.xyz>
+Reply-To: refund-desk@attacker-inbox.com
+Subject: Critical Security Alert: Account Suspended
+Date: Thu, 14 Nov 2026 10:05:00 +0000
+
+Dear Client,
+Your PayPal account has been restricted. Verify your password within 24 hours:
+http://paypa1-security-alert.xyz/login`
+  },
   {
     label: "PayPal Spoof + Dangerous Attachment",
     text: `From: "PayPal Account Security" <service@paypa1-security-alert.xyz>
@@ -227,6 +241,8 @@ export default function EmailScanner({ setActivePage }) {
               </div>
             </div>
           )}
+
+          <SenderOriginCard origin={result.sender_origin} />
 
           <ScamResultCard
             result={result}

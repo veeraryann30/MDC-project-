@@ -264,8 +264,7 @@ export default function BulkScanner() {
             </table>
           </div>
           <p className="mt-3 text-[12.5px] text-ctp-text-muted">
-            Links are analysed from their text only and are never opened. Bulk checks skip the network lookup that single scans do.
-          </p>
+            Links are analysed from their text only and are never opened.          </p>
         </div>
       )}
     </div>

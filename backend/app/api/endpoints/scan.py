@@ -25,13 +25,12 @@ from backend.app.services.rule_engine import RuleEngineService
 from backend.app.services.ml_service import MLService
 from backend.app.services.threat_intel import ThreatIntelService
 from backend.app.services.scorer import ScorerService
-from backend.app.services.link_origin_service import LinkOriginService
 from backend.app.services.qr_scanner_service import QRScannerService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-def _analyze_url(raw_url: str, db: Session, include_origin: bool = True) -> ScanResponse:
+def _analyze_url(raw_url: str, db: Session) -> ScanResponse:
     """Runs the full static analysis for one URL and persists it. Raises on failure (caller rolls back)."""
     # 1. Feature Extraction (strictly static parsing without network fetching)
     extracted = extract_features(raw_url)
@@ -61,16 +60,7 @@ def _analyze_url(raw_url: str, db: Session, include_origin: bool = True) -> Scan
     final_score = risk_breakdown_dict["final_score"]
     classification = risk_breakdown_dict["classification"]
 
-    # 6. Retrieve Link Origin Intelligence (Non-blocking: does not alter phishing risk score).
-    #    Skipped for bulk scans to keep large batches fast.
-    origin_intelligence = None
-    if include_origin:
-        try:
-            origin_intelligence = LinkOriginService.analyze(raw_url)
-        except Exception as origin_err:
-            print(f"[!] LinkOriginService non-blocking warning: {origin_err}")
-
-    # 7. Persist scan in SQLite database for history & dashboard
+    # 6. Persist scan in SQLite database for history & dashboard
     scan_record = ScanRecord(
         url=raw_url,
         domain=domain,
@@ -88,7 +78,7 @@ def _analyze_url(raw_url: str, db: Session, include_origin: bool = True) -> Scan
     db.commit()
     db.refresh(scan_record)
 
-    # 8. Construct response
+    # 7. Construct response
     return ScanResponse(
         id=scan_record.id,
         url=raw_url,
@@ -100,7 +90,6 @@ def _analyze_url(raw_url: str, db: Session, include_origin: bool = True) -> Scan
         safe_indicators=[ThreatIndicator(**s) for s in safe_indicators],
         features=features,
         details=details,
-        origin_intelligence=origin_intelligence,
         detection_method="ML + Rule Heuristics + Threat Intel",
         created_at=scan_record.created_at
     )
@@ -125,7 +114,7 @@ def scan_bulk(payload: BulkScanRequest, db: Session = Depends(get_db)):
     items = []
     for raw_url in payload.urls:
         try:
-            result = _analyze_url(raw_url, db, include_origin=False)
+            result = _analyze_url(raw_url, db)
             items.append(BulkScanItem(
                 url=raw_url,
                 ok=True,

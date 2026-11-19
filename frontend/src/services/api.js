@@ -90,10 +90,6 @@ export const api = {
     return request('/feedback', { method: 'POST', json: { scan_id: scanId, label, comment }, timeout: 20000 });
   },
 
-  getOriginIntelligence(url) {
-    return request('/origin-intelligence', { method: 'POST', json: { url }, timeout: SCAN_TIMEOUT });
-  },
-
   getHistory(search = '', classification = '', limit = 50, offset = 0) {
     const params = new URLSearchParams();
     if (search) params.append('search', search);

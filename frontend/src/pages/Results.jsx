@@ -5,7 +5,6 @@ import {
   ChevronUp, Server, Cpu, ExternalLink, AlertCircle, Info, Shield, ArrowRight
 } from 'lucide-react';
 import VerdictPanel from '../components/scanner/VerdictPanel';
-import LinkOriginIntelligence from '../components/results/LinkOriginIntelligence';
 import WhyRiskyPanel from '../components/results/WhyRiskyPanel';
 import FeedbackBar from '../components/results/FeedbackBar';
 
@@ -350,14 +349,6 @@ Verification Protocol: Zero-Execution Static Sandbox`;
           </div>
         </div>
       </div>
-
-      {/* 5. Link Origin Intelligence */}
-      <LinkOriginIntelligence 
-        originData={result.origin_intelligence} 
-        targetUrl={url} 
-        domain={domain} 
-        setActivePage={setActivePage}
-      />
 
       {/* 6. Collapsible "Why was this flagged?" Forensic Evidence */}
       <div className="rounded-2xl bg-white border border-[#E2E8F0] overflow-hidden shadow-sm">
