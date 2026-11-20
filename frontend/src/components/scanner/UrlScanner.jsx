@@ -4,13 +4,6 @@ import { api } from '../../services/api';
 import { playScanResultSound, unlockAudio } from '../../lib/sound';
 import SoundToggle from '../common/SoundToggle';
 
-const SAMPLE_URLS = [
-  { label: 'Safe corporate', url: 'https://www.google.com/search?q=cybersecurity+research' },
-  { label: 'Brand lookalike', url: 'http://paypa1-account-verification.xyz/login.php' },
-  { label: 'Raw IP + port', url: 'http://192.168.1.100:8080/secure/bank-login.asp' },
-  { label: 'Punycode homoglyph', url: 'http://xn--gogle-pra.com/signin/v2/identifier' },
-];
-
 // What the server runs for every scan. Shown as "running" while the request is open; none of
 // these is ever marked complete by the client — completion is the response itself.
 const ENGINE_STAGES = ['URL structure', 'Rule engine', 'ML model', 'Link origin'];
@@ -123,20 +116,6 @@ export default function UrlScanner({ onScanComplete, initialUrl = '' }) {
         </div>
       )}
 
-      <div className="relative mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-[13px]">
-        <span className="text-ctp-text-muted mr-1">Try</span>
-        {SAMPLE_URLS.map((sample) => (
-          <button
-            key={sample.label}
-            type="button"
-            disabled={loading}
-            onClick={() => { setUrl(sample.url); handleScan(sample.url); }}
-            className="rounded-full border border-ctp-border px-3 py-1.5 text-ctp-text-2 transition-[border-color,color,transform] duration-200 hover:-translate-y-px hover:border-ctp-border-strong hover:text-ctp-text active:translate-y-px disabled:opacity-50 cursor-pointer"
-          >
-            {sample.label}
-          </button>
-        ))}
-      </div>
       <div className="relative mt-5 flex items-center justify-center gap-4 text-[13px] border-t border-ctp-border pt-4">
         <label htmlFor="ctp-url-input" className="sr-only">Link to check</label>
         <div className="flex items-center gap-2.5">

@@ -372,7 +372,6 @@ export default function App() {
           setActivePage={navigateToPage}
           isCollapsed={isCollapsed}
           setIsMobileOpen={setIsMobileOpen}
-          onQuickScan={handleQuickScan}
           theme={theme}
           toggleTheme={toggleTheme}
           openAboutModal={() => setIsAboutModalOpen(true)}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Search, CheckCircle2, Shield, ArrowRight } from 'lucide-react';
+import { Menu, CheckCircle2, Shield, ArrowRight } from 'lucide-react';
 import ThemeToggle from '../common/ThemeToggle';
 import { api } from '../../services/api';
 
@@ -8,13 +8,11 @@ export default function TopNavbar({
   setActivePage, 
   isCollapsed, 
   setIsMobileOpen,
-  onQuickScan,
   theme,
   toggleTheme,
   openAboutModal
 }) {
   const [isBackendOnline, setIsBackendOnline] = useState(false);
-  const [quickSearch, setQuickSearch] = useState('');
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -43,17 +41,6 @@ export default function TopNavbar({
 
   const current = pageMeta[activePage] || { title: 'Security Console', breadcrumb: 'SECURITY' };
 
-  const handleQuickSubmit = (e) => {
-    e.preventDefault();
-    if (!quickSearch.trim()) return;
-    if (onQuickScan) {
-      onQuickScan(quickSearch.trim());
-    } else {
-      setActivePage('scanner');
-    }
-    setQuickSearch('');
-  };
-
   return (
     <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] px-4 sm:px-6 flex items-center justify-between gap-4 select-none">
       {/* Left: Mobile Toggle & Page Title */}
@@ -78,25 +65,7 @@ export default function TopNavbar({
         </div>
       </div>
 
-      {/* Center: Quick Scanner Bar */}
-      <div className="hidden md:flex flex-1 max-w-md mx-4">
-        <form onSubmit={handleQuickSubmit} className="relative w-full">
-          <Search className="w-4 h-4 text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={quickSearch}
-            onChange={(e) => setQuickSearch(e.target.value)}
-            placeholder="Quick URL scan..."
-            className="w-full pl-10 pr-16 py-1.5 bg-[#F5F9FF] border border-[#E2E8F0] rounded-full text-xs font-mono text-[#111827] placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#DBEAFE] transition-all"
-          />
-          <button
-            type="submit"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 bg-[#2563EB] hover:bg-[#1E40AF] text-white font-mono font-medium text-[10px] rounded-full transition-all cursor-pointer shadow-sm"
-          >
-            Scan
-          </button>
-        </form>
-      </div>
+      <div className="flex-1" />
 
       {/* Right: Engine Status & Actions */}
       <div className="flex items-center gap-2.5 shrink-0">
