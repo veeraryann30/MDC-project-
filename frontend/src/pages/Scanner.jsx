@@ -33,20 +33,6 @@ export default function Scanner({ setActivePage, setScanResult, initialTab = 'UR
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 select-none font-sans">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#DBEAFE] text-[#2563EB] text-xs font-mono uppercase tracking-wider font-semibold shadow-2xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A]" />
-          <span>{heading.badge}</span>
-        </div>
-        <h1 className="text-2xl sm:text-4xl font-bold text-[#111827] tracking-tight">
-          {heading.title}
-        </h1>
-        <p className="text-xs sm:text-sm text-[#64748B] max-w-lg mx-auto leading-relaxed">
-          {heading.blurb}
-        </p>
-      </div>
-
       {/* Dual Scanner Tabs: URL SCANNER | QR CODE */}
       <div className="flex items-center justify-center gap-1.5 p-1.5 max-w-md mx-auto rounded-xl bg-white border border-[#E2E8F0] shadow-2xs">
         <button
@@ -87,6 +73,20 @@ export default function Scanner({ setActivePage, setScanResult, initialTab = 'UR
           <ListChecks className="w-3.5 h-3.5" />
           <span>BULK</span>
         </button>
+      </div>
+
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#DBEAFE] text-[#2563EB] text-xs font-mono uppercase tracking-wider font-semibold shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A]" />
+          <span>{heading.badge}</span>
+        </div>
+        <h1 className="text-2xl sm:text-4xl font-bold text-[#111827] tracking-tight">
+          {heading.title}
+        </h1>
+        <p className="text-xs sm:text-sm text-[#64748B] max-w-lg mx-auto leading-relaxed">
+          {heading.blurb}
+        </p>
       </div>
 
       {/* Prominent Scanner Mode View */}

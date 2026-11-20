@@ -65,18 +65,7 @@ export default function UrlScanner({ onScanComplete, initialUrl = '' }) {
       {/* Scanning beam: a glowing line sweeping across the card while the request is in flight */}
       {loading && <span aria-hidden="true" className="ctp-scanbeam" />}
 
-      <div className="relative flex items-center justify-between gap-3 text-[13px]">
-        <label htmlFor="ctp-url-input" className="font-medium text-ctp-text">Link to check</label>
-        <div className="flex items-center gap-2.5">
-          <SoundToggle />
-          <span className="hidden items-center gap-1.5 text-ctp-text-muted sm:flex">
-            <Lock className="w-3.5 h-3.5" strokeWidth={1.6} />
-            Never opened or executed
-          </span>
-        </div>
-      </div>
-
-      <form className="relative mt-3" onSubmit={(e) => { e.preventDefault(); handleScan(); }}>
+      <form className="relative" onSubmit={(e) => { e.preventDefault(); handleScan(); }}>
         <div className="relative flex items-center rounded-2xl border border-ctp-border-strong bg-ctp-bg transition-[border-color,box-shadow] duration-300 focus-within:border-ctp-accent focus-within:shadow-[0_0_0_4px_color-mix(in_srgb,var(--ctp-accent)_16%,transparent)]">
           <input
             id="ctp-url-input"
@@ -107,7 +96,7 @@ export default function UrlScanner({ onScanComplete, initialUrl = '' }) {
         </div>
 
         {/* Honest progress: stages the server is running; elapsed time is real */}
-        <div className="mt-4 min-h-[44px]" aria-live="polite">
+        <div className="mt-3" aria-live="polite">
           {loading && (
             <div className="space-y-2.5">
               <div className="flex items-center gap-3 text-[12px] text-ctp-text-2">
@@ -134,7 +123,7 @@ export default function UrlScanner({ onScanComplete, initialUrl = '' }) {
         </div>
       )}
 
-      <div className="relative mt-5 flex flex-wrap items-center gap-x-2 gap-y-2 text-[13px]">
+      <div className="relative mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-[13px]">
         <span className="text-ctp-text-muted mr-1">Try</span>
         {SAMPLE_URLS.map((sample) => (
           <button
@@ -147,6 +136,16 @@ export default function UrlScanner({ onScanComplete, initialUrl = '' }) {
             {sample.label}
           </button>
         ))}
+      </div>
+      <div className="relative mt-5 flex items-center justify-center gap-4 text-[13px] border-t border-ctp-border pt-4">
+        <label htmlFor="ctp-url-input" className="sr-only">Link to check</label>
+        <div className="flex items-center gap-2.5">
+          <SoundToggle />
+          <span className="hidden items-center gap-1.5 text-ctp-text-muted sm:flex">
+            <Lock className="w-3.5 h-3.5" strokeWidth={1.6} />
+            Never opened or executed
+          </span>
+        </div>
       </div>
     </div>
   );
