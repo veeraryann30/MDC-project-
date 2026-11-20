@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, animate, useInView, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
-import { Link2, Mail, QrCode, MessageSquare, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
+import { Link2, QrCode, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
 import { api } from '../services/api';
 import TiltCard from '../components/common/TiltCard';
 
@@ -180,10 +180,7 @@ function Skeleton({ className = '' }) {
 
 const SERVICES = [
   { id: 'url-scanner', title: 'URL Threat Scanner', description: 'Analyze any web link for phishing, credential harvesters and malicious servers.', icon: Link2, route: 'scanner' },
-  { id: 'email-scanner', title: 'Email Scam Forensics', description: 'Verify inbound emails for spoofed headers, deceptive domains and scam lures.', icon: Mail, route: 'email-scanner' },
-  { id: 'qr-scanner', title: 'QR Code Detector', description: 'Inspect QR codes from images or PDF invoices before opening them.', icon: QrCode, route: 'qr-scanner' },
-  { id: 'message-scanner', title: 'Message Scam Detector', description: 'Evaluate SMS, WhatsApp and chat messages for KYC and financial fraud patterns.', icon: MessageSquare, route: 'message-scanner' },
-];
+  { id: 'qr-scanner', title: 'QR Code Detector', description: 'Inspect QR codes from images or PDF invoices before opening them.', icon: QrCode, route: 'qr-scanner' },];
 
 /**
  * Dashboard: live security overview (real backend statistics) followed by the tool launcher.

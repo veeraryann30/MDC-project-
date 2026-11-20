@@ -22,10 +22,8 @@ from backend.app.services.ml_service import MLService
 from backend.app.services.scorer import ScorerService
 from backend.app.security.auth import hash_password
 from backend.app.security.rate_limit import RateLimitMiddleware
-from backend.app.services.message_scanner_service import MessageScannerService
 from backend.app.services.job_scam_service import JobScamService
 from backend.app.services.investment_scam_service import InvestmentScamService
-from backend.app.services.email_scam_service import EmailScamService
 
 # Initialize SQLite database schema
 Base.metadata.create_all(bind=engine)
@@ -260,16 +258,6 @@ def seed_demo_data_if_empty():
             print("[*] Seeding sample multi-channel scam intelligence analyses...")
             demo_scams = [
                 {
-                    "type": "MESSAGE",
-                    "content": "Dear SBI customer, your NetBanking account will be blocked today within 24 hours. Update your KYC immediately at http://sbi-kyc-verify.top to avoid permanent suspension. Never share your OTP.",
-                    "analyzer": MessageScannerService.analyze
-                },
-                {
-                    "type": "MESSAGE",
-                    "content": "Congratulations! You have won ₹25,00,000 in KBC Lucky Draw 2026. Contact official WhatsApp manager to claim your prize. Registration fee of ₹2,500 required for tax clearance.",
-                    "analyzer": MessageScannerService.analyze
-                },
-                {
                     "type": "JOB",
                     "content": "Immediate opening for WFH Data Entry Specialist at Amazon. Guaranteed salary ₹45,000/month. No technical interview required. Direct appointment letter. Submit ₹1,500 registration fee to HR at amazon.careers.hr@gmail.com.",
                     "analyzer": lambda txt: JobScamService.analyze(txt, "Amazon", "₹45,000/month")
@@ -278,11 +266,6 @@ def seed_demo_data_if_empty():
                     "type": "INVESTMENT",
                     "content": "Join our VIP Crypto Trading Pool! Guaranteed 200% return in 48 hours. 100% risk-free automated bot. Refer 3 friends for binary downline bonuses. Pay 5% withdrawal fee to unlock your funds.",
                     "analyzer": InvestmentScamService.analyze
-                },
-                {
-                    "type": "EMAIL",
-                    "content": "From: PayPal Account Security <service@paypa1-account-portal.xyz>\nReply-To: refund-desk@attacker-inbox.com\nSubject: Critical Security Alert: Account Suspended\n\nDear client,\nUnusual login detected. Verify your password and card details immediately to unlock your wallet.\n\nAttached: invoice_security_patch.pdf.exe",
-                    "analyzer": EmailScamService.analyze_raw_email
                 }
             ]
 

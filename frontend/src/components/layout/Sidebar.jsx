@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   LayoutGrid, Search, Clock, 
   Settings, ChevronLeft, ChevronRight, Globe,
-  MessageSquare, Mail, Dna, QrCode
+  QrCode
 } from 'lucide-react';
 import Logo from '../common/Logo';
 import ThemeToggle from '../common/ThemeToggle';
@@ -22,9 +22,6 @@ export default function Sidebar({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutGrid },
     { id: 'scanner', label: 'URL Scanner', icon: Search },
     { id: 'qr-scanner', label: 'QR Scanner', icon: QrCode },
-    { id: 'message-scanner', label: 'Message Scanner', icon: MessageSquare },
-    { id: 'email-scanner', label: 'Email Scanner', icon: Mail },
-    { id: 'scam-dna', label: 'Scam DNA', icon: Dna },
     { id: 'history', label: 'History', icon: Clock },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];

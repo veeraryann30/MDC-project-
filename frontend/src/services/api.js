@@ -185,10 +185,6 @@ export const api = {
   },
 
   // ==================== MULTI-CHANNEL SCAM DETECTION ====================
-  scanMessage(text) {
-    return request('/scam/message', { method: 'POST', json: { text }, auth: true, timeout: SCAN_TIMEOUT });
-  },
-
   scanJob(text, companyName = '', claimedSalary = '') {
     return request('/scam/job', {
       method: 'POST',
@@ -200,19 +196,6 @@ export const api = {
 
   scanInvestment(text) {
     return request('/scam/investment', { method: 'POST', json: { text }, auth: true, timeout: SCAN_TIMEOUT });
-  },
-
-  scanEmail(rawEmail, subject = '', body = '', sender = '') {
-    return request('/scam/email', {
-      method: 'POST',
-      json: { raw_email: rawEmail, subject, body, sender },
-      auth: true,
-      timeout: SCAN_TIMEOUT,
-    });
-  },
-
-  scanDNA(text) {
-    return request('/scam/dna', { method: 'POST', json: { text }, auth: true, timeout: SCAN_TIMEOUT });
   },
 
   // ==================== QR CODE SCANNING ====================

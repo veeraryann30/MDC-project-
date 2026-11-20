@@ -22,10 +22,7 @@ const Learn = lazy(() => import('./pages/Learn'));
 const Settings = lazy(() => import('./pages/Settings'));
 const About = lazy(() => import('./pages/About'));
 const PhishTrace = lazy(() => import('./pages/PhishTrace'));
-const MessageScanner = lazy(() => import('./pages/MessageScanner'));
 const InvestmentScanner = lazy(() => import('./pages/InvestmentScanner'));
-const EmailScanner = lazy(() => import('./pages/EmailScanner'));
-const ScamDNA = lazy(() => import('./pages/ScamDNA'));
 
 const PageFallback = () => (
   <div className="flex flex-col items-center justify-center gap-3 py-28 text-xs text-ctp-text-2" role="status" aria-live="polite">
@@ -43,8 +40,8 @@ export default function App() {
       const hash = window.location.hash.replace('#', '').toLowerCase();
       if (hash === 'about' || hash === 'about-the-project') return 'about';
       if ([
-        'scanner', 'bulk-scanner', 'qr-scanner', 'qr', 'message-scanner', 'investment-scanner', 
-        'email-scanner', 'scam-dna', 'phish-trace', 'dashboard', 'history', 
+        'scanner', 'bulk-scanner', 'qr-scanner', 'qr', 'investment-scanner',
+        'phish-trace', 'dashboard', 'history', 
         'threat-intel', 'analytics', 'learn', 'settings', 'results'
       ].includes(hash)) {
         return hash;
@@ -260,16 +257,10 @@ export default function App() {
       case 'qr-scanner':
       case 'qr':
         return <Scanner key="scanner-qr" setActivePage={navigateToPage} setScanResult={setScanResult} initialTab="QR" />;
-      case 'message-scanner':
-        return <MessageScanner setActivePage={navigateToPage} />;
       case 'job-scanner':
         return <Dashboard setActivePage={navigateToPage} setScanResult={setScanResult} />;
       case 'investment-scanner':
         return <InvestmentScanner setActivePage={navigateToPage} />;
-      case 'email-scanner':
-        return <EmailScanner setActivePage={navigateToPage} />;
-      case 'scam-dna':
-        return <ScamDNA setActivePage={navigateToPage} />;
       case 'phish-trace':
         return <PhishTrace setActivePage={navigateToPage} />;
       case 'results':

@@ -245,10 +245,7 @@ export default function History({ setActivePage, setScanResult }) {
             <option value="ALL">All Categories</option>
             {activeTab === 'MULTI_CHANNEL' ? (
               <>
-                <option value="MESSAGE">Messages / SMS</option>
                 <option value="INVESTMENT">Crypto & Financial</option>
-                <option value="EMAIL">Email Phishing</option>
-                <option value="DNA">Scam DNA</option>
               </>
             ) : (
               <>

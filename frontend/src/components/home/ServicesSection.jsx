@@ -29,9 +29,9 @@ const SERVICES = [
   {
     id: 'scam',
     title: 'Digital Scam Detection',
-    description: 'Messages, emails, job offers and investment pitches checked for the patterns scammers reuse.',
+    description: 'Job offers and investment pitches checked for the patterns scammers reuse.',
     icon: MessageSquareWarning,
-    route: 'message-scanner',
+    route: 'investment-scanner',
   },
   {
     id: 'intel',

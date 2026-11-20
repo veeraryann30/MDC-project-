@@ -36,11 +36,6 @@ Rather than providing an opaque binary verdict ("Phishing" vs "Safe"), Catch the
 - Machine Learning inference using an ensemble Random Forest model evaluated with balanced datasets.
 - Integration with Phish Trace infrastructure mapping (DNS, IP reputation, ASN routing, and SSL certificates).
 
-### Module 2: AI Message Scam Detector (SMS / WhatsApp)
-- Identifies SMS, WhatsApp, and messaging scams targeting retail banking customers.
-- Detects KYC update deadlines, urgent account freeze threats, OTP interception demands, fake lottery windfalls, and suspicious shortlinks.
-- Highlights exact offending substrings with character offset bounds.
-
 ### Module 3: Fake Job & Internship Scam Detector
 - Specialized recruitment fraud analyzer tailored for students, fresh graduates, and remote job seekers.
 - Flags upfront registration and training fee traps, direct appointment promises without technical interviews, and enterprise HR impersonation over free public webmail accounts (@gmail.com).
@@ -49,23 +44,6 @@ Rather than providing an opaque binary verdict ("Phishing" vs "Safe"), Catch the
 ### Module 4: Investment & Financial Scam Detector
 - Unmasks high-yield investment programs (HYIP), automated crypto arbitrage bots, and "pig butchering" schemes.
 - Detects mathematically impossible "guaranteed returns", capital protection claims, Ponzi multi-level referral structures, and advance withdrawal fee traps.
-
-### Module 5: Email Phishing & Social Engineering Detector
-- Zero-execution RFC 822 email parser supporting both pasted text and `.eml` file uploads.
-- Evaluates sender display-name spoofing, Return-Path / Reply-To mismatches, and cryptographic SPF/DKIM/DMARC headers.
-- Inspects attachment metadata safely without opening files, identifying executable scripts (`.exe`, `.scr`, `.vbs`, `.iso`) and double extensions (`invoice.pdf.exe`).
-
-### Module 6: SCAM DNA — Explainable Scam Intelligence
-- Central intelligence engine that deconstructs deceptive communication into fundamental manipulation tactics:
-  1. **Upfront Payment Demand**
-  2. **Artificial Urgency & Coercion**
-  3. **Unrealistic Opportunity Promise**
-  4. **Authority & Corporate Impersonation**
-  5. **Credential & Secret Harvesting**
-  6. **Off-Platform Channel Redirection**
-  7. **Ponzi / Multi-Level Referral Mechanics**
-  8. **Sender Identity / Header Mismatch**
-- Produces an evidence-backed report with risk contribution weights and actionable safety steps.
 
 ---
 
@@ -90,7 +68,7 @@ c:/veer cyber security project/
 │   │   │   ├── endpoints/
 │   │   │   │   ├── auth.py           # /api/auth (Register, Login, Me with JWT)
 │   │   │   │   ├── scan.py           # /api/scan (Preserved URL Scanner)
-│   │   │   │   ├── scam.py           # /api/scam (Message, Job, Investment, Email, DNA)
+│   │   │   │   ├── scam.py           # /api/scam (Job, Investment)
 │   │   │   │   ├── academy.py        # /api/academy (Curriculum & interactive Quiz)
 │   │   │   │   ├── history.py        # /api/history (Multi-channel & URL history)
 │   │   │   │   ├── dashboard.py      # /api/dashboard/stats (Database telemetry)
@@ -106,10 +84,8 @@ c:/veer cyber security project/
 │   │   ├── services/
 │   │   │   ├── nlp_engine.py         # Central NLP & phrase highlighting engine
 │   │   │   ├── scam_dna_service.py   # SCAM DNA explainable taxonomy
-│   │   │   ├── message_scanner_service.py # Module 2 SMS scanner
 │   │   │   ├── job_scam_service.py   # Module 3 Recruitment scanner
 │   │   │   ├── investment_scam_service.py # Module 4 Financial scanner
-│   │   │   ├── email_scam_service.py # Module 5 Email & EML parser
 │   │   │   ├── rule_engine.py        # URL Heuristics engine
 │   │   │   ├── ml_service.py         # URL Random Forest predictor
 │   │   │   └── scorer.py             # Unified 4-tier risk scorer
@@ -126,11 +102,8 @@ c:/veer cyber security project/
 │   │   ├── pages/
 │   │   │   ├── Dashboard.jsx         # Multi-channel SOC overview with Recharts
 │   │   │   ├── Scanner.jsx           # Module 1 URL Scanner
-│   │   │   ├── MessageScanner.jsx    # Module 2 AI Message Scam Detector
 │   │   │   ├── JobScanner.jsx        # Module 3 Fake Job & Internship Detector
 │   │   │   ├── InvestmentScanner.jsx # Module 4 Investment Scam Detector
-│   │   │   ├── EmailScanner.jsx      # Module 5 Email Phishing & Header Forensics
-│   │   │   ├── ScamDNA.jsx           # Module 6 Central SCAM DNA Engine
 │   │   │   ├── History.jsx           # Unified multi-channel audit trail
 │   │   │   ├── Learn.jsx             # Scam Awareness Academy & IQ Quiz
 │   │   │   ├── ThreatIntel.jsx       # Threat Intelligence feeds
@@ -138,10 +111,8 @@ c:/veer cyber security project/
 │   │   └── services/api.js           # API client with complete client-side fallbacks
 ├── tests/
 │   ├── test_url_scanner.py
-│   ├── test_message_scanner.py
 │   ├── test_job_scam.py
 │   ├── test_investment_scam.py
-│   ├── test_email_scam.py
 │   ├── test_auth_security.py
 │   └── run_all_tests.py              # Master test suite runner
 └── README.md
@@ -166,22 +137,17 @@ test_expired_token_rejection (test_auth_security.TestAuthSecurity) ... ok
 test_jwt_token_creation_and_payload (test_auth_security.TestAuthSecurity) ... ok
 test_password_hashing_and_verification (test_auth_security.TestAuthSecurity) ... ok
 test_tampered_token_rejection (test_auth_security.TestAuthSecurity) ... ok
-test_clean_internal_email (test_email_scam.TestEmailScamDetector) ... ok
-test_display_name_spoof_with_executable_attachment (test_email_scam.TestEmailScamDetector) ... ok
 test_advance_withdrawal_fee_trap (test_investment_scam.TestInvestmentScamDetector) ... ok
 test_clean_financial_commentary (test_investment_scam.TestInvestmentScamDetector) ... ok
 test_guaranteed_return_crypto_ponzi (test_investment_scam.TestInvestmentScamDetector) ... ok
 test_clean_legitimate_job_posting (test_job_scam.TestJobScamDetector) ... ok
 test_fake_internship_with_upfront_registration_fee (test_job_scam.TestJobScamDetector) ... ok
 test_guaranteed_selection_no_interview (test_job_scam.TestJobScamDetector) ... ok
-test_clean_message (test_message_scanner.TestMessageScanner) ... ok
-test_kyc_and_otp_banking_fraud (test_message_scanner.TestMessageScanner) ... ok
-test_lottery_prize_lure (test_message_scanner.TestMessageScanner) ... ok
 test_clean_legitimate_url (test_url_scanner.TestURLScanner) ... ok
 test_phishing_brand_impersonation_url (test_url_scanner.TestURLScanner) ... ok
 test_raw_ip_address_host (test_url_scanner.TestURLScanner) ... ok
 
-Ran 18 tests in 1.95s
+Ran 13 tests in 1.95s
 [SUCCESS] All test suites passed with zero errors!
 ```
 

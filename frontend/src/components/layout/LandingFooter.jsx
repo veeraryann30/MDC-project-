@@ -114,30 +114,6 @@ export default function LandingFooter({ setActivePage, tone = 'light' }) {
                   02 QR Code Scam Detector
                 </button>
               </li>
-              <li>
-                <button 
-                  onClick={() => handleNav('message-scanner')} 
-                  className={`${hov} transition-colors cursor-pointer`}
-                >
-                  03 Message Scam Detector
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => handleNav('email-scanner')} 
-                  className={`${hov} transition-colors cursor-pointer`}
-                >
-                  04 Email Phishing Analysis
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => handleNav('scam-dna')} 
-                  className={`${hov} transition-colors cursor-pointer`}
-                >
-                  05 Scam DNA Fingerprint
-                </button>
-              </li>
             </ul>
           </div>
 

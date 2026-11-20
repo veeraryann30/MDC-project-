@@ -62,21 +62,6 @@ export default function Footer({ setActivePage }) {
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => setActivePage('message-scanner')} className="hover:text-[#2563EB] transition-colors cursor-pointer">
-                  Message Scanner
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setActivePage('email-scanner')} className="hover:text-[#2563EB] transition-colors cursor-pointer">
-                  Email Scanner
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setActivePage('scam-dna')} className="hover:text-[#2563EB] transition-colors cursor-pointer">
-                  Scam DNA
-                </button>
-              </li>
-              <li>
                 <button onClick={() => setActivePage('threat-intel')} className="hover:text-[#2563EB] transition-colors cursor-pointer">
                   Threat Intel
                 </button>

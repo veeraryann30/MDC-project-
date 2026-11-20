@@ -1,6 +1,6 @@
 """
 Scam Detection API Endpoints for Catch the Phish
-Handles Message, Job, Investment, Email, and central Scam DNA analyses with SQLite persistence.
+Handles Job and Investment analyses with SQLite persistence.
 """
 
 from datetime import datetime
@@ -13,18 +13,12 @@ from backend.app.database.session import get_db
 from backend.app.database.models import ScamAnalysisRecord
 from backend.app.security.auth import get_current_user_optional, get_current_user
 from backend.app.schemas.scam import (
-    MessageScanRequest, MessageScanResponse,
     JobScanRequest, JobScanResponse,
     InvestmentScanRequest, InvestmentScanResponse,
-    EmailScanRequest, EmailScanResponse,
-    ScamDNARequest, ScamDNAResponse,
     ScamHistoryResponse
 )
-from backend.app.services.message_scanner_service import MessageScannerService
 from backend.app.services.job_scam_service import JobScamService
 from backend.app.services.investment_scam_service import InvestmentScamService
-from backend.app.services.email_scam_service import EmailScamService
-from backend.app.services.scam_dna_service import ScamDNAService
 
 router = APIRouter(prefix="/scam", tags=["Scam Detection Engines"])
 
@@ -52,40 +46,6 @@ def _extract_user_id(token_payload: Optional[dict]) -> Optional[int]:
         except ValueError:
             return None
     return None
-
-
-@router.post("/message", response_model=MessageScanResponse)
-def scan_message(
-    payload: MessageScanRequest,
-    db: Session = Depends(get_db),
-    user_payload: Optional[dict] = Depends(get_current_user_optional)
-):
-    result = MessageScannerService.analyze(payload.text)
-    user_id = _extract_user_id(user_payload)
-
-    # Persist in SQLite
-    record = ScamAnalysisRecord(
-        user_id=user_id,
-        analysis_type="MESSAGE",
-        content_snippet=payload.text[:250],
-        risk_score=result["risk_score"],
-        risk_tier=result["risk_tier"],
-        scam_category=result["scam_category"],
-        confidence_score=result["confidence_score"],
-        detected_indicators=result["detected_indicators"],
-        highlighted_phrases=result["highlighted_phrases"],
-        scam_dna_breakdown=result["scam_dna"],
-        recommended_actions=[result["recommended_action"]],
-        metadata_info={"embedded_urls_count": len(result["embedded_urls"])},
-        created_at=datetime.utcnow()
-    )
-    db.add(record)
-    db.commit()
-    db.refresh(record)
-
-    result["id"] = record.id
-    result["created_at"] = record.created_at
-    return result
 
 
 @router.post("/job", response_model=JobScanResponse)
@@ -141,87 +101,6 @@ def scan_investment_proposal(
         detected_indicators=result["detected_indicators"],
         highlighted_phrases=result["highlighted_phrases"],
         scam_dna_breakdown=result["scam_dna"],
-        recommended_actions=result["recommended_actions"],
-        metadata_info={},
-        created_at=datetime.utcnow()
-    )
-    db.add(record)
-    db.commit()
-    db.refresh(record)
-
-    result["id"] = record.id
-    result["created_at"] = record.created_at
-    return result
-
-
-@router.post("/email", response_model=EmailScanResponse)
-def scan_email(
-    payload: EmailScanRequest,
-    db: Session = Depends(get_db),
-    user_payload: Optional[dict] = Depends(get_current_user_optional)
-):
-    # If raw_email is provided, parse it; otherwise synthesize from body/subject/sender
-    raw_content = payload.raw_email or ""
-    if not raw_content:
-        headers_synthetic = []
-        if payload.sender:
-            headers_synthetic.append(f"From: {payload.sender}")
-        if payload.subject:
-            headers_synthetic.append(f"Subject: {payload.subject}")
-        raw_content = "\n".join(headers_synthetic) + "\n\n" + (payload.body or "")
-
-    result = EmailScamService.analyze_raw_email(raw_content)
-    user_id = _extract_user_id(user_payload)
-
-    snippet = (payload.subject or result["headers"].get("subject") or payload.body or raw_content)[:250]
-    record = ScamAnalysisRecord(
-        user_id=user_id,
-        analysis_type="EMAIL",
-        content_snippet=snippet,
-        risk_score=result["risk_score"],
-        risk_tier=result["risk_tier"],
-        scam_category=result["email_verdict"],
-        confidence_score=result["confidence_score"],
-        detected_indicators=result["detected_indicators"],
-        highlighted_phrases=result["highlighted_phrases"],
-        scam_dna_breakdown=result["scam_dna"],
-        recommended_actions=result["recommended_actions"],
-        metadata_info={
-            "headers": result["headers"],
-            "auth_evidence": result["auth_evidence"],
-            "attachments_count": len(result["attachments"])
-        },
-        created_at=datetime.utcnow()
-    )
-    db.add(record)
-    db.commit()
-    db.refresh(record)
-
-    result["id"] = record.id
-    result["created_at"] = record.created_at
-    return result
-
-
-@router.post("/dna", response_model=ScamDNAResponse)
-def scan_dna_general(
-    payload: ScamDNARequest,
-    db: Session = Depends(get_db),
-    user_payload: Optional[dict] = Depends(get_current_user_optional)
-):
-    result = ScamDNAService.analyze(payload.text)
-    user_id = _extract_user_id(user_payload)
-
-    record = ScamAnalysisRecord(
-        user_id=user_id,
-        analysis_type="DNA",
-        content_snippet=payload.text[:250],
-        risk_score=result["risk_score"],
-        risk_tier=result["risk_tier"],
-        scam_category=result["primary_scam_pattern"],
-        confidence_score=result["confidence_score"],
-        detected_indicators=result["detected_indicators"],
-        highlighted_phrases=result["highlighted_phrases"],
-        scam_dna_breakdown={"techniques": result["detected_techniques"]},
         recommended_actions=result["recommended_actions"],
         metadata_info={},
         created_at=datetime.utcnow()

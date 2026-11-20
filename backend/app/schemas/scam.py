@@ -21,27 +21,6 @@ class HighlightedPhraseItem(BaseModel):
     technique: Optional[str] = None
 
 
-class MessageScanRequest(BaseModel):
-    text: str = Field(..., min_length=2, example="URGENT: Your SBI Account is suspended. Update KYC now at http://sbi-kyc.top")
-
-
-class MessageScanResponse(BaseModel):
-    id: Optional[int] = None
-    risk_score: float
-    risk_tier: str
-    risk_tier_label: str
-    scam_category: str
-    scam_probability: float
-    confidence_score: float
-    detected_indicators: List[Dict[str, Any]]
-    highlighted_phrases: List[Dict[str, Any]]
-    scam_dna: Dict[str, Any]
-    embedded_urls: List[Dict[str, Any]]
-    explanation: str
-    recommended_action: str
-    created_at: Optional[datetime] = None
-
-
 class JobScanRequest(BaseModel):
     text: str = Field(..., min_length=5, example="Direct selection for WFH Data Entry. Pay registration fee of Rs 1,500.")
     company_name: Optional[str] = None
@@ -81,53 +60,6 @@ class InvestmentScanResponse(BaseModel):
     scam_dna: Dict[str, Any]
     explanation: str
     recommended_actions: List[str]
-    created_at: Optional[datetime] = None
-
-
-class EmailScanRequest(BaseModel):
-    raw_email: Optional[str] = None
-    subject: Optional[str] = None
-    body: Optional[str] = None
-    sender: Optional[str] = None
-
-
-class EmailScanResponse(BaseModel):
-    id: Optional[int] = None
-    risk_score: float
-    risk_tier: str
-    risk_tier_label: str
-    email_verdict: str
-    confidence_score: float
-    sender_origin: Optional[Dict[str, Any]] = None
-    headers: Dict[str, Any]
-    sender_analysis: Dict[str, Any]
-    auth_evidence: Dict[str, Any]
-    attachments: List[Dict[str, Any]]
-    embedded_urls: List[Dict[str, Any]]
-    detected_indicators: List[Dict[str, Any]]
-    highlighted_phrases: List[Dict[str, Any]]
-    scam_dna: Dict[str, Any]
-    explanation: str
-    recommended_actions: List[str]
-    created_at: Optional[datetime] = None
-
-
-class ScamDNARequest(BaseModel):
-    text: str = Field(..., min_length=5, example="Congratulations! You have been selected for an internship. Pay Rs 1,500 for registration.")
-
-
-class ScamDNAResponse(BaseModel):
-    id: Optional[int] = None
-    risk_score: float
-    risk_tier: str
-    risk_tier_label: str
-    confidence_score: float
-    primary_scam_pattern: str
-    detected_techniques: List[Dict[str, Any]]
-    highlighted_phrases: List[Dict[str, Any]]
-    detected_indicators: List[Dict[str, Any]]
-    recommended_actions: List[str]
-    evidence_summary: str
     created_at: Optional[datetime] = None
 
 
