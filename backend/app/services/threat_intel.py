@@ -6,8 +6,11 @@ Operates safely without network execution or with honest 'Unavailable' flags if 
 
 import base64
 import json
+import threading
+import time
 import urllib.request
 import urllib.error
+from collections import OrderedDict
 from typing import Dict, Any, Optional
 from backend.app.core.config import settings
 
@@ -57,6 +60,43 @@ class ThreatIntelService:
         never submitted for new scanning). Returns a threat_score of 0-100.
         """
         url_id = base64.urlsafe_b64encode(url.encode("utf-8")).decode("ascii").rstrip("=")
+        cached = ThreatIntelService._vt_cache_get(url_id)
+        if cached is not None:
+            return cached
+        result = ThreatIntelService._query_virustotal_url_live(url_id)
+        # Cache definitive answers only (incl. "no report"); retry errors/timeouts next time.
+        if result["status"] != "unknown" or result["available"]:
+            ThreatIntelService._vt_cache_set(url_id, result)
+        return result
+
+    _VT_CACHE: "OrderedDict[str, tuple]" = OrderedDict()
+    _VT_CACHE_LOCK = threading.Lock()
+    _VT_CACHE_TTL = 3600.0   # seconds
+    _VT_CACHE_MAX = 1000
+
+    @classmethod
+    def _vt_cache_get(cls, key: str) -> Optional[Dict[str, Any]]:
+        with cls._VT_CACHE_LOCK:
+            entry = cls._VT_CACHE.get(key)
+            if entry is None:
+                return None
+            expires, value = entry
+            if expires < time.monotonic():
+                del cls._VT_CACHE[key]
+                return None
+            cls._VT_CACHE.move_to_end(key)
+            return dict(value)
+
+    @classmethod
+    def _vt_cache_set(cls, key: str, value: Dict[str, Any]) -> None:
+        with cls._VT_CACHE_LOCK:
+            cls._VT_CACHE[key] = (time.monotonic() + cls._VT_CACHE_TTL, dict(value))
+            cls._VT_CACHE.move_to_end(key)
+            while len(cls._VT_CACHE) > cls._VT_CACHE_MAX:
+                cls._VT_CACHE.popitem(last=False)
+
+    @staticmethod
+    def _query_virustotal_url_live(url_id: str) -> Dict[str, Any]:
         req = urllib.request.Request(
             f"https://www.virustotal.com/api/v3/urls/{url_id}",
             headers={
