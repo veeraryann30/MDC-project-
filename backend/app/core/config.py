@@ -34,6 +34,11 @@ def _load_dotenv() -> None:
 _load_dotenv()
 
 
+def _secret(name: str) -> str:
+    """API keys are whitespace-trimmed: a trailing newline from a pasted value breaks HTTP headers."""
+    return os.getenv(name, "").strip()
+
+
 def _csv(name: str, default: str) -> list:
     return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
 
@@ -53,18 +58,18 @@ class Settings:
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./catch_the_phish.db")
 
     # Optional Threat Intelligence API Keys
-    VIRUSTOTAL_API_KEY: str = os.getenv("VIRUSTOTAL_API_KEY", "")
-    GOOGLE_SAFE_BROWSING_API_KEY: str = os.getenv("GOOGLE_SAFE_BROWSING_API_KEY", "")
-    ABUSEIPDB_API_KEY: str = os.getenv("ABUSEIPDB_API_KEY", "")
-    IPINFO_API_KEY: str = os.getenv("IPINFO_API_KEY", "")
+    VIRUSTOTAL_API_KEY: str = _secret("VIRUSTOTAL_API_KEY")
+    GOOGLE_SAFE_BROWSING_API_KEY: str = _secret("GOOGLE_SAFE_BROWSING_API_KEY")
+    ABUSEIPDB_API_KEY: str = _secret("ABUSEIPDB_API_KEY")
+    IPINFO_API_KEY: str = _secret("IPINFO_API_KEY")
 
     # Unified threat-detection engine (all optional: a missing key is reported honestly as
     # "not configured" in every result, never silently treated as "clean").
-    GOOGLE_WEB_RISK_API_KEY: str = os.getenv("GOOGLE_WEB_RISK_API_KEY", "")
-    URLHAUS_AUTH_KEY: str = os.getenv("URLHAUS_AUTH_KEY", "")      # abuse.ch Auth-Key (free)
-    URLSCAN_API_KEY: str = os.getenv("URLSCAN_API_KEY", "")
-    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
-    GROQ_MODEL: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+    GOOGLE_WEB_RISK_API_KEY: str = _secret("GOOGLE_WEB_RISK_API_KEY")
+    URLHAUS_AUTH_KEY: str = _secret("URLHAUS_AUTH_KEY")      # abuse.ch Auth-Key (free)
+    URLSCAN_API_KEY: str = _secret("URLSCAN_API_KEY")
+    GROQ_API_KEY: str = _secret("GROQ_API_KEY")
+    GROQ_MODEL: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b").strip()
 
     # Outbound API budgets (calls per minute) so the platform stays inside each provider's free tier.
     VT_REQUESTS_PER_MINUTE: int = int(os.getenv("VT_REQUESTS_PER_MINUTE", "4"))

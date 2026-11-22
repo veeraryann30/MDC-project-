@@ -221,5 +221,32 @@ class TestAnalyst(unittest.TestCase):
         self.assertIn("unavailable", out["note"])
 
 
+class TestSecretHandling(unittest.TestCase):
+    KEY = "fake0123456789abcdef" * 3  # obviously fake, never a real credential
+
+    def test_pasted_keys_are_whitespace_trimmed(self):
+        import subprocess
+        env = dict(os.environ, VIRUSTOTAL_API_KEY="  " + self.KEY + "\n", GROQ_MODEL=" openai/gpt-oss-120b \n")
+        out = subprocess.run(
+            [sys.executable, "-c", "from backend.app.core.config import settings as s; print(repr(s.VIRUSTOTAL_API_KEY), repr(s.GROQ_MODEL))"],
+            cwd=ROOT, env=env, capture_output=True, text=True)
+        self.assertIn(repr(self.KEY), out.stdout)
+        self.assertIn("'openai/gpt-oss-120b'", out.stdout)
+
+    def test_exception_text_with_the_key_never_reaches_the_result(self):
+        err = ValueError("Invalid header value b'%s\\n'" % self.KEY)
+        with mock.patch.object(settings, "VIRUSTOTAL_API_KEY", self.KEY), \
+                mock.patch("urllib.request.urlopen", side_effect=err):
+            r = intel_clients.check_virustotal("http://secret-leak-test.example/x")
+        self.assertEqual(r["status"], "error")
+        self.assertNotIn(self.KEY, json.dumps(r))
+
+    def test_redact_removes_configured_keys(self):
+        from backend.app.services.intel_common import redact
+        with mock.patch.object(settings, "GROQ_API_KEY", "gsk_" + "a" * 40):
+            self.assertNotIn("a" * 40, redact("boom gsk_" + "a" * 40 + " boom"))
+            self.assertIn("[redacted]", redact("boom gsk_" + "a" * 40))
+
+
 if __name__ == "__main__":
     unittest.main()

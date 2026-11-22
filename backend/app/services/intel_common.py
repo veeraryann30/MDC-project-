@@ -99,7 +99,7 @@ class HealthRegistry:
                 st["rate_limited"] += 1
             else:
                 st["failed"] += 1
-                st["last_error"] = (error or "")[:200]
+                st["last_error"] = redact(error or "")[:200]
             st["last_status"] = status
             st["last_checked"] = datetime.now(timezone.utc).isoformat()
             if latency_ms is not None:
@@ -111,6 +111,18 @@ class HealthRegistry:
 
 
 health = HealthRegistry()
+
+
+def redact(text: Any) -> str:
+    """Replace any configured API key/token inside ``text`` so a secret can never reach a response or the UI."""
+    from backend.app.core.config import settings
+    out = str(text or "")
+    for name in ("VIRUSTOTAL_API_KEY", "GOOGLE_WEB_RISK_API_KEY", "URLHAUS_AUTH_KEY", "URLSCAN_API_KEY",
+                 "GROQ_API_KEY", "ABUSEIPDB_API_KEY", "IPINFO_API_KEY", "GOOGLE_SAFE_BROWSING_API_KEY"):
+        secret = getattr(settings, name, "")
+        if secret and len(secret) >= 8:
+            out = out.replace(secret, "[redacted]")
+    return out
 
 
 def make_result(
@@ -129,7 +141,7 @@ def make_result(
         "status": status,
         "verdict": verdict,
         "score": round(float(score), 1),
-        "note": note,
+        "note": redact(note),
         "details": details or {},
         "latency_ms": latency_ms,
         "reference": reference,

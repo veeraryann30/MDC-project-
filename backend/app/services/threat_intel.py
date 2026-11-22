@@ -53,7 +53,7 @@ class ThreatIntelService:
                 intel_result["provider"] = "Google Safe Browsing"
                 intel_result["details"] = "Google Safe Browsing checked."
             except Exception as e:
-                intel_result["details"] = f"Google Safe Browsing check failed: {str(e)}"
+                intel_result["details"] = f"Google Safe Browsing check failed: {type(e).__name__}"
 
         return intel_result
 
@@ -148,7 +148,7 @@ class ThreatIntelService:
             return {"available": e.code == 404, "threat_score": 0.0, "status": "unknown", "note": note}
         except Exception as e:
             return {"available": False, "threat_score": 0.0, "status": "unknown",
-                    "note": f"VirusTotal query error: {str(e)}"}
+                    "note": f"VirusTotal query error: {type(e).__name__}"}
 
     @staticmethod
     def query_abuseipdb(ip: str) -> Dict[str, Any]:
@@ -216,7 +216,7 @@ class ThreatIntelService:
                 "last_reported": "Unavailable",
                 "usage_type": "Unavailable",
                 "source": "AbuseIPDB",
-                "note": f"AbuseIPDB query error: {str(e)}"
+                "note": f"AbuseIPDB query error: {type(e).__name__}"
             }
 
     @staticmethod
@@ -292,7 +292,7 @@ class ThreatIntelService:
                 "undetected_count": "Unavailable",
                 "reputation": "Unavailable",
                 "source": "VirusTotal",
-                "note": f"VirusTotal query error: {str(e)}"
+                "note": f"VirusTotal query error: {type(e).__name__}"
             }
 
     @staticmethod
@@ -346,7 +346,7 @@ class ThreatIntelService:
                 "tor": "Unavailable",
                 "hosting": "Unavailable",
                 "source": "IPinfo.io",
-                "note": f"IPinfo query error: {str(e)}"
+                "note": f"IPinfo query error: {type(e).__name__}"
             }
 
     @classmethod

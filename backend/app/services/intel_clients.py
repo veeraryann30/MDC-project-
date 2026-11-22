@@ -137,7 +137,7 @@ def check_web_risk(url: str) -> Dict[str, Any]:
         r = _http_error_result(src, e, t0)
         return _finish("webrisk", r, r["note"])
     except Exception as e:  # noqa: BLE001
-        return _finish("webrisk", make_result(src, ERROR, note=f"Web Risk query failed: {type(e).__name__}.", latency_ms=_elapsed(t0)), str(e))
+        return _finish("webrisk", make_result(src, ERROR, note=f"Web Risk query failed: {type(e).__name__}.", latency_ms=_elapsed(t0)), type(e).__name__)
 
 
 # --------------------------------------------------------------------------- URLhaus (abuse.ch)
@@ -200,7 +200,7 @@ def check_urlhaus(url: str, host: str) -> Dict[str, Any]:
         r = _http_error_result(src, e, t0)
         return _finish("urlhaus", r, r["note"])
     except Exception as e:  # noqa: BLE001
-        return _finish("urlhaus", make_result(src, ERROR, note=f"URLhaus query failed: {type(e).__name__}.", latency_ms=_elapsed(t0)), str(e))
+        return _finish("urlhaus", make_result(src, ERROR, note=f"URLhaus query failed: {type(e).__name__}.", latency_ms=_elapsed(t0)), type(e).__name__)
 
 
 # --------------------------------------------------------------------------- urlscan.io
@@ -301,7 +301,7 @@ def check_urlscan(url: str, domain: str) -> Dict[str, Any]:
         r = _http_error_result(src, e, t0)
         return _finish("urlscan", r, r["note"])
     except Exception as e:  # noqa: BLE001
-        return _finish("urlscan", make_result(src, ERROR, note=f"urlscan.io query failed: {type(e).__name__}.", latency_ms=_elapsed(t0)), str(e))
+        return _finish("urlscan", make_result(src, ERROR, note=f"urlscan.io query failed: {type(e).__name__}.", latency_ms=_elapsed(t0)), type(e).__name__)
 
 
 def urlscan_submit(url: str) -> Dict[str, Any]:
@@ -325,7 +325,7 @@ def urlscan_submit(url: str) -> Dict[str, Any]:
         health.record("urlscan", RATE_LIMITED if e.code == 429 else ERROR, _elapsed(t0), msg)
         return {"ok": False, "status": RATE_LIMITED if e.code == 429 else ERROR, "message": msg}
     except Exception as e:  # noqa: BLE001
-        health.record("urlscan", ERROR, _elapsed(t0), str(e))
+        health.record("urlscan", ERROR, _elapsed(t0), type(e).__name__)
         return {"ok": False, "status": ERROR, "message": f"urlscan.io submission failed: {type(e).__name__}."}
 
 
