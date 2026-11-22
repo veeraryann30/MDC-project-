@@ -27,6 +27,7 @@ from backend.app.services.threat_intel import ThreatIntelService
 from backend.app.services.scorer import ScorerService
 from backend.app.services.qr_scanner_service import QRScannerService
 from backend.app.services.url_analysis_service import UrlAnalysisService
+from backend.app.services.url_validation import check_url
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -77,6 +78,10 @@ def scan_bulk(payload: BulkScanRequest, db: Session = Depends(get_db)):
     """Analyzes up to BULK_MAX_URLS links in one request. One bad link never fails the batch."""
     items = []
     for raw_url in payload.urls:
+        valid, message = check_url(raw_url)
+        if not valid:
+            items.append(BulkScanItem(url=raw_url, ok=False, error=message))
+            continue
         try:
             result = _analyze_url(raw_url, db, external=False)
             items.append(BulkScanItem(

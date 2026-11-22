@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field, field_validator
 import re
+from backend.app.services.url_validation import check_url
 
 class ScanRequest(BaseModel):
     url: str = Field(..., description="The target URL to analyze statically")
@@ -17,6 +18,9 @@ class ScanRequest(BaseModel):
         # Basic character safety check
         if any(c in cleaned for c in ["\r", "\n", "\t"]):
             raise ValueError("URL contains illegal control characters.")
+        ok, message = check_url(cleaned)
+        if not ok:
+            raise ValueError(message)
         return cleaned
 
 

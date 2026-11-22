@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Lock, X, AlertCircle, ArrowRight } from 'lucide-react';
 import { api } from '../../services/api';
+import { validateUrlInput } from '../../lib/validateUrl';
 import { playScanResultSound, unlockAudio } from '../../lib/sound';
 import SoundToggle from '../common/SoundToggle';
 
@@ -30,12 +31,14 @@ export default function UrlScanner({ onScanComplete, initialUrl = '' }) {
 
   const handleScan = async (targetUrl = url) => {
     const trimmed = targetUrl.trim();
-    if (!trimmed) {
-      setError('Please enter or paste a valid URL to analyze.');
-      return;
-    }
     if (trimmed.length > 2048) {
       setError('URL exceeds maximum safe length of 2048 characters.');
+      return;
+    }
+    // Check that the input is a web address BEFORE any scan starts.
+    const problem = validateUrlInput(trimmed);
+    if (problem) {
+      setError(problem);
       return;
     }
 
