@@ -1,6 +1,39 @@
 import os
 
 
+def _load_dotenv() -> None:
+    """
+    Load KEY=value pairs from a `.env` file in the project root (dependency-free).
+    Real environment variables always win, so hosting dashboards (Render, etc.) are never overridden.
+    Quotes, `export` prefixes, comments and a UTF-8 BOM are handled. The file is git-ignored.
+    """
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    path = os.path.join(root, ".env")
+    try:
+        with open(path, encoding="utf-8-sig") as fh:
+            lines = fh.read().splitlines()
+    except OSError:
+        return
+    for raw in lines:
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        if line.startswith("export "):
+            line = line[7:].lstrip()
+        key, _, value = line.partition("=")
+        key, value = key.strip(), value.strip()
+        if not key or key in os.environ:
+            continue
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        elif " #" in value:
+            value = value.split(" #", 1)[0].rstrip()
+        os.environ[key] = value
+
+
+_load_dotenv()
+
+
 def _csv(name: str, default: str) -> list:
     return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
 

@@ -6,7 +6,9 @@ score is built, and the safeguards around outbound requests.
 
 ## 1. Environment variables
 
-All keys are **server-side only** (set them in `.env` locally and in the Render dashboard). The
+All keys are **server-side only**. Locally, copy `.env.example` to `.env` in the project root (git-ignored); it is
+loaded when the backend starts, and real environment variables always take precedence. On Render, set them in the
+dashboard. The
 frontend never receives a key. Every key is optional: a missing key is shown as *Not configured* in the
 result, never silently treated as "clean".
 
