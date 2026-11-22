@@ -4,6 +4,7 @@ Modular integration for AbuseIPDB, VirusTotal, IPinfo, and Google Safe Browsing 
 Operates safely without network execution or with honest 'Unavailable' flags if API keys are absent.
 """
 
+import base64
 import json
 import urllib.request
 import urllib.error
@@ -29,12 +30,14 @@ class ThreatIntelService:
 
         # Check VirusTotal API if key is present
         if settings.VIRUSTOTAL_API_KEY:
-            try:
-                intel_result["enabled"] = True
-                intel_result["provider"] = "VirusTotal API"
-                intel_result["details"] = "VirusTotal reputation checked."
-            except Exception as e:
-                intel_result["details"] = f"VirusTotal check failed: {str(e)}"
+            intel_result["provider"] = "VirusTotal API"
+            vt = ThreatIntelService.query_virustotal_url(url)
+            intel_result["enabled"] = vt["available"]
+            intel_result["details"] = vt["note"]
+            intel_result["status"] = vt["status"]
+            intel_result["threat_score"] = vt["threat_score"]
+            intel_result["malicious_count"] = vt.get("malicious_count", 0)
+            intel_result["suspicious_count"] = vt.get("suspicious_count", 0)
 
         # Check Google Safe Browsing API if key is present
         elif settings.GOOGLE_SAFE_BROWSING_API_KEY:
@@ -46,6 +49,51 @@ class ThreatIntelService:
                 intel_result["details"] = f"Google Safe Browsing check failed: {str(e)}"
 
         return intel_result
+
+    @staticmethod
+    def query_virustotal_url(url: str) -> Dict[str, Any]:
+        """
+        Looks up an existing VirusTotal v3 report for a URL (read-only; the URL is
+        never submitted for new scanning). Returns a threat_score of 0-100.
+        """
+        url_id = base64.urlsafe_b64encode(url.encode("utf-8")).decode("ascii").rstrip("=")
+        req = urllib.request.Request(
+            f"https://www.virustotal.com/api/v3/urls/{url_id}",
+            headers={
+                "x-apikey": settings.VIRUSTOTAL_API_KEY,
+                "Accept": "application/json",
+                "User-Agent": "CatchThePhish-ThreatIntelligence/2.0",
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=3.5) as resp:
+                attrs = json.loads(resp.read().decode("utf-8")).get("data", {}).get("attributes", {})
+            stats = attrs.get("last_analysis_stats", {})
+            malicious = int(stats.get("malicious", 0))
+            suspicious = int(stats.get("suspicious", 0))
+            if malicious > 0:
+                score, status = min(100.0, 40.0 + malicious * 10.0 + suspicious * 5.0), "malicious"
+            elif suspicious > 0:
+                score, status = min(60.0, 30.0 + suspicious * 10.0), "suspicious"
+            else:
+                score, status = 0.0, "clean"
+            return {
+                "available": True,
+                "threat_score": score,
+                "status": status,
+                "malicious_count": malicious,
+                "suspicious_count": suspicious,
+                "note": f"VirusTotal: {malicious} vendors flagged this URL as malicious, {suspicious} as suspicious.",
+            }
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                note = "VirusTotal has no existing report for this URL."
+            else:
+                note = f"VirusTotal API HTTP {e.code}: {e.reason}"
+            return {"available": e.code == 404, "threat_score": 0.0, "status": "unknown", "note": note}
+        except Exception as e:
+            return {"available": False, "threat_score": 0.0, "status": "unknown",
+                    "note": f"VirusTotal query error: {str(e)}"}
 
     @staticmethod
     def query_abuseipdb(ip: str) -> Dict[str, Any]:
