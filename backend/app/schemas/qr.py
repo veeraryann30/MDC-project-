@@ -44,4 +44,13 @@ class QRScanResponse(BaseModel):
     threat_intel: Optional[Dict[str, Any]] = None
     origin_intelligence: Optional[Dict[str, Any]] = None
     detection_method: str = "OpenCV QR Decoding + 34-Feature URL Lexical Inspection + ML Inference"
+    # Unified threat-engine output for URL payloads
+    verdict: Optional[str] = None
+    engine: Optional[Dict[str, Any]] = None
+    intelligence: Optional[Dict[str, Any]] = None
+    redirect: Optional[Dict[str, Any]] = None
+    ai_analysis: Optional[Dict[str, Any]] = None
+    ml_models: Optional[Dict[str, Any]] = None
+    features: Optional[Dict[str, Any]] = None
+    details: Optional[Dict[str, Any]] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)

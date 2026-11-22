@@ -77,6 +77,11 @@ const STEPS = {
     { strong: 'Check with the sender.', rest: "If it came from someone you know or a company, confirm using a phone number or app you already trust, not the one in the message." },
     { strong: 'When unsure, skip the link.', rest: 'Type the official website address into your browser instead.' },
   ],
+  unverified: [
+    { strong: "Treat it as unknown, not as safe.", rest: 'Nothing looked wrong, but no outside security service could confirm this link either.' },
+    { strong: "Don't enter passwords or codes until you're sure.", rest: 'Check with whoever sent it, using a phone number or app you already trust.' },
+    { strong: 'When unsure, type the official address yourself.', rest: 'That avoids any hidden redirect or look-alike address.' },
+  ],
   safe: [
     { strong: 'Check the message makes sense.', rest: 'A safe-looking link can still come from a scam message, so make sure you were expecting it.' },
     { strong: 'Read the address before you sign in.', rest: 'Make sure the name in your browser bar is spelled exactly as the real site.' },
@@ -87,6 +92,7 @@ const TITLES = {
   danger: { heading: 'Why this is risky', sub: 'The main warning signs we found, in plain English.' },
   suspicious: { heading: 'Why this looks suspicious', sub: 'The main things that made us cautious, in plain English.' },
   safe: { heading: 'Why this looks okay', sub: "What we checked and didn't find a problem with." },
+  unverified: { heading: 'Why we can\'t call this safe', sub: 'Low warning signs, but nothing independent confirmed it.' },
 };
 
 /**
@@ -127,6 +133,13 @@ export function explainResult(result) {
         };
       });
 
+    if (reasons.length === 0 && state === 'unverified') {
+      reasons = [{
+        title: 'No warning signs, but no confirmation either',
+        plain: 'Our checks found no obvious tricks, but no outside security service has verified this link, so it is treated as unknown rather than safe.',
+      }];
+      note = 'A brand-new scam link can look clean for hours before security services list it.';
+    }
     if (reasons.length === 0) {
       reasons = [{
         title: 'It matches patterns seen in scam links',

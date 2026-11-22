@@ -203,7 +203,7 @@ export function playScanResultSound(result) {
       // Not unlocked by a gesture: stay silent rather than queueing a late, surprising sound.
       return verdict;
     }
-    SOUNDS[verdict]();
+    (SOUNDS[verdict] || SOUNDS.suspicious)();
   } catch {
     /* audio is optional */
   }

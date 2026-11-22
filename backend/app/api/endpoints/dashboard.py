@@ -24,6 +24,7 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
     url_safe = db.query(func.count(ScanRecord.id)).filter(ScanRecord.classification == "SAFE").scalar() or 0
     url_susp = db.query(func.count(ScanRecord.id)).filter(ScanRecord.classification == "SUSPICIOUS").scalar() or 0
     url_phish = db.query(func.count(ScanRecord.id)).filter(ScanRecord.classification == "PHISHING").scalar() or 0
+    url_unverified = db.query(func.count(ScanRecord.id)).filter(ScanRecord.classification == "UNVERIFIED").scalar() or 0
 
     # 2. Multi-channel scam analysis metrics
     scam_total = db.query(func.count(ScamAnalysisRecord.id)).scalar() or 0
@@ -137,6 +138,7 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
         safe_count=safe_combined,
         suspicious_count=suspicious_combined,
         phishing_count=phishing_combined,
+        unverified_count=url_unverified,
         avg_risk_score=overall_avg,
         top_threat_indicators=top_indicators,
         recent_activity=recent_activity,
@@ -155,3 +157,79 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
         top_scam_categories=top_categories,
         channel_breakdown=channel_breakdown
     )
+
+
+_LEGACY_TO_VERDICT = {"SAFE": "SAFE", "SUSPICIOUS": "SUSPICIOUS", "PHISHING": "DANGEROUS", "UNVERIFIED": "UNVERIFIED"}
+
+
+@router.get("/dashboard/security")
+def get_security_overview(db: Session = Depends(get_db)):
+    """Real counts from stored scans: URL vs QR volume, verdict distribution, 14-day trend, per-source detections."""
+    rows = db.query(
+        ScanRecord.verdict, ScanRecord.classification, ScanRecord.scan_type,
+        ScanRecord.detection_method, ScanRecord.created_at,
+    ).all()
+
+    dist = Counter()
+    url_n = qr_n = 0
+    timeline = {}
+    for verdict, classification, scan_type, method, created in rows:
+        v = verdict or _LEGACY_TO_VERDICT.get(str(classification or "").upper(), "UNVERIFIED")
+        dist[v] += 1
+        is_qr = scan_type == "QR" or str(method or "").startswith("QR")
+        if is_qr:
+            qr_n += 1
+        else:
+            url_n += 1
+        if created:
+            day = created.strftime("%Y-%m-%d")
+            slot = timeline.setdefault(day, {"date": day, "scans": 0, "dangerous": 0, "suspicious": 0})
+            slot["scans"] += 1
+            if v == "DANGEROUS":
+                slot["dangerous"] += 1
+            elif v == "SUSPICIOUS":
+                slot["suspicious"] += 1
+
+    # QR scans of non-URL payloads (text, Wi-Fi) leave no ScanRecord, so count QR scans from their own log.
+    qr_total = db.query(func.count(ScamAnalysisRecord.id)).filter(ScamAnalysisRecord.analysis_type == "QR").scalar() or 0
+
+    from datetime import timedelta
+    today = datetime.utcnow().date()
+    trend = []
+    for i in range(13, -1, -1):
+        d = (today - timedelta(days=i)).strftime("%Y-%m-%d")
+        trend.append(timeline.get(d, {"date": d, "scans": 0, "dangerous": 0, "suspicious": 0}))
+
+    recent_rows = db.query(ScanRecord).order_by(ScanRecord.created_at.desc()).limit(10).all()
+    recent = [{
+        "id": r.id,
+        "type": "QR" if (r.scan_type == "QR" or str(r.detection_method or "").startswith("QR")) else "URL",
+        "domain": r.domain,
+        "score": r.risk_score,
+        "verdict": r.verdict or _LEGACY_TO_VERDICT.get(str(r.classification or "").upper(), "UNVERIFIED"),
+        "created_at": r.created_at,
+    } for r in recent_rows]
+
+    sources = {}
+    for (rep,) in db.query(ScanRecord.engine_report).filter(ScanRecord.engine_report.isnot(None)).order_by(ScanRecord.created_at.desc()).limit(300).all():
+        for name, s in ((rep or {}).get("sources") or {}).items():
+            slot = sources.setdefault(name, {"source": name, "queried": 0, "flagged": 0})
+            if s.get("status") in ("ok", "no_data"):
+                slot["queried"] += 1
+                if s.get("status") == "ok" and s.get("verdict") in ("malicious", "suspicious"):
+                    slot["flagged"] += 1
+
+    return {
+        "totals": {
+            "urls_scanned": url_n,
+            "qr_scanned": max(qr_total, qr_n),
+            "malicious": dist["DANGEROUS"],
+            "suspicious": dist["SUSPICIOUS"],
+            "safe": dist["SAFE"],
+            "unverified": dist["UNVERIFIED"],
+        },
+        "verdict_distribution": {k: dist[k] for k in ("SAFE", "UNVERIFIED", "SUSPICIOUS", "DANGEROUS")},
+        "timeline": trend,
+        "recent": recent,
+        "source_detections": list(sources.values()),
+    }

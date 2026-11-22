@@ -13,8 +13,12 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
+from backend.app.core.config import settings
+
 WINDOW_SECONDS = 60
 AUTH_LIMIT_PER_MINUTE = 10  # login / register attempts
+# Endpoints that fan out to third-party APIs (or make urlscan.io visit a page) get a stricter bucket.
+SCAN_PATH_SUFFIXES = ("/scan", "/scan/bulk", "/scan/qr", "/qr", "/scan/qr-json", "/qr/json", "/urlscan/submit")
 BULK_COST = 5               # a bulk scan counts as this many requests
 
 
@@ -37,8 +41,13 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         path = request.url.path
-        bucket = "auth" if "/auth/" in path else "post"
-        limit = AUTH_LIMIT_PER_MINUTE if bucket == "auth" else self.per_minute
+        if "/auth/" in path:
+            bucket, limit = "auth", AUTH_LIMIT_PER_MINUTE
+        elif path.rstrip("/").endswith(SCAN_PATH_SUFFIXES):
+            bucket = "scan"
+            limit = min(self.per_minute, settings.SCAN_RATE_LIMIT_PER_MINUTE) if settings.SCAN_RATE_LIMIT_PER_MINUTE > 0 else self.per_minute
+        else:
+            bucket, limit = "post", self.per_minute
         key = (_client_ip(request), bucket)
 
         now = time.monotonic()

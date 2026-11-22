@@ -26,74 +26,38 @@ from backend.app.services.ml_service import MLService
 from backend.app.services.threat_intel import ThreatIntelService
 from backend.app.services.scorer import ScorerService
 from backend.app.services.qr_scanner_service import QRScannerService
+from backend.app.services.url_analysis_service import UrlAnalysisService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-def _analyze_url(raw_url: str, db: Session) -> ScanResponse:
-    """Runs the full static analysis for one URL and persists it. Raises on failure (caller rolls back)."""
-    # 1. Feature Extraction (strictly static parsing without network fetching)
-    extracted = extract_features(raw_url)
-    features = extracted["features"]
-    details = extracted["details"]
-    domain = details["domain"]
-
-    # 2. Rule Engine & Explainability Generation
-    threats_detected, safe_indicators, rule_score = RuleEngineService.evaluate(features, details)
-
-    # 3. Machine Learning Probability Prediction
-    ml_score, is_phish = MLService.predict(features)
-
-    # 4. Optional Threat Intelligence Check
-    intel = ThreatIntelService.check_url(raw_url, domain)
-    threat_intel_score = intel.get("threat_score", 0.0)
-
-    # 5. Hybrid Risk Scoring & Classification (Risk score remains purely lexical/ML/heuristic)
-    risk_breakdown_dict = ScorerService.calculate_risk(
-        ml_score=ml_score,
-        rule_score=rule_score,
-        threat_intel_score=threat_intel_score,
-        threats_detected=threats_detected,
-        domain=domain
-    )
-
-    final_score = risk_breakdown_dict["final_score"]
-    classification = risk_breakdown_dict["classification"]
-
-    # 6. Persist scan in SQLite database for history & dashboard
-    scan_record = ScanRecord(
-        url=raw_url,
-        domain=domain,
-        risk_score=final_score,
-        classification=classification,
-        ml_score=ml_score,
-        rule_score=rule_score,
-        threat_intel_score=threat_intel_score,
-        detected_threats=threats_detected,
-        features=features,
-        detection_method="ML + Rule Heuristics + Threat Intel",
-        created_at=datetime.utcnow()
-    )
-    db.add(scan_record)
-    db.commit()
-    db.refresh(scan_record)
-
-    # 7. Construct response
+def _analyze_url(raw_url: str, db: Session, external: bool = True) -> ScanResponse:
+    """
+    Runs the unified detection pipeline for one URL and persists it. Raises on failure (caller rolls back).
+    The URL is never fetched; reputation lookups, short-link expansion and the AI explanation are
+    described in url_analysis_service.
+    """
+    r = UrlAnalysisService.analyze(raw_url, db, external=external, persist=True)
     return ScanResponse(
-        id=scan_record.id,
+        id=r["id"],
         url=raw_url,
-        domain=domain,
-        risk_score=final_score,
-        classification=classification,
-        breakdown=RiskBreakdown(**risk_breakdown_dict),
-        threats_detected=[ThreatIndicator(**t) for t in threats_detected],
-        safe_indicators=[ThreatIndicator(**s) for s in safe_indicators],
-        features=features,
-        details=details,
-        detection_method="ML + Rule Heuristics + Threat Intel",
-        created_at=scan_record.created_at
+        domain=r["domain"],
+        risk_score=r["risk_score"],
+        classification=r["classification"],
+        breakdown=RiskBreakdown(**r["breakdown"]),
+        threats_detected=[ThreatIndicator(**t) for t in r["threats_detected"]],
+        safe_indicators=[ThreatIndicator(**s) for s in r["safe_indicators"]],
+        features=r["features"],
+        details=r["details"],
+        detection_method=r["detection_method"],
+        created_at=r["created_at"],
+        verdict=r["verdict"],
+        scan_type=r["scan_type"],
+        engine=r["engine"],
+        intelligence=r["intelligence"],
+        redirect=r["redirect"],
+        ai_analysis=r["ai_analysis"],
     )
-
 
 @router.post("/scan", response_model=ScanResponse)
 def scan_url(payload: ScanRequest, db: Session = Depends(get_db)):
@@ -114,7 +78,7 @@ def scan_bulk(payload: BulkScanRequest, db: Session = Depends(get_db)):
     items = []
     for raw_url in payload.urls:
         try:
-            result = _analyze_url(raw_url, db)
+            result = _analyze_url(raw_url, db, external=False)
             items.append(BulkScanItem(
                 url=raw_url,
                 ok=True,
@@ -200,3 +164,5 @@ def scan_qr_json(
             status_code=400,
             detail="Invalid base64 payload."
         )
+
+

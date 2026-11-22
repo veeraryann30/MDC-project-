@@ -9,7 +9,8 @@ from backend.app.api.endpoints import (
     auth,
     scam,
     academy,
-    feedback
+    feedback,
+    engines
 )
 
 api_router = APIRouter()
@@ -33,3 +34,6 @@ api_router.include_router(academy.router)
 api_router.include_router(history.router, tags=["History"])
 api_router.include_router(dashboard.router, tags=["Dashboard"])
 api_router.include_router(ml_stats.router, tags=["Machine Learning"])
+
+# Detection engine status and on-demand urlscan.io deep scan
+api_router.include_router(engines.router, tags=["Detection Engines"])

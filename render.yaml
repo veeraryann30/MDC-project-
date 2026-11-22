@@ -30,3 +30,11 @@ services:
         sync: false
       - key: IPINFO_API_KEY
         sync: false
+      - key: GOOGLE_WEB_RISK_API_KEY
+        sync: false
+      - key: URLHAUS_AUTH_KEY
+        sync: false
+      - key: URLSCAN_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false

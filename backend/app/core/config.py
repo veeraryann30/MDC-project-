@@ -25,6 +25,27 @@ class Settings:
     ABUSEIPDB_API_KEY: str = os.getenv("ABUSEIPDB_API_KEY", "")
     IPINFO_API_KEY: str = os.getenv("IPINFO_API_KEY", "")
 
+    # Unified threat-detection engine (all optional: a missing key is reported honestly as
+    # "not configured" in every result, never silently treated as "clean").
+    GOOGLE_WEB_RISK_API_KEY: str = os.getenv("GOOGLE_WEB_RISK_API_KEY", "")
+    URLHAUS_AUTH_KEY: str = os.getenv("URLHAUS_AUTH_KEY", "")      # abuse.ch Auth-Key (free)
+    URLSCAN_API_KEY: str = os.getenv("URLSCAN_API_KEY", "")
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    GROQ_MODEL: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+
+    # Outbound API budgets (calls per minute) so the platform stays inside each provider's free tier.
+    VT_REQUESTS_PER_MINUTE: int = int(os.getenv("VT_REQUESTS_PER_MINUTE", "4"))
+    WEB_RISK_REQUESTS_PER_MINUTE: int = int(os.getenv("WEB_RISK_REQUESTS_PER_MINUTE", "60"))
+    URLHAUS_REQUESTS_PER_MINUTE: int = int(os.getenv("URLHAUS_REQUESTS_PER_MINUTE", "30"))
+    URLSCAN_SEARCH_PER_MINUTE: int = int(os.getenv("URLSCAN_SEARCH_PER_MINUTE", "20"))
+    URLSCAN_SUBMIT_PER_MINUTE: int = int(os.getenv("URLSCAN_SUBMIT_PER_MINUTE", "5"))
+    GROQ_REQUESTS_PER_MINUTE: int = int(os.getenv("GROQ_REQUESTS_PER_MINUTE", "20"))
+    INTEL_CACHE_TTL_SECONDS: int = int(os.getenv("INTEL_CACHE_TTL_SECONDS", "3600"))
+    INTEL_TIMEOUT_SECONDS: float = float(os.getenv("INTEL_TIMEOUT_SECONDS", "6"))
+
+    # Stricter per-IP limit for the scan endpoints (they fan out to paid/limited third-party APIs).
+    SCAN_RATE_LIMIT_PER_MINUTE: int = int(os.getenv("SCAN_RATE_LIMIT_PER_MINUTE", "20"))
+
     # CORS: comma-separated list of allowed browser origins, e.g.
     # CORS_ORIGINS=https://catch-the-phish.vercel.app
     # Never "*": the API accepts credentials (bearer tokens).

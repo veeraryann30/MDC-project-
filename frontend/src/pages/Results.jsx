@@ -7,6 +7,8 @@ import {
 import VerdictPanel from '../components/scanner/VerdictPanel';
 import WhyRiskyPanel from '../components/results/WhyRiskyPanel';
 import FeedbackBar from '../components/results/FeedbackBar';
+import AiAnalystCard from '../components/results/AiAnalystCard';
+import ThreatEngineReport from '../components/results/ThreatEngineReport';
 
 /**
  * THREAT FINGERPRINT — Security Analysis Report
@@ -61,7 +63,19 @@ export default function Results({ result, setActivePage }) {
     summary: 'The link matches legitimate structural patterns and displays zero anomalous brand or lexical indicators.'
   };
 
-  if (normalizedScore >= 61 || classification === 'PHISHING' || classification === 'DANGEROUS') {
+  const engineVerdict = String(result.verdict || '').toUpperCase();
+
+  if (engineVerdict === 'UNVERIFIED' || classification === 'UNVERIFIED') {
+    // Low risk indicators, but no independent source confirmed the link: unknown, never "safe".
+    statusVerdict = {
+      title: 'Not verified — treat as unknown',
+      label: 'UNVERIFIED',
+      color: '#64748B',
+      badgeClass: 'bg-slate-100 border-[#E2E8F0] text-[#475569]',
+      icon: AlertCircle,
+      summary: 'We found few warning signs, but no reputation source could confirm this link. Unknown links should not be trusted.'
+    };
+  } else if (normalizedScore >= 61 || classification === 'PHISHING' || classification === 'DANGEROUS') {
     statusVerdict = {
       title: 'High risk detected',
       label: 'HIGH RISK',
@@ -131,7 +145,7 @@ Verification Protocol: Zero-Execution Static Sandbox`;
 
       {/* 2. Verdict: three visual states (safe / suspicious / dangerous), driven by the real scan result */}
       <VerdictPanel
-        state={statusVerdict.label === 'HIGH RISK' ? 'danger' : statusVerdict.label === 'SUSPICIOUS' ? 'suspicious' : 'safe'}
+        state={statusVerdict.label === 'HIGH RISK' ? 'danger' : statusVerdict.label === 'SUSPICIOUS' ? 'suspicious' : statusVerdict.label === 'UNVERIFIED' ? 'unverified' : 'safe'}
         score={normalizedScore}
         title={statusVerdict.title}
         summary={breakdown.summary_explanation || statusVerdict.summary}
@@ -142,6 +156,10 @@ Verification Protocol: Zero-Execution Static Sandbox`;
         ruleScore={breakdown.rule_score}
         https={!!features.has_https}
       />
+
+      {/* 2b. AI analyst (explains the evidence) and the unified engine's source-by-source report */}
+      <AiAnalystCard analysis={result.ai_analysis || result.engine?.ai_analysis} />
+      <ThreatEngineReport result={result} />
 
       {/* 3. Plain-English reasons and next steps, then a way to tell us if the verdict is wrong */}
       <WhyRiskyPanel result={result} />
@@ -193,7 +211,7 @@ Verification Protocol: Zero-Execution Static Sandbox`;
                   <span className="text-base font-bold text-[#2563EB]">
                     {breakdown.ml_score ?? 0}%
                   </span>
-                  <span className="text-[10px] text-[#64748B] block mt-0.5">Random Forest</span>
+                  <span className="text-[10px] text-[#64748B] block mt-0.5">Random Forest + Logistic Regression</span>
                 </div>
                 <div className="p-3 rounded-xl bg-[#F5F9FF] border border-[#E2E8F0]">
                   <span className="text-[10px] text-[#64748B] block">Heuristic Rules</span>
@@ -323,7 +341,7 @@ Verification Protocol: Zero-Execution Static Sandbox`;
                   <span><strong className="text-[#111827]">Report malicious indicator:</strong> Submit this link to your security team or phishing takedown registries.</span>
                 </li>
               </ul>
-            ) : normalizedScore >= 31 ? (
+            ) : normalizedScore >= 31 || statusVerdict.label === 'UNVERIFIED' ? (
               <ul className="space-y-2 text-xs text-[#64748B]">
                 <li className="flex items-start gap-2">
                   <span className="text-[#D97706] font-bold">1.</span>

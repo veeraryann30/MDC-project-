@@ -26,6 +26,27 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
+def ensure_schema_upgrades():
+    """
+    Lightweight, additive migration: ``create_all`` never alters existing tables, so columns added
+    after a database was first created are added here (idempotent; works on SQLite and PostgreSQL).
+    """
+    from sqlalchemy import inspect, text
+
+    wanted = {
+        "scan_records": [("verdict", "VARCHAR(20)"), ("scan_type", "VARCHAR(10)"), ("engine_report", "JSON")],
+    }
+    insp = inspect(engine)
+    with engine.begin() as conn:
+        for table, cols in wanted.items():
+            if table not in insp.get_table_names():
+                continue
+            existing = {c["name"] for c in insp.get_columns(table)}
+            for name, ddl in cols:
+                if name not in existing:
+                    conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}"))
+
+
 def get_db():
     db = SessionLocal()
     try:

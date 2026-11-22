@@ -13,7 +13,7 @@ if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR)
 
 from backend.app.core.config import settings
-from backend.app.database.session import engine, Base, SessionLocal
+from backend.app.database.session import engine, Base, SessionLocal, ensure_schema_upgrades
 from backend.app.database.models import ScanRecord, PhishTraceRecord, User, ScamAnalysisRecord, AcademyProgress, FeedbackRecord
 from backend.app.api.api import api_router
 from ml.features.extractor import extract_features
@@ -27,6 +27,7 @@ from backend.app.services.investment_scam_service import InvestmentScamService
 
 # Initialize SQLite database schema
 Base.metadata.create_all(bind=engine)
+ensure_schema_upgrades()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

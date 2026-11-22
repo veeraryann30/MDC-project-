@@ -30,7 +30,7 @@ def get_history(
         s = f"%{search.strip().lower()}%"
         query = query.filter((ScanRecord.url.ilike(s)) | (ScanRecord.domain.ilike(s)))
 
-    if classification and classification.upper() in ["SAFE", "SUSPICIOUS", "PHISHING"]:
+    if classification and classification.upper() in ["SAFE", "SUSPICIOUS", "PHISHING", "UNVERIFIED"]:
         query = query.filter(ScanRecord.classification == classification.upper())
 
     total = query.count()
@@ -52,7 +52,9 @@ def get_history(
                 detected_threats_count=len(threats_list),
                 detected_threats=threats_list,
                 detection_method=r.detection_method or "ML + Rule Heuristics",
-                created_at=r.created_at
+                created_at=r.created_at,
+                verdict=r.verdict,
+                scan_type=r.scan_type,
             )
         )
 

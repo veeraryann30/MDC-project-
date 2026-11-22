@@ -9,6 +9,8 @@ const STATES = {
   safe: { label: 'Low risk', color: 'var(--ctp-safe)', pulses: 1 },
   suspicious: { label: 'Suspicious', color: 'var(--ctp-warn)', pulses: 1 },
   danger: { label: 'Dangerous', color: 'var(--ctp-danger)', pulses: 2 },
+  // Low risk indicators but nothing independent confirmed the link: shown as unknown, never as safe.
+  unverified: { label: 'Unverified', color: 'var(--ctp-text-2)', pulses: 1 },
 };
 
 const R = 64;
@@ -21,7 +23,7 @@ function StateGlyph({ state, color, size = 18 }) {
   const common = { fill: 'none', stroke: color, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
-      {state === 'suspicious' ? (
+      {state === 'suspicious' || state === 'unverified' ? (
         <>
           <motion.path d="M12 3.2 22 20.5H2L12 3.2z" {...common} initial={{ pathLength: reduced ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.7, ease: EASE }} />
           <motion.path d="M12 10v4.6M12 17.6v.2" {...common} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.3 }} />
@@ -98,7 +100,7 @@ function ScaleBar({ score, color }) {
         />
       </div>
       <div className="mt-2 flex justify-between text-[11px] text-ctp-text-muted">
-        <span>Safe</span><span>Suspicious</span><span>Dangerous</span>
+        <span>Safe (0-30)</span><span>Suspicious (31-60)</span><span>Dangerous (61-100)</span>
       </div>
     </div>
   );

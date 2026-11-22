@@ -13,6 +13,10 @@ import urllib.error
 from collections import OrderedDict
 from typing import Dict, Any, Optional
 from backend.app.core.config import settings
+from backend.app.services.intel_common import RateBudget
+
+
+_VT_BUDGET = RateBudget(settings.VT_REQUESTS_PER_MINUTE)
 
 
 class ThreatIntelService:
@@ -63,9 +67,12 @@ class ThreatIntelService:
         cached = ThreatIntelService._vt_cache_get(url_id)
         if cached is not None:
             return cached
+        if not _VT_BUDGET.allow():
+            return {"available": False, "rate_limited": True, "threat_score": 0.0, "status": "unknown",
+                    "note": "VirusTotal call budget reached (free tier allows about 4 lookups/minute); retry shortly."}
         result = ThreatIntelService._query_virustotal_url_live(url_id)
         # Cache definitive answers only (incl. "no report"); retry errors/timeouts next time.
-        if result["status"] != "unknown" or result["available"]:
+        if (result["status"] != "unknown" or result["available"]) and not result.get("rate_limited"):
             ThreatIntelService._vt_cache_set(url_id, result)
         return result
 
@@ -111,12 +118,17 @@ class ThreatIntelService:
             stats = attrs.get("last_analysis_stats", {})
             malicious = int(stats.get("malicious", 0))
             suspicious = int(stats.get("suspicious", 0))
+            engines = malicious + suspicious + int(stats.get("harmless", 0)) + int(stats.get("undetected", 0))
             if malicious > 0:
                 score, status = min(100.0, 40.0 + malicious * 10.0 + suspicious * 5.0), "malicious"
             elif suspicious > 0:
                 score, status = min(60.0, 30.0 + suspicious * 10.0), "suspicious"
-            else:
+            elif engines >= 10:
                 score, status = 0.0, "clean"
+            else:
+                # Report exists but too few engines analysed it to call it clean.
+                return {"available": True, "threat_score": 0.0, "status": "unknown",
+                        "note": f"VirusTotal report exists but only {engines} engine(s) analysed it; not enough to judge."}
             return {
                 "available": True,
                 "threat_score": score,
@@ -128,6 +140,9 @@ class ThreatIntelService:
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 note = "VirusTotal has no existing report for this URL."
+            elif e.code == 429:
+                return {"available": False, "rate_limited": True, "threat_score": 0.0, "status": "unknown",
+                        "note": "VirusTotal rate limit reached (HTTP 429); retry shortly."}
             else:
                 note = f"VirusTotal API HTTP {e.code}: {e.reason}"
             return {"available": e.code == 404, "threat_score": 0.0, "status": "unknown", "note": note}

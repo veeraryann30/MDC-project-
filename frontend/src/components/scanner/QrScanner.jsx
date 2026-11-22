@@ -1,10 +1,106 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   QrCode, UploadCloud, FileText, CheckCircle2, AlertTriangle, 
   XCircle, Copy, Check, ArrowRight, RefreshCw, Shield, Lock, 
-  ExternalLink, File, HelpCircle, AlertOctagon
+  ExternalLink, HelpCircle, AlertOctagon, Camera, X
 } from 'lucide-react';
 import { api } from '../../services/api';
+import AiAnalystCard from '../results/AiAnalystCard';
+import ThreatEngineReport from '../results/ThreatEngineReport';
+
+/**
+ * Live camera capture. A frame is only grabbed when a QR code is seen (detected locally with jsQR) or the
+ * user presses Capture; the frame is then sent through the same backend scan as an uploaded image.
+ * The scanned address is never opened. Everything is released when the panel closes.
+ */
+function CameraCapture({ onCapture, onClose }) {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [status, setStatus] = useState('starting'); // starting | scanning | denied | unsupported
+  const doneRef = useRef(false);
+
+  const grab = () => new Promise((resolve) => {
+    const v = videoRef.current;
+    const cv = canvasRef.current;
+    if (!v || !cv || !v.videoWidth) { resolve(null); return; }
+    cv.width = v.videoWidth;
+    cv.height = v.videoHeight;
+    cv.getContext('2d', { willReadFrequently: true }).drawImage(v, 0, 0);
+    cv.toBlob((b) => resolve(b), 'image/png');
+  });
+
+  const finish = async () => {
+    if (doneRef.current) return;
+    const blob = await grab();
+    if (!blob) return;
+    doneRef.current = true;
+    onCapture(new File([blob], 'camera-capture.png', { type: 'image/png' }));
+  };
+
+  useEffect(() => {
+    let stream;
+    let timer;
+    let cancelled = false;
+    (async () => {
+      if (!navigator.mediaDevices?.getUserMedia) { setStatus('unsupported'); return; }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+      } catch {
+        if (!cancelled) setStatus('denied');
+        return;
+      }
+      if (cancelled) { stream.getTracks().forEach((t) => t.stop()); return; }
+      const v = videoRef.current;
+      v.srcObject = stream;
+      await v.play().catch(() => {});
+      setStatus('scanning');
+      const { default: jsQR } = await import('jsqr');
+      timer = setInterval(() => {
+        const cv = canvasRef.current;
+        if (!v.videoWidth || !cv || doneRef.current) return;
+        const w = Math.min(640, v.videoWidth);
+        const h = Math.round((v.videoHeight / v.videoWidth) * w);
+        cv.width = w; cv.height = h;
+        const ctx = cv.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(v, 0, 0, w, h);
+        const found = jsQR(ctx.getImageData(0, 0, w, h).data, w, h);
+        if (found?.data) finish();
+      }, 350);
+    })();
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+      stream?.getTracks().forEach((t) => t.stop());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="rounded-xl border border-[#E2E8F0] bg-[#0F172A] p-3 space-y-3">
+      <div className="relative overflow-hidden rounded-lg bg-black aspect-video flex items-center justify-center">
+        <video ref={videoRef} muted playsInline className="h-full w-full object-cover" aria-label="Camera preview" />
+        <canvas ref={canvasRef} className="hidden" />
+        {status === 'scanning' && (
+          <span aria-hidden="true" className="pointer-events-none absolute inset-6 rounded-lg border-2 border-[#60A5FA]/80 shadow-[0_0_0_9999px_rgba(15,23,42,0.35)]" />
+        )}
+        {status !== 'scanning' && (
+          <p role="status" className="absolute inset-0 flex items-center justify-center px-6 text-center text-xs text-slate-200">
+            {status === 'starting' && 'Starting camera…'}
+            {status === 'denied' && 'Camera access was blocked. Allow it in your browser settings, or upload an image instead.'}
+            {status === 'unsupported' && 'This browser or connection does not support camera access (HTTPS is required). Upload an image instead.'}
+          </p>
+        )}
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[11px] text-slate-300">Point the camera at a QR code. It is scanned only — the link is never opened.</p>
+        <div className="flex items-center gap-2 shrink-0">
+          <button type="button" onClick={finish} disabled={status !== 'scanning'} className="px-3 py-1.5 rounded-lg bg-[#2563EB] hover:bg-[#1E40AF] disabled:opacity-40 text-white text-xs font-semibold cursor-pointer">Capture</button>
+          <button type="button" onClick={onClose} aria-label="Close camera" className="p-1.5 rounded-lg text-slate-300 hover:bg-white/10 cursor-pointer"><X className="w-4 h-4" /></button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function QrScanner({ onScanComplete }) {
   const [file, setFile] = useState(null);
@@ -14,6 +110,7 @@ export default function QrScanner({ onScanComplete }) {
   const [error, setError] = useState('');
   const [scanResult, setScanResult] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
   
   const fileInputRef = useRef(null);
 
@@ -94,8 +191,16 @@ export default function QrScanner({ onScanComplete }) {
     }
   };
 
-  const handleScan = async () => {
-    if (!file) {
+  const handleCameraCapture = (capturedFile) => {
+    setCameraOpen(false);
+    handleFileSelect(capturedFile);
+    runScan(capturedFile);
+  };
+
+  const handleScan = () => runScan(file);
+
+  const runScan = async (target) => {
+    if (!target) {
       setError('Please select or drop a QR code file first.');
       return;
     }
@@ -105,7 +210,7 @@ export default function QrScanner({ onScanComplete }) {
     setScanResult(null);
 
     try {
-      const result = await api.scanQr(file);
+      const result = await api.scanQr(target);
       setScanResult(result);
     } catch (err) {
       setError(err.message || 'Failed to analyze QR code file. Please verify file format.');
@@ -134,6 +239,12 @@ export default function QrScanner({ onScanComplete }) {
           bg: 'bg-[#FFFBEB] border-[#FDE68A] text-[#D97706]',
           label: 'SUSPICIOUS LINK',
           icon: AlertTriangle
+        };
+      case 'Unverified':
+        return {
+          bg: 'bg-slate-100 border-[#E2E8F0] text-[#475569]',
+          label: 'UNVERIFIED LINK',
+          icon: HelpCircle
         };
       case 'Safe':
         return {
@@ -172,8 +283,10 @@ export default function QrScanner({ onScanComplete }) {
           </div>
         </div>
 
+        {cameraOpen && <CameraCapture onCapture={handleCameraCapture} onClose={() => setCameraOpen(false)} />}
+
         {/* Upload Drag-and-Drop Area */}
-        {!file ? (
+        {!file && !cameraOpen ? (
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -208,7 +321,7 @@ export default function QrScanner({ onScanComplete }) {
               </div>
             </div>
           </div>
-        ) : (
+        ) : cameraOpen ? null : (
           /* File Preview Card */
           <div className="p-4 rounded-xl bg-[#F5F9FF] border border-[#E2E8F0] flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in duration-150">
             <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -263,6 +376,19 @@ export default function QrScanner({ onScanComplete }) {
                 )}
               </button>
             </div>
+          </div>
+        )}
+
+        {!cameraOpen && (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => { setError(''); setScanResult(null); setCameraOpen(true); }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[#DBEAFE] bg-white hover:bg-[#F5F9FF] text-xs font-semibold text-[#2563EB] cursor-pointer transition-colors"
+            >
+              <Camera className="w-4 h-4" />
+              <span>Scan with camera</span>
+            </button>
           </div>
         )}
 
@@ -360,7 +486,7 @@ export default function QrScanner({ onScanComplete }) {
             </div>
 
             <div className="text-[10px] font-mono text-[#64748B] flex items-center justify-between pt-1">
-              <span>Zero-Execution Protocol: Payload inspected as inert text. Never dispatched to remote web servers.</span>
+              <span>Zero-Execution Protocol: the destination is never opened. Its address may be checked against threat-intelligence services.</span>
               {scanResult.is_url && scanResult.extracted_domain && (
                 <span className="font-semibold text-[#2563EB]">Domain: {scanResult.extracted_domain}</span>
               )}
@@ -424,6 +550,14 @@ export default function QrScanner({ onScanComplete }) {
             </div>
           </div>
 
+          {/* AI analyst + unified engine report (URL payloads) */}
+          {scanResult.is_url && scanResult.engine && (
+            <div className="space-y-5">
+              <AiAnalystCard analysis={scanResult.ai_analysis} />
+              <ThreatEngineReport result={{ ...scanResult, url: scanResult.extracted_url, is_qr: true }} />
+            </div>
+          )}
+
           {/* Deep Dive Action (if URL extracted) */}
           {scanResult.is_url && onScanComplete && (
             <div className="pt-2 border-t border-[#E2E8F0] flex justify-end">
@@ -433,7 +567,16 @@ export default function QrScanner({ onScanComplete }) {
                   url: scanResult.extracted_url,
                   domain: scanResult.extracted_domain,
                   risk_score: scanResult.risk_score,
-                  classification: scanResult.risk_classification === 'Malicious' ? 'PHISHING' : scanResult.risk_classification === 'Suspicious' ? 'SUSPICIOUS' : 'SAFE',
+                  id: scanResult.url_scan_id,
+                  classification: scanResult.risk_classification === 'Malicious' ? 'PHISHING' : scanResult.risk_classification === 'Suspicious' ? 'SUSPICIOUS' : scanResult.risk_classification === 'Unverified' ? 'UNVERIFIED' : 'SAFE',
+                  verdict: scanResult.verdict,
+                  engine: scanResult.engine,
+                  ai_analysis: scanResult.ai_analysis,
+                  intelligence: scanResult.intelligence,
+                  redirect: scanResult.redirect,
+                  features: scanResult.features || {},
+                  details: scanResult.details || {},
+                  is_qr: true,
                   breakdown: scanResult.url_breakdown || {
                     final_score: scanResult.risk_score,
                     ml_score: scanResult.risk_score,

@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { explainResult } from '../../lib/explain';
 
 const EASE = [0.16, 1, 0.3, 1];
-const COLORS = { safe: 'var(--ctp-safe)', suspicious: 'var(--ctp-warn)', danger: 'var(--ctp-danger)' };
+const COLORS = { safe: 'var(--ctp-safe)', suspicious: 'var(--ctp-warn)', danger: 'var(--ctp-danger)', unverified: 'var(--ctp-text-2)' };
 
 /**
  * Plain-English "why" + "what to do next" for non-technical readers.

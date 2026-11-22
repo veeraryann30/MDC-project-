@@ -103,9 +103,16 @@ export default function History({ setActivePage, setScanResult }) {
         },
         threats_detected: fullRecord.detected_threats || [],
         safe_indicators: [],
-        features: fullRecord.extracted_features || {},
+        features: fullRecord.features || fullRecord.extracted_features || {},
         details: {},
-        created_at: fullRecord.created_at
+        created_at: fullRecord.created_at,
+        // Unified-engine data (absent on scans recorded before the upgrade)
+        verdict: fullRecord.verdict || undefined,
+        engine: fullRecord.engine_report || undefined,
+        ai_analysis: fullRecord.engine_report?.ai_analysis || undefined,
+        intelligence: fullRecord.engine_report?.sources || undefined,
+        redirect: fullRecord.engine_report?.redirect || undefined,
+        is_qr: fullRecord.scan_type === 'QR',
       };
       setScanResult(mapped);
       setActivePage('results');
@@ -125,6 +132,14 @@ export default function History({ setActivePage, setScanResult }) {
         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold font-mono uppercase bg-red-50 text-[#DC2626] border border-red-200">
           <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
           <span>Blocked ({score})</span>
+        </span>
+      );
+    }
+    if (t === 'UNVERIFIED') {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold font-mono uppercase bg-slate-100 text-[#475569] border border-slate-300">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#64748B]" />
+          <span>Unverified ({score})</span>
         </span>
       );
     }
@@ -250,6 +265,7 @@ export default function History({ setActivePage, setScanResult }) {
             ) : (
               <>
                 <option value="PHISHING">Phishing Only</option>
+                <option value="UNVERIFIED">Unverified Only</option>
                 <option value="SUSPICIOUS">Suspicious Only</option>
                 <option value="SAFE">Safe Only</option>
               </>

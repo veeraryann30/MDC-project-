@@ -19,12 +19,14 @@ import pypdf
 from sqlalchemy.orm import Session
 
 from backend.app.database.models import ScanRecord, ScamAnalysisRecord
-from ml.features.extractor import extract_features
-from backend.app.services.rule_engine import RuleEngineService
-from backend.app.services.ml_service import MLService
-from backend.app.services.threat_intel import ThreatIntelService
-from backend.app.services.scorer import ScorerService
+import logging
+import os
+from backend.app.services import ai_analyst, net_safety
+from backend.app.services.url_analysis_service import UrlAnalysisService
 from backend.app.services.link_origin_service import LinkOriginService
+
+logger = logging.getLogger(__name__)
+MAX_IMAGE_PIXELS = 40_000_000  # decompression-bomb guard (e.g. 6300 x 6300)
 
 MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024  # 15 MB
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".pdf"}
@@ -81,6 +83,23 @@ class QRScannerService:
             return True, "application/pdf", ""
 
         return True, "image", ""
+
+    @staticmethod
+    def sanitize_filename(name: str) -> str:
+        """Uploaded names are user input: drop any path, control characters and excess length."""
+        base = os.path.basename((name or "").replace("\\", "/"))
+        base = re.sub(r"[^A-Za-z0-9._ -]", "_", base)[:80].strip(" .")
+        return base or "uploaded_qr_file"
+
+    @staticmethod
+    def _image_too_large(file_bytes: bytes) -> bool:
+        """Reads only the image header, so a small file declaring a huge canvas is rejected before decoding."""
+        try:
+            with Image.open(io.BytesIO(file_bytes)) as im:
+                w, h = im.size
+            return w * h > MAX_IMAGE_PIXELS
+        except Exception:
+            return False
 
     @staticmethod
     def _decode_cv_image(cv_img: np.ndarray) -> List[str]:
@@ -168,6 +187,8 @@ class QRScannerService:
                         break
                     for img_obj in page.images:
                         try:
+                            if cls._image_too_large(img_obj.data):
+                                continue
                             nparr = np.frombuffer(img_obj.data, np.uint8)
                             cv_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
                             if cv_img is not None:
@@ -181,6 +202,8 @@ class QRScannerService:
                 print(f"[!] PDF extraction warning: {pdf_err}")
         else:
             # Image file (PNG, JPG, JPEG)
+            if cls._image_too_large(file_bytes):
+                return []
             try:
                 nparr = np.frombuffer(file_bytes, np.uint8)
                 cv_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -288,6 +311,7 @@ class QRScannerService:
         Complete end-to-end QR Code Scam Detection pipeline.
         """
         file_size_kb = round(len(file_bytes) / 1024, 2)
+        file_name = cls.sanitize_filename(file_name)
 
         # 1. Validate file
         is_valid, file_type, val_err = cls.validate_file(file_name, file_bytes)
@@ -386,95 +410,56 @@ class QRScannerService:
                     "created_at": datetime.utcnow()
                 }
 
-            # Run through Catch the Phish existing URL scanning engine (Zero-Execution)
+            # Resolve the host once: internal/private destinations (incl. decimal/hex IP spellings and
+            # DNS names that point inward) are blocked and never sent to any third party.
+            target = net_safety.inspect_target(norm_url)
+            if target["blocked_private"]:
+                threat = {
+                    "id": "ssrf_private_network",
+                    "title": "Private / Internal Network Destination (SSRF)",
+                    "severity": "CRITICAL",
+                    "what_was_detected": f"The QR destination resolves to a non-public address. {target['reason']}",
+                    "why_it_matters": "Attack vector designed to probe intranet systems or cloud metadata services.",
+                }
+                return {
+                    "success": True, "status": "UNSAFE_PROTOCOL", "filename": file_name, "file_type": file_type,
+                    "file_size_kb": file_size_kb, "qr_count": len(extracted), "extracted_contents": extracted,
+                    "primary_content": primary_content, "is_url": True, "extracted_url": norm_url,
+                    "extracted_domain": urllib.parse.urlparse(norm_url).netloc,
+                    "risk_classification": "Malicious", "risk_score": 95.0, "risk_tier": "CRITICAL",
+                    "danger_explanation": "Destination points to an internal network address (SSRF threat).",
+                    "recommended_actions": [
+                        "Do not open or scan this QR code.",
+                        "This code attempts an internal network SSRF attack or dangerous protocol execution.",
+                        "Notify physical security or IT administrators if this QR was found on public signage.",
+                    ],
+                    "threats_detected": [threat], "safe_indicators": [], "verdict": "DANGEROUS",
+                    "created_at": datetime.utcnow(),
+                }
+
+            # Unified engine: ML (RF + LR), rules, VirusTotal / Web Risk / URLhaus / urlscan.io lookups,
+            # short-link expansion (shortener only), explanation. The destination is never opened.
             try:
-                extracted_features = extract_features(norm_url)
-                features = extracted_features["features"]
-                details = extracted_features["details"]
-                domain = details["domain"]
+                r = UrlAnalysisService.analyze(norm_url, db, external=True, persist=True, is_qr=True)
+                domain = r["domain"]
+                final_score = r["risk_score"]
+                verdict = r["verdict"]
+                threats_detected = r["threats_detected"]
+                safe_indicators = r["safe_indicators"]
+                ai = r["ai_analysis"] or {}
 
-                threats_detected, safe_indicators, rule_score = RuleEngineService.evaluate(features, details)
-                ml_score, is_phish = MLService.predict(features)
-                intel = ThreatIntelService.check_url(norm_url, domain)
-                threat_intel_score = intel.get("threat_score", 0.0)
+                risk_class = {"DANGEROUS": "Malicious", "SUSPICIOUS": "Suspicious", "SAFE": "Safe",
+                              "UNVERIFIED": "Unverified"}[verdict]
+                risk_tier = {"DANGEROUS": "CRITICAL" if final_score >= 85 else "HIGH", "SUSPICIOUS": "MODERATE",
+                             "SAFE": "SAFE", "UNVERIFIED": "UNVERIFIED"}[verdict]
 
-                risk_breakdown = ScorerService.calculate_risk(
-                    ml_score=ml_score,
-                    rule_score=rule_score,
-                    threat_intel_score=threat_intel_score,
-                    threats_detected=threats_detected,
-                    domain=domain
+                danger_explanation = ai.get("summary") or (
+                    f"Risk score {final_score}/100 ({verdict}). " + " ".join(r["engine"]["reasons"][:2])
                 )
-
-                final_score = risk_breakdown["final_score"]
-                classification = risk_breakdown["classification"]
-
-                # Optional Link Origin check
-                origin_intel = None
-                try:
-                    origin_intel = LinkOriginService.analyze(norm_url)
-                except Exception:
-                    pass
-
-                # Map classification to Safe | Suspicious | Malicious | Inconclusive
-                if classification == "PHISHING" or final_score >= 65:
-                    risk_class = "Malicious"
-                    risk_tier = "HIGH" if final_score < 85 else "CRITICAL"
-                elif classification == "SUSPICIOUS" or final_score >= 30:
-                    risk_class = "Suspicious"
-                    risk_tier = "MODERATE"
-                else:
-                    risk_class = "Safe"
-                    risk_tier = "SAFE"
-
-                # Generate contextual danger explanation
-                if risk_class == "Malicious":
-                    threat_titles = [t.get("title", "") for t in threats_detected[:3]]
-                    danger_explanation = (
-                        f"High-confidence phishing indicators identified in destination structure. "
-                        f"Identified cues: {', '.join(threat_titles) if threat_titles else 'Suspicious brand impersonation pattern'}. "
-                        f"The QR code is designed to lure victims into entering credentials or transferring funds."
-                    )
-                    actions = [
-                        "Do not open or follow this QR destination link on your mobile or desktop browser.",
-                        "Do not enter passwords, credit card numbers, or authorization codes.",
-                        "If this QR was placed on a parking meter, restaurant table, or bill payment, report sticker tampering."
-                    ]
-                elif risk_class == "Suspicious":
-                    danger_explanation = (
-                        f"Anomalous markers detected in the destination URL structure or domain reputation. "
-                        f"The link exhibits deceptive or atypical characteristics (score: {final_score}/100)."
-                    )
-                    actions = [
-                        "Exercise caution before proceeding.",
-                        "Verify the root domain matches the organization's official portal before clicking.",
-                        "Do not download files or install configuration profiles prompted by this destination."
-                    ]
-                else:
-                    danger_explanation = (
-                        "The destination domain matches legitimate architectural conventions and displays "
-                        "zero anomalous brand impersonation or deceptive lexical cues."
-                    )
-                    actions = [
-                        "Link appears benign based on static lexical analysis and recognized domain conventions.",
-                        "Always confirm that the mobile browser displays valid HTTPS encryption when loading."
-                    ]
-
-                # Persist in SQLite database
-                scan_record = ScanRecord(
-                    url=norm_url,
-                    domain=domain,
-                    risk_score=final_score,
-                    classification=classification,
-                    ml_score=ml_score,
-                    rule_score=rule_score,
-                    threat_intel_score=threat_intel_score,
-                    detected_threats=threats_detected,
-                    features=features,
-                    detection_method="QR Code OpenCV + ML + Rule Heuristics",
-                    created_at=datetime.utcnow()
-                )
-                db.add(scan_record)
+                actions = list(ai.get("recommendations") or [])
+                if not actions:
+                    actions = ai_analyst.rule_based(r["engine"]).get("recommendations", [])
+                actions.append("This QR code and its destination were never opened by the scanner.")
 
                 scam_record = ScamAnalysisRecord(
                     analysis_type="QR",
@@ -482,17 +467,22 @@ class QRScannerService:
                     risk_score=final_score,
                     risk_tier=risk_tier,
                     scam_category="QR Code (Quishing) Scam",
-                    confidence_score=92.0,
+                    confidence_score=float(r["engine"]["confidence"]["pct"]),
                     detected_indicators=threats_detected,
                     highlighted_phrases=[{"text": norm_url, "start": 0, "end": len(norm_url), "severity": risk_tier}],
-                    scam_dna_breakdown={"primary_scam_pattern": "Quishing Vector", "confidence_score": 90.0},
+                    scam_dna_breakdown={"primary_scam_pattern": "Quishing Vector", "confidence_score": float(r["engine"]["confidence"]["pct"])},
                     recommended_actions=actions,
-                    metadata_info={"filename": file_name, "file_type": file_type, "qr_count": len(extracted)},
+                    metadata_info={"filename": file_name, "file_type": file_type, "qr_count": len(extracted), "verdict": verdict},
                     created_at=datetime.utcnow()
                 )
                 db.add(scam_record)
                 db.commit()
-                db.refresh(scan_record)
+
+                origin_intel = None
+                try:
+                    origin_intel = LinkOriginService.analyze(norm_url)
+                except Exception:
+                    pass
 
                 return {
                     "success": True,
@@ -513,16 +503,25 @@ class QRScannerService:
                     "recommended_actions": actions,
                     "threats_detected": threats_detected,
                     "safe_indicators": safe_indicators,
-                    "url_scan_id": scan_record.id,
-                    "url_breakdown": risk_breakdown,
-                    "threat_intel": intel,
+                    "url_scan_id": r["id"],
+                    "url_breakdown": r["breakdown"],
+                    "threat_intel": {k: {"status": v["status"], "verdict": v["verdict"], "note": v["note"]} for k, v in r["intelligence"].items()},
                     "origin_intelligence": origin_intel,
-                    "created_at": scan_record.created_at
+                    "verdict": verdict,
+                    "engine": r["engine"],
+                    "intelligence": r["intelligence"],
+                    "redirect": r["redirect"],
+                    "ai_analysis": r["ai_analysis"],
+                    "ml_models": r["ml"],
+                    "features": r["features"],
+                    "details": r["details"],
+                    "detection_method": r["detection_method"],
+                    "created_at": r["created_at"]
                 }
 
             except Exception as scan_err:
                 db.rollback()
-                print(f"[!] QR URL scan error: {scan_err}")
+                logger.exception("QR URL scan error")
                 return {
                     "success": False,
                     "status": "ERROR",
@@ -538,7 +537,7 @@ class QRScannerService:
                     "risk_classification": "Inconclusive",
                     "risk_score": 0.0,
                     "risk_tier": "INCONCLUSIVE",
-                    "danger_explanation": f"Extracted URL could not be evaluated: {scan_err}",
+                    "danger_explanation": "The extracted URL could not be evaluated. Please retry.",
                     "recommended_actions": ["Verify input and retry verification."],
                     "threats_detected": [],
                     "safe_indicators": [],
@@ -585,7 +584,7 @@ class QRScannerService:
                 })
 
         if text_threats:
-            risk_score = 88.0 if has_credential else 72.0 if has_finance else 45.0
+            risk_score = 88.0 if has_credential_harvesting else 72.0 if has_finance else 45.0
             risk_class = "Malicious" if risk_score >= 70 else "Suspicious"
             risk_tier = "CRITICAL" if risk_score >= 80 else "HIGH" if risk_score >= 60 else "MODERATE"
             explanation = "Extracted QR text contains explicit financial demands, urgency markers, or credential requests."

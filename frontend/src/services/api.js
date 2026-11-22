@@ -244,6 +244,25 @@ export const api = {
     return request('/dashboard/stats');
   },
 
+  /** Real counts: URL/QR volume, verdict distribution, 14-day trend, per-source detections. */
+  getSecurityOverview() {
+    return request('/dashboard/security');
+  },
+
+  /** Honest per-engine state (configured? last real call result?). Never contains API keys. */
+  getEngineStatus() {
+    return request('/engines/status', { timeout: 15000 });
+  },
+
+  /** User-initiated urlscan.io behavioural scan (urlscan.io visits the page, unlisted). */
+  urlscanSubmit(url) {
+    return request('/urlscan/submit', { method: 'POST', json: { url }, timeout: 30000 });
+  },
+
+  urlscanResult(uuid) {
+    return request(`/urlscan/result/${encodeURIComponent(uuid)}`, { timeout: 30000 });
+  },
+
   getMLMetrics() {
     return request('/ml/metrics');
   },

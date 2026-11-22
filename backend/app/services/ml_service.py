@@ -27,6 +27,58 @@ class MLService:
                 cls._model = joblib.load(MODEL_PATH)
         return cls._model
 
+    _lr = None
+    _scaler = None
+    _lr_checked = False
+
+    @classmethod
+    def lr_available(cls) -> bool:
+        cls._load_lr()
+        return cls._lr is not None and cls._scaler is not None
+
+    @classmethod
+    def _load_lr(cls):
+        if cls._lr_checked:
+            return
+        cls._lr_checked = True
+        lr_path = os.path.join(BASE_DIR, "ml", "models", "phishing_lr_model.joblib")
+        sc_path = os.path.join(BASE_DIR, "ml", "models", "feature_scaler.joblib")
+        try:
+            if os.path.exists(lr_path) and os.path.exists(sc_path):
+                cls._lr = joblib.load(lr_path)
+                cls._scaler = joblib.load(sc_path)
+        except Exception:
+            cls._lr = cls._scaler = None
+
+    @classmethod
+    def predict_lr(cls, features: Dict[str, Any]):
+        """Logistic Regression phishing probability (0-100), or None if the model is unavailable."""
+        cls._load_lr()
+        if cls._lr is None or cls._scaler is None:
+            return None
+        try:
+            X = np.array([[features.get(col, 0.0) for col in FEATURE_NAMES]], dtype=np.float32)
+            return round(float(cls._lr.predict_proba(cls._scaler.transform(X))[0][1]) * 100.0, 1)
+        except Exception:
+            return None
+
+    @classmethod
+    def predict_all(cls, features: Dict[str, Any]) -> Dict[str, Any]:
+        """Both classifiers. Weights favour the Random Forest (stronger on held-out data)."""
+        rf_score, rf_is_phish = cls.predict(features)
+        lr_score = cls.predict_lr(features)
+        if lr_score is None:
+            ensemble = rf_score
+        else:
+            ensemble = round(0.7 * rf_score + 0.3 * lr_score, 1)
+        return {
+            "rf": rf_score,
+            "lr": lr_score,
+            "ensemble": ensemble,
+            "rf_is_phishing": rf_is_phish,
+            "models_disagree": lr_score is not None and abs(rf_score - lr_score) >= 40,
+        }
+
     @classmethod
     def predict(cls, features: Dict[str, Any]) -> Tuple[float, bool]:
         """

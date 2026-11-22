@@ -58,13 +58,14 @@ function StatCard({ label, value, hint, color, index, total }) {
 }
 
 /** Animated SVG donut: safe / suspicious / dangerous share of all analyses. */
-function Donut({ safe, suspicious, danger }) {
+function Donut({ safe, suspicious, danger, unverified = 0 }) {
   const reduced = useReducedMotion();
-  const total = safe + suspicious + danger;
+  const total = safe + suspicious + danger + unverified;
   const R = 52;
   const C = 2 * Math.PI * R;
   const parts = [
     { key: 'safe', v: safe, color: 'var(--ctp-safe)', label: 'Safe' },
+    { key: 'unverified', v: unverified, color: 'var(--ctp-text-muted)', label: 'Unverified' },
     { key: 'suspicious', v: suspicious, color: 'var(--ctp-warn)', label: 'Suspicious' },
     { key: 'danger', v: danger, color: 'var(--ctp-danger)', label: 'Dangerous' },
   ];
@@ -72,7 +73,7 @@ function Donut({ safe, suspicious, danger }) {
   return (
     <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6">
       <div className="relative h-40 w-40 shrink-0">
-        <svg viewBox="0 0 140 140" className="h-full w-full -rotate-90" role="img" aria-label={`Safe ${safe}, suspicious ${suspicious}, dangerous ${danger}`}>
+        <svg viewBox="0 0 140 140" className="h-full w-full -rotate-90" role="img" aria-label={`Safe ${safe}, unverified ${unverified}, suspicious ${suspicious}, dangerous ${danger}`}>
           <circle cx="70" cy="70" r={R} fill="none" stroke="var(--ctp-border)" strokeWidth="14" />
           {total > 0 && parts.map((p, i) => {
             const len = Math.max(0, (p.v / total) * C - 2);
@@ -140,6 +141,7 @@ const CLASS_STYLE = {
   SAFE: { label: 'Safe', color: 'var(--ctp-safe)' },
   SUSPICIOUS: { label: 'Suspicious', color: 'var(--ctp-warn)' },
   PHISHING: { label: 'Dangerous', color: 'var(--ctp-danger)' },
+  UNVERIFIED: { label: 'Unverified', color: 'var(--ctp-text-muted)' },
 };
 
 function Activity({ items }) {
@@ -174,6 +176,107 @@ function Activity({ items }) {
   );
 }
 
+
+const VERDICT_STYLE = {
+  SAFE: { label: 'Safe', color: 'var(--ctp-safe)' },
+  UNVERIFIED: { label: 'Unverified', color: 'var(--ctp-text-muted)' },
+  SUSPICIOUS: { label: 'Suspicious', color: 'var(--ctp-warn)' },
+  DANGEROUS: { label: 'Dangerous', color: 'var(--ctp-danger)' },
+};
+
+/** 14-day scan volume; the red / amber parts of each bar are the days' dangerous and suspicious scans. */
+function TrendChart({ days }) {
+  const reduced = useReducedMotion();
+  const max = Math.max(1, ...days.map((d) => d.scans));
+  const total = days.reduce((a, d) => a + d.scans, 0);
+  if (!total) return <p className="text-sm text-ctp-text-muted">No scans in the last 14 days.</p>;
+  return (
+    <div>
+      <div className="flex h-36 items-end gap-1.5" role="img" aria-label={`Scans per day for the last 14 days, ${total} in total`}>
+        {days.map((d, i) => {
+          const h = (d.scans / max) * 100;
+          const danger = d.scans ? (d.dangerous / d.scans) * 100 : 0;
+          const warn = d.scans ? (d.suspicious / d.scans) * 100 : 0;
+          return (
+            <div key={d.date} className="group relative flex h-full flex-1 flex-col justify-end" title={`${d.date}: ${d.scans} scans, ${d.dangerous} dangerous, ${d.suspicious} suspicious`}>
+              <motion.div
+                className="flex w-full flex-col justify-end overflow-hidden rounded-t-md bg-ctp-accent/70"
+                initial={{ height: reduced ? `${h}%` : 0 }}
+                animate={{ height: `${h}%` }}
+                transition={{ duration: 0.9, ease: EASE, delay: 0.1 + i * 0.03 }}
+              >
+                <div style={{ height: `${warn}%`, background: 'var(--ctp-warn)' }} />
+                <div style={{ height: `${danger}%`, background: 'var(--ctp-danger)' }} />
+              </motion.div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-2 flex justify-between text-[11px] text-ctp-text-muted">
+        <span>{days[0].date.slice(5)}</span><span>{days[days.length - 1].date.slice(5)}</span>
+      </div>
+    </div>
+  );
+}
+
+const ENGINE_STATE = {
+  online: { label: 'Online', color: 'var(--ctp-safe)' },
+  idle: { label: 'Ready (not yet used)', color: 'var(--ctp-accent)' },
+  degraded: { label: 'Degraded', color: 'var(--ctp-warn)' },
+  not_configured: { label: 'Not configured', color: 'var(--ctp-text-muted)' },
+};
+
+/** Honest engine status: "online" only after a real successful call; unconfigured stays unconfigured. */
+function EngineGrid({ data }) {
+  const reduced = useReducedMotion();
+  return (
+    <div>
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {data.engines.map((e, i) => {
+          const st = ENGINE_STATE[e.state] || ENGINE_STATE.degraded;
+          return (
+            <motion.li
+              key={e.id}
+              initial={reduced ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: EASE, delay: 0.05 + i * 0.04 }}
+              className={`rounded-xl border p-4 ${e.state === 'not_configured' ? 'border-dashed border-ctp-border bg-transparent' : 'border-ctp-border bg-ctp-bg-2'}`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="truncate text-sm font-medium" title={e.name}>{e.name}</span>
+                <span className="flex shrink-0 items-center gap-1.5 text-[11px]" style={{ color: st.color }}>
+                  <StatusDot color={st.color} />{st.label}
+                </span>
+              </div>
+              <p className="mt-1 text-[12px] text-ctp-text-muted">{e.role}</p>
+              {e.kind === 'external' && e.configured && (
+                <p className="mt-2 text-[11px] tabular-nums text-ctp-text-muted">
+                  {e.ok_count} ok · {e.failed_count} failed{e.rate_limited_count ? ` · ${e.rate_limited_count} rate-limited` : ''}
+                  {typeof e.last_latency_ms === 'number' ? ` · ${e.last_latency_ms} ms` : ''}
+                </p>
+              )}
+              {e.state === 'degraded' && e.last_error && <p className="mt-1 truncate text-[11px] text-ctp-warn" title={e.last_error}>{e.last_error}</p>}
+            </motion.li>
+          );
+        })}
+      </ul>
+      <p className="mt-3 text-[12px] text-ctp-text-muted">
+        {data.configured_external} of {data.total_external} external services configured. {data.note}
+      </p>
+    </div>
+  );
+}
+
+function VerdictChip({ verdict }) {
+  const st = VERDICT_STYLE[verdict];
+  if (!st) return null;
+  return (
+    <span className="hidden items-center gap-1.5 text-[12px] sm:flex" style={{ color: st.color }}>
+      <span className="h-1.5 w-1.5 rounded-full" style={{ background: st.color }} />{st.label}
+    </span>
+  );
+}
+
 function Skeleton({ className = '' }) {
   return <div className={`animate-pulse rounded-xl bg-ctp-surface-2 ${className}`} />;
 }
@@ -189,6 +292,8 @@ const SERVICES = [
 export default function Dashboard({ setActivePage }) {
   const reduced = useReducedMotion();
   const [stats, setStats] = useState(null);
+  const [sec, setSec] = useState(null);
+  const [engines, setEngines] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -196,7 +301,13 @@ export default function Dashboard({ setActivePage }) {
     setLoading(true);
     setError('');
     try {
-      setStats(await api.getDashboardStats());
+      const [main, security, status] = await Promise.allSettled([
+        api.getDashboardStats(), api.getSecurityOverview(), api.getEngineStatus(),
+      ]);
+      if (main.status === 'rejected') throw main.reason;
+      setStats(main.value);
+      setSec(security.status === 'fulfilled' ? security.value : null);
+      setEngines(status.status === 'fulfilled' ? status.value : null);
     } catch (err) {
       setStats(null);
       setError(err.message || 'Statistics are unavailable right now.');
@@ -255,9 +366,9 @@ export default function Dashboard({ setActivePage }) {
                 className="rounded-2xl border border-ctp-border bg-ctp-surface p-6 lg:col-span-2"
               >
                 <h2 className="mb-5 text-sm font-medium text-ctp-text-2">Threat overview</h2>
-                <Donut safe={stats.safe_count} suspicious={stats.suspicious_count} danger={stats.phishing_count} />
-                {stats.total_scans > stats.safe_count + stats.suspicious_count + stats.phishing_count && (
-                  <p className="mt-5 text-[12px] text-ctp-text-muted">{stats.total_scans - (stats.safe_count + stats.suspicious_count + stats.phishing_count)} analyses have no risk classification and are not shown.</p>
+                <Donut safe={stats.safe_count} suspicious={stats.suspicious_count} danger={stats.phishing_count} unverified={stats.unverified_count || 0} />
+                {stats.total_scans > stats.safe_count + stats.suspicious_count + stats.phishing_count + (stats.unverified_count || 0) && (
+                  <p className="mt-5 text-[12px] text-ctp-text-muted">{stats.total_scans - (stats.safe_count + stats.suspicious_count + stats.phishing_count + (stats.unverified_count || 0))} analyses have no risk classification and are not shown.</p>
                 )}
               </motion.div>
 
@@ -277,6 +388,78 @@ export default function Dashboard({ setActivePage }) {
               <h2 className="mb-2 text-sm font-medium text-ctp-text-2">Recent scanning activity</h2>
               <Activity items={stats.recent_activity || []} />
             </motion.div>
+
+            {sec && (
+              <>
+                <div className="pt-4">
+                  <p className="text-[13px] tracking-wide text-ctp-accent-text">Threat detection</p>
+                  <h2 className="ctp-display mt-2 text-[length:var(--ctp-text-h2)]">Links and QR codes</h2>
+                </div>
+                <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+                  <StatCard index={0} label="URLs scanned" value={sec.totals.urls_scanned} hint="Pasted links" />
+                  <StatCard index={1} label="QR codes scanned" value={sec.totals.qr_scanned} hint="Images, PDFs, camera" />
+                  <StatCard index={2} label="Malicious" value={sec.totals.malicious} hint="Dangerous verdicts" color="var(--ctp-danger)" total={sec.totals.urls_scanned + sec.totals.qr_scanned} />
+                  <StatCard index={3} label="Suspicious" value={sec.totals.suspicious} hint="Caution advised" color="var(--ctp-warn)" total={sec.totals.urls_scanned + sec.totals.qr_scanned} />
+                  <StatCard index={4} label="Safe" value={sec.totals.safe} hint="Confirmed low risk" color="var(--ctp-safe)" total={sec.totals.urls_scanned + sec.totals.qr_scanned} />
+                  <StatCard index={5} label="Unverified" value={sec.totals.unverified} hint="Low risk, unconfirmed" color="var(--ctp-text-muted)" total={sec.totals.urls_scanned + sec.totals.qr_scanned} />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
+                  <div className="rounded-2xl border border-ctp-border bg-ctp-surface p-6 lg:col-span-3">
+                    <h2 className="mb-5 text-sm font-medium text-ctp-text-2">Scans over the last 14 days</h2>
+                    <TrendChart days={sec.timeline} />
+                    <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-ctp-text-muted">
+                      <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-sm bg-ctp-accent/70" />All scans</span>
+                      <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-sm" style={{ background: 'var(--ctp-warn)' }} />Suspicious</span>
+                      <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-sm" style={{ background: 'var(--ctp-danger)' }} />Dangerous</span>
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-ctp-border bg-ctp-surface p-6 lg:col-span-2">
+                    <h2 className="mb-5 text-sm font-medium text-ctp-text-2">Flags by threat-intelligence source</h2>
+                    {sec.source_detections.length ? (
+                      <ul className="space-y-4">
+                        {sec.source_detections.map((s) => (
+                          <li key={s.source}>
+                            <div className="flex items-baseline justify-between text-[13px]">
+                              <span className="text-ctp-text-2">{s.source}</span>
+                              <span className="tabular-nums"><strong className="font-medium">{s.flagged}</strong> <span className="text-ctp-text-muted">flagged / {s.queried} answered</span></span>
+                            </div>
+                            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ctp-border">
+                              <div className="h-full rounded-full" style={{ width: `${s.queried ? (s.flagged / s.queried) * 100 : 0}%`, background: 'var(--ctp-danger)' }} />
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-ctp-text-muted">No reputation source has answered a scan yet. Add API keys to enable them.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-ctp-border bg-ctp-surface p-6">
+                  <h2 className="mb-2 text-sm font-medium text-ctp-text-2">Latest verdicts</h2>
+                  {sec.recent.length ? (
+                    <ul className="divide-y divide-ctp-border">
+                      {sec.recent.slice(0, 6).map((r) => (
+                        <li key={r.id} className="flex items-center gap-4 py-3">
+                          <span className="w-12 shrink-0 rounded-md border border-ctp-border px-1.5 py-0.5 text-center text-[11px] text-ctp-text-muted">{r.type}</span>
+                          <span className="min-w-0 flex-1 truncate text-sm" title={r.domain}>{r.domain}</span>
+                          <VerdictChip verdict={r.verdict} />
+                          <span className="w-10 shrink-0 text-right text-sm font-medium tabular-nums">{Math.round(r.score)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : <p className="text-sm text-ctp-text-muted">No scans yet.</p>}
+                </div>
+              </>
+            )}
+
+            {engines && (
+              <div className="rounded-2xl border border-ctp-border bg-ctp-surface p-6">
+                <h2 className="mb-5 text-sm font-medium text-ctp-text-2">Detection engines</h2>
+                <EngineGrid data={engines} />
+              </div>
+            )}
           </>
         )}
       </section>

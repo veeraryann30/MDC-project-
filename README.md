@@ -120,6 +120,13 @@ c:/veer cyber security project/
 
 ---
 
+## Unified Threat Detection Engine
+
+Every URL and QR payload is judged by one explainable engine: Random Forest + Logistic Regression, heuristic rules,
+and VirusTotal / Google Web Risk / URLhaus / urlscan.io reputation sources, explained by a Groq (Llama) analyst.
+Missing keys are reported honestly in each result (never treated as "clean"), and a low-risk link nothing could confirm is
+shown as **Unverified**, not Safe. Setup, scoring design and security model: [docs/THREAT_INTELLIGENCE.md](docs/THREAT_INTELLIGENCE.md).
+
 ## Verification & Testing
 
 Catch the Phish includes a comprehensive automated test suite. Execute tests from the workspace root:

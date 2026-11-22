@@ -17,6 +17,10 @@ class ScanRecord(Base):
     features = Column(JSON, nullable=False, default=dict)
     detection_method = Column(String(100), default="ML + Rule Heuristics + Threat Intel")
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    # Unified engine output (nullable: rows written before the engine upgrade have none)
+    verdict = Column(String(20), nullable=True, index=True)   # SAFE | SUSPICIOUS | DANGEROUS | UNVERIFIED
+    scan_type = Column(String(10), nullable=True, default="URL")  # URL | QR
+    engine_report = Column(JSON, nullable=True)
 
 
 class FeedbackRecord(Base):

@@ -15,6 +15,8 @@ class HistoryItem(BaseModel):
     detected_threats: List[Dict[str, Any]]
     detection_method: str
     created_at: datetime
+    verdict: Optional[str] = None
+    scan_type: Optional[str] = None
 
 
 class HistoryResponse(BaseModel):
@@ -27,6 +29,7 @@ class DashboardStats(BaseModel):
     safe_count: int
     suspicious_count: int
     phishing_count: int
+    unverified_count: int = 0
     avg_risk_score: float
     top_threat_indicators: List[Dict[str, Any]]
     recent_activity: List[Dict[str, Any]]

@@ -10,6 +10,7 @@ const VERDICT = {
   danger: { label: 'Dangerous', color: 'var(--ctp-danger)' },
   suspicious: { label: 'Suspicious', color: 'var(--ctp-warn)' },
   safe: { label: 'Low risk', color: 'var(--ctp-safe)' },
+  unverified: { label: 'Unverified', color: 'var(--ctp-text-2)' },
 };
 
 /** Splits pasted / uploaded text into unique link-looking tokens (must contain a dot). */
@@ -126,7 +127,7 @@ export default function BulkScanner() {
           acc[k] = (acc[k] || 0) + 1;
           return acc;
         },
-        { danger: 0, suspicious: 0, safe: 0, failed: 0 }
+        { danger: 0, suspicious: 0, unverified: 0, safe: 0, failed: 0 }
       )
     : null;
 
@@ -203,7 +204,7 @@ export default function BulkScanner() {
         <div className="relative mt-6 border-t border-ctp-border pt-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <ul className="flex flex-wrap gap-2 text-[12.5px]" aria-label="Summary">
-              {[['danger', counts.danger], ['suspicious', counts.suspicious], ['safe', counts.safe]].map(([k, n]) => (
+              {[['danger', counts.danger], ['suspicious', counts.suspicious], ['unverified', counts.unverified], ['safe', counts.safe]].map(([k, n]) => (
                 <li key={k} className="flex items-center gap-1.5 rounded-full border border-ctp-border px-3 py-1">
                   <span aria-hidden="true" className="h-2 w-2 rounded-full" style={{ background: VERDICT[k].color }} />
                   {n} {VERDICT[k].label.toLowerCase()}

@@ -101,3 +101,10 @@ class ScanResponse(BaseModel):
     origin_intelligence: Optional[Dict[str, Any]] = None
     detection_method: str
     created_at: datetime
+    # Unified threat-engine output (all optional so older clients keep working)
+    verdict: Optional[str] = None            # SAFE | SUSPICIOUS | DANGEROUS | UNVERIFIED
+    scan_type: str = "URL"
+    engine: Optional[Dict[str, Any]] = None  # score path, components, reasons, conflicts, limitations, confidence
+    intelligence: Optional[Dict[str, Any]] = None  # per-source reputation results (honest status each)
+    redirect: Optional[Dict[str, Any]] = None
+    ai_analysis: Optional[Dict[str, Any]] = None
