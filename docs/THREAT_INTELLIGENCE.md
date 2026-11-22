@@ -19,7 +19,7 @@ result, never silently treated as "clean".
 | `URLHAUS_AUTH_KEY` | Malware-distribution URLs and hosts | free key at auth.abuse.ch |
 | `URLSCAN_API_KEY` | Existing scan lookup + optional deep behavioural scan | urlscan.io -> profile -> API keys |
 | `GROQ_API_KEY` | AI analyst explanations (Llama) | console.groq.com/keys |
-| `GROQ_MODEL` | Model id (default `llama-3.3-70b-versatile`) | Groq model list |
+| `GROQ_MODEL` | Model id (default `openai/gpt-oss-120b`) | console.groq.com/docs/models (Groq retires models; if calls return 404, pick a current one) |
 | `VT_REQUESTS_PER_MINUTE`, `WEB_RISK_REQUESTS_PER_MINUTE`, `URLHAUS_REQUESTS_PER_MINUTE`, `URLSCAN_SEARCH_PER_MINUTE`, `URLSCAN_SUBMIT_PER_MINUTE`, `GROQ_REQUESTS_PER_MINUTE` | Outbound call budgets (defaults fit free tiers) | - |
 | `INTEL_CACHE_TTL_SECONDS` | How long provider answers are cached (default 3600) | - |
 | `SCAN_RATE_LIMIT_PER_MINUTE` | Per-IP limit on scan endpoints (default 20) | - |

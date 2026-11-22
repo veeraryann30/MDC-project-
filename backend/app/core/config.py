@@ -64,7 +64,7 @@ class Settings:
     URLHAUS_AUTH_KEY: str = os.getenv("URLHAUS_AUTH_KEY", "")      # abuse.ch Auth-Key (free)
     URLSCAN_API_KEY: str = os.getenv("URLSCAN_API_KEY", "")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
-    GROQ_MODEL: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    GROQ_MODEL: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 
     # Outbound API budgets (calls per minute) so the platform stays inside each provider's free tier.
     VT_REQUESTS_PER_MINUTE: int = int(os.getenv("VT_REQUESTS_PER_MINUTE", "4"))
