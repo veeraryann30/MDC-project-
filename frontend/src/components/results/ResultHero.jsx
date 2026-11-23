@@ -48,7 +48,7 @@ function SourceDots({ sources }) {
  * The whole answer in one view: verdict, one sentence, up to three actions, which checks ran.
  * Everything else lives in the full report drawer.
  */
-export default function ResultHero({ result, state, label, headline, actions, onOpenReport, drawerOpen }) {
+export default function ResultHero({ result, state, label, headline, actions, onOpenReport, drawerOpen, kicker, urlLabel }) {
   const reduced = useReducedMotion();
   const s = STATES[state] || STATES.safe;
   const score = Math.min(100, Math.max(0, Math.round(Number(result.risk_score) || 0)));
@@ -87,8 +87,10 @@ export default function ResultHero({ result, state, label, headline, actions, on
 
         <h1 className="ctp-display text-[length:var(--ctp-text-h2)] leading-[1.1]">{headline}</h1>
 
-        <p className="max-w-full truncate rounded-lg border border-ctp-border bg-ctp-surface px-3 py-1.5 font-mono text-[12.5px] text-ctp-text-2 select-all" title={result.url}>
-          {result.url}
+        {kicker && <p className="text-[12px] uppercase tracking-[0.1em] text-ctp-text-muted">{kicker}</p>}
+
+        <p className="max-w-full truncate rounded-lg border border-ctp-border bg-ctp-surface px-3 py-1.5 font-mono text-[12.5px] text-ctp-text-2 select-all" title={urlLabel || result.url}>
+          {urlLabel || result.url}
         </p>
 
         {actions.length > 0 && (

@@ -16,6 +16,8 @@ export default function TechnicalDetails({ result }) {
     details = {},
   } = result;
 
+  const hasFeatures = Object.keys(features || {}).length > 0;
+
   const sevStyle = (severity) =>
     severity === 'MEDIUM' || severity === 'ELEVATED'
       ? { color: '#F59E0B', cls: 'bg-[#FFFBEB] border-[#FDE68A] text-[#D97706]' }
@@ -26,6 +28,7 @@ export default function TechnicalDetails({ result }) {
   return (
     <div className="space-y-5 font-sans">
       {/* Domain + signals */}
+      {hasFeatures && (
       <div className="space-y-5 rounded-2xl border border-[#E2E8F0] bg-white p-5">
         <div>
           <span className="mb-2 block font-mono text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Domain summary</span>
@@ -56,6 +59,8 @@ export default function TechnicalDetails({ result }) {
           </div>
         </div>
       </div>
+
+      )}
 
       {/* Findings */}
       <div className="space-y-3 rounded-2xl border border-[#E2E8F0] bg-white p-5">
@@ -112,6 +117,7 @@ export default function TechnicalDetails({ result }) {
       </div>
 
       {/* Raw evidence */}
+      {hasFeatures && (
       <div className="space-y-3 rounded-2xl border border-[#E2E8F0] bg-white p-5 font-mono text-xs">
         <span className="block text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">Forensic evidence</span>
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
@@ -142,6 +148,7 @@ export default function TechnicalDetails({ result }) {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }

@@ -6,15 +6,7 @@ import AiAnalystCard from '../components/results/AiAnalystCard';
 import ThreatEngineReport from '../components/results/ThreatEngineReport';
 import TechnicalDetails from '../components/results/TechnicalDetails';
 import WhyRiskyPanel from '../components/results/WhyRiskyPanel';
-import { classifyResult } from '../lib/verdict';
-import { explainResult } from '../lib/explain';
-
-const TITLES = {
-  danger: 'High risk detected',
-  suspicious: 'This link looks suspicious',
-  unverified: 'Not verified. Treat it as unknown',
-  safe: 'No significant threats detected',
-};
+import { heroProps } from '../lib/heroProps';
 
 /**
  * Scan result. The first view is only the answer: verdict, one sentence, up to three actions and
@@ -51,20 +43,7 @@ export default function Results({ result, setActivePage }) {
 
   const { url = '', domain = '', risk_score = 0, breakdown = {}, threats_detected = [], created_at } = result;
   const score = Math.min(100, Math.max(0, Math.round(Number(risk_score) || 0)));
-  const state = classifyResult(result) || 'unverified';
-  const engineVerdict = String(result.verdict || '').toUpperCase();
-  const label = { danger: 'Dangerous', suspicious: 'Suspicious', unverified: 'Unverified', safe: engineVerdict === 'SAFE' ? 'Safe' : 'Low risk' }[state];
-
-  const ai = result.ai_analysis || result.engine?.ai_analysis;
-  const headline = ai?.headline || TITLES[state];
-
-  // Up to three actions: the AI analyst's when it wrote them, otherwise the plain-English steps.
-  let actions = [];
-  if (String(ai?.generated_by || '').startsWith('groq:') && ai.recommendations?.length) {
-    actions = ai.recommendations.slice(0, 3).map((t) => ({ title: t }));
-  } else {
-    actions = (explainResult(result)?.steps || []).slice(0, 3).map((s) => ({ title: s.strong, detail: s.rest }));
-  }
+  const { state, label, headline, actions, ai } = heroProps(result);
 
   const tabs = [
     { id: 'why', label: 'Why' },

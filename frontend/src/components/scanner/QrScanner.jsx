@@ -1,12 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  QrCode, UploadCloud, FileText, CheckCircle2, AlertTriangle, 
-  XCircle, Copy, Check, ArrowRight, RefreshCw, Shield, Lock, 
-  ExternalLink, HelpCircle, AlertOctagon, Camera, X
-} from 'lucide-react';
+import { QrCode, UploadCloud, FileText, ArrowRight, Lock, Camera, X } from 'lucide-react';
 import { api } from '../../services/api';
-import AiAnalystCard from '../results/AiAnalystCard';
-import ThreatEngineReport from '../results/ThreatEngineReport';
+import QrResult from '../results/QrResult';
 
 /**
  * Live camera capture. A frame is only grabbed when a QR code is seen (detected locally with jsQR) or the
@@ -102,14 +97,13 @@ function CameraCapture({ onCapture, onClose }) {
   );
 }
 
-export default function QrScanner({ onScanComplete }) {
+export default function QrScanner() {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [scanResult, setScanResult] = useState(null);
-  const [copied, setCopied] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   
   const fileInputRef = useRef(null);
@@ -216,49 +210,6 @@ export default function QrScanner({ onScanComplete }) {
       setError(err.message || 'Failed to analyze QR code file. Please verify file format.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const copyToClipboard = (text) => {
-    if (!text) return;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const getClassificationBadge = (classification) => {
-    switch (classification) {
-      case 'Malicious':
-        return {
-          bg: 'bg-[#FEF2F2] border-[#FECACA] text-[#DC2626]',
-          label: 'MALICIOUS DESTINATION',
-          icon: AlertOctagon
-        };
-      case 'Suspicious':
-        return {
-          bg: 'bg-[#FFFBEB] border-[#FDE68A] text-[#D97706]',
-          label: 'SUSPICIOUS LINK',
-          icon: AlertTriangle
-        };
-      case 'Unverified':
-        return {
-          bg: 'bg-slate-100 border-[#E2E8F0] text-[#475569]',
-          label: 'UNVERIFIED LINK',
-          icon: HelpCircle
-        };
-      case 'Safe':
-        return {
-          bg: 'bg-[#F0FDF4] border-[#BBF7D0] text-[#16A34A]',
-          label: 'VERIFIED SAFE',
-          icon: CheckCircle2
-        };
-      case 'Inconclusive':
-      default:
-        return {
-          bg: 'bg-[#F5F9FF] border-[#E2E8F0] text-[#64748B]',
-          label: 'INCONCLUSIVE',
-          icon: HelpCircle
-        };
     }
   };
 
@@ -423,179 +374,8 @@ export default function QrScanner({ onScanComplete }) {
         )}
       </div>
 
-      {/* DETAILED QR SECURITY REPORT DOSSIER */}
-      {scanResult && (
-        <div className="p-6 rounded-2xl bg-white border border-[#E2E8F0] space-y-6 shadow-sm animate-in fade-in duration-200">
-          {/* Header Summary Banner */}
-          {(() => {
-            const badge = getClassificationBadge(scanResult.risk_classification);
-            const BadgeIcon = badge.icon;
-            return (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F5F9FF] border border-[#E2E8F0]">
-                <div className="space-y-1">
-                  <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-[#64748B]">
-                    <span>Decoded QR Verdict</span>
-                    <span>·</span>
-                    <span>{scanResult.file_type}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider border inline-flex items-center gap-1.5 ${badge.bg}`}>
-                      <BadgeIcon className="w-3.5 h-3.5" />
-                      <span>{badge.label}</span>
-                    </span>
-                    <span className="text-xs text-[#64748B] font-mono">
-                      ({scanResult.qr_count} QR Code{scanResult.qr_count !== 1 ? 's' : ''} detected)
-                    </span>
-                  </div>
-                </div>
-
-                {/* Risk Score */}
-                <div className="flex items-center gap-3">
-                  <div className="text-right font-mono">
-                    <div className="text-[10px] uppercase text-[#64748B]">Risk Score</div>
-                    <div className="text-xl font-bold text-[#111827]">
-                      {Math.round(scanResult.risk_score)} / 100
-                    </div>
-                  </div>
-                  <div className="px-3 py-1.5 rounded-full border border-[#E2E8F0] bg-white text-xs font-mono font-bold uppercase tracking-wider text-[#2563EB]">
-                    {scanResult.risk_tier} RISK
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Extracted QR Content Card */}
-          <div className="p-4 rounded-xl bg-[#F5F9FF] border border-[#E2E8F0] space-y-2">
-            <div className="flex items-center justify-between text-[11px] font-mono text-[#64748B]">
-              <span className="uppercase tracking-wider">
-                Extracted Payload {scanResult.is_url ? '(Destination URL)' : '(Plain Text Content)'}
-              </span>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(scanResult.primary_content)}
-                className="text-[#2563EB] hover:text-[#1E40AF] inline-flex items-center gap-1 text-[11px] font-semibold cursor-pointer"
-              >
-                {copied ? <Check className="w-3 h-3 text-[#16A34A]" /> : <Copy className="w-3 h-3" />}
-                <span>{copied ? 'Copied' : 'Copy Payload'}</span>
-              </button>
-            </div>
-
-            <div className="p-3 rounded-lg bg-white border border-[#E2E8F0] font-mono text-xs text-[#111827] break-all select-text leading-relaxed">
-              {scanResult.primary_content}
-            </div>
-
-            <div className="text-[10px] font-mono text-[#64748B] flex items-center justify-between pt-1">
-              <span>Zero-Execution Protocol: the destination is never opened. Its address may be checked against threat-intelligence services.</span>
-              {scanResult.is_url && scanResult.extracted_domain && (
-                <span className="font-semibold text-[#2563EB]">Domain: {scanResult.extracted_domain}</span>
-              )}
-            </div>
-          </div>
-
-          {/* Why Destination May Be Dangerous */}
-          <div className="p-4 rounded-xl bg-[#F5F9FF] border border-[#E2E8F0] space-y-2">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#64748B] font-semibold">
-              Security Analysis & Danger Explanation
-            </span>
-            <p className="text-xs text-[#111827] leading-relaxed font-sans">
-              {scanResult.danger_explanation}
-            </p>
-          </div>
-
-          {/* Recommended Safety Actions & Detected Threat Indicators */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Safety Actions */}
-            <div className="p-4 rounded-xl bg-[#F5F9FF] border border-[#E2E8F0] space-y-3">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#64748B] font-semibold">
-                Recommended Safety Actions
-              </span>
-              <ul className="space-y-2 text-xs text-[#64748B]">
-                {scanResult.recommended_actions.map((act, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-[#2563EB] font-bold mt-0.5">•</span>
-                    <span className="text-[#111827]">{act}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Detected Indicators */}
-            <div className="p-4 rounded-xl bg-[#F5F9FF] border border-[#E2E8F0] space-y-3">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#64748B] font-semibold">
-                Evaluated Threat Markers ({scanResult.threats_detected.length})
-              </span>
-              {scanResult.threats_detected.length > 0 ? (
-                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                  {scanResult.threats_detected.map((t, idx) => (
-                    <div key={idx} className="p-2.5 rounded-lg bg-white border border-[#E2E8F0] text-xs space-y-0.5">
-                      <div className="font-semibold text-[#111827] flex items-center justify-between text-[11px]">
-                        <span>{t.title || t.id}</span>
-                        <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-md border border-[#FECACA] bg-[#FEF2F2] text-[#DC2626] font-bold">
-                          {t.severity || 'EVALUATED'}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-[#64748B] leading-tight">
-                        {t.what_was_detected || t.why_it_matters}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-xs text-[#16A34A] font-mono py-2 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>No anomalous deception signatures or threats detected.</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* AI analyst + unified engine report (URL payloads) */}
-          {scanResult.is_url && scanResult.engine && (
-            <div className="space-y-5">
-              <AiAnalystCard analysis={scanResult.ai_analysis} />
-              <ThreatEngineReport result={{ ...scanResult, url: scanResult.extracted_url, is_qr: true }} />
-            </div>
-          )}
-
-          {/* Deep Dive Action (if URL extracted) */}
-          {scanResult.is_url && onScanComplete && (
-            <div className="pt-2 border-t border-[#E2E8F0] flex justify-end">
-              <button
-                type="button"
-                onClick={() => onScanComplete({
-                  url: scanResult.extracted_url,
-                  domain: scanResult.extracted_domain,
-                  risk_score: scanResult.risk_score,
-                  id: scanResult.url_scan_id,
-                  classification: scanResult.risk_classification === 'Malicious' ? 'PHISHING' : scanResult.risk_classification === 'Suspicious' ? 'SUSPICIOUS' : scanResult.risk_classification === 'Unverified' ? 'UNVERIFIED' : 'SAFE',
-                  verdict: scanResult.verdict,
-                  engine: scanResult.engine,
-                  ai_analysis: scanResult.ai_analysis,
-                  intelligence: scanResult.intelligence,
-                  redirect: scanResult.redirect,
-                  features: scanResult.features || {},
-                  details: scanResult.details || {},
-                  is_qr: true,
-                  breakdown: scanResult.url_breakdown || {
-                    final_score: scanResult.risk_score,
-                    ml_score: scanResult.risk_score,
-                    rule_score: scanResult.risk_score,
-                    threat_intel_score: 0.0
-                  },
-                  threats_detected: scanResult.threats_detected,
-                  safe_indicators: scanResult.safe_indicators,
-                  origin_intelligence: scanResult.origin_intelligence
-                })}
-                className="px-5 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1E40AF] text-white text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer shadow-sm"
-              >
-                <span>Open in URL Forensic Dossier</span>
-                <ArrowRight className="w-3.5 h-3.5 text-white" />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+      {/* RESULT: same short layout as the URL results page */}
+      {scanResult && <QrResult key={`${scanResult.filename}-${scanResult.created_at}`} scanResult={scanResult} />}
     </div>
   );
 }

@@ -63,7 +63,7 @@ const PLAIN_SAFE = {
   clean_domain_structure: 'The web address is plain and simple, with none of the usual disguise tricks.',
 };
 
-const SEVERITY_RANK = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+const SEVERITY_RANK = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
 
 const STEPS = {
   danger: [
