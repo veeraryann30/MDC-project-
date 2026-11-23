@@ -7,6 +7,8 @@ def _load_dotenv() -> None:
     Real environment variables always win, so hosting dashboards (Render, etc.) are never overridden.
     Quotes, `export` prefixes, comments and a UTF-8 BOM are handled. The file is git-ignored.
     """
+    if os.getenv("CTP_SKIP_DOTENV"):  # set by the test suite so tests never use real keys or spend API quota
+        return
     root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
     path = os.path.join(root, ".env")
     try:

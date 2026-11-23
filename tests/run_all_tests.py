@@ -7,6 +7,8 @@ import os
 import sys
 import unittest
 
+os.environ.setdefault("CTP_SKIP_DOTENV", "1")  # tests run offline: never read the developer's .env
+
 # Ensure workspace root is in python path
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT_DIR not in sys.path:

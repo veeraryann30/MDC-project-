@@ -7,6 +7,8 @@ import json
 import os
 import sys
 import unittest
+
+os.environ.setdefault("CTP_SKIP_DOTENV", "1")  # offline tests: never read the developer's .env
 from unittest import mock
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -34,6 +36,17 @@ def run_engine(url, intel=None, **kw):
     threats, _safe, rule = RuleEngineService.evaluate(f, d)
     return evaluate(url=url, domain=d["domain"], features=f, details=d, threats=threats, rule_score=rule,
                     ml=MLService.predict_all(f), intel=intel or missing(), **kw)["report"]
+
+
+
+def _unlimited_budgets():
+    """Provider tests check how responses are interpreted, not our call budgets: make those independent of test order."""
+    from backend.app.services import threat_intel
+    return [
+        mock.patch.object(b, "allow", return_value=True)
+        for b in (intel_clients.budget_webrisk, intel_clients.budget_urlhaus,
+                  intel_clients.budget_urlscan_search, intel_clients.budget_urlscan_submit, threat_intel._VT_BUDGET)
+    ]
 
 
 class TestEngine(unittest.TestCase):
@@ -131,6 +144,11 @@ class TestNetSafety(unittest.TestCase):
 
 
 class TestProviders(unittest.TestCase):
+    def setUp(self):
+        for p in _unlimited_budgets():
+            p.start()
+            self.addCleanup(p.stop)
+
     def test_not_configured_is_reported_honestly(self):
         with mock.patch.object(settings, "GOOGLE_WEB_RISK_API_KEY", ""), mock.patch.object(settings, "URLHAUS_AUTH_KEY", ""):
             self.assertEqual(intel_clients.check_web_risk("http://a.example/")["status"], "not_configured")
@@ -222,6 +240,11 @@ class TestAnalyst(unittest.TestCase):
 
 
 class TestSecretHandling(unittest.TestCase):
+    def setUp(self):
+        for p in _unlimited_budgets():
+            p.start()
+            self.addCleanup(p.stop)
+
     KEY = "fake0123456789abcdef" * 3  # obviously fake, never a real credential
 
     def test_pasted_keys_are_whitespace_trimmed(self):
@@ -246,6 +269,57 @@ class TestSecretHandling(unittest.TestCase):
         with mock.patch.object(settings, "GROQ_API_KEY", "gsk_" + "a" * 40):
             self.assertNotIn("a" * 40, redact("boom gsk_" + "a" * 40 + " boom"))
             self.assertIn("[redacted]", redact("boom gsk_" + "a" * 40))
+
+
+class TestAnalystAudience(unittest.TestCase):
+    def test_operator_advice_is_filtered_out_of_recommendations(self):
+        recs = [
+            "Open the link only in a trusted browser.",
+            "Consider configuring additional reputation services (Google Web Risk, URLhaus, urlscan.io).",
+            "Add the API keys on the server to enable more checks.",
+            "Do not enter passwords on the page.",
+        ]
+        kept = ai_analyst.user_recommendations(recs)
+        self.assertEqual(kept, ["Open the link only in a trusted browser.", "Do not enter passwords on the page."])
+
+    def test_groq_recommendations_never_tell_the_user_to_configure_services(self):
+        report = run_engine("https://totally-unknown-example-site.com/home")
+        body = json.dumps({"choices": [{"message": {"content": json.dumps({
+            "headline": "Unverified link", "summary": "No source confirmed it.",
+            "key_findings": ["No reputation source answered"],
+            "recommendations": ["Consider configuring more reputation services.", "Avoid entering passwords until verified."],
+            "limitations": "Several sources are not configured."})}}]}).encode()
+
+        class Resp:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self, n=-1): return body
+
+        with mock.patch.object(settings, "GROQ_API_KEY", "k"), mock.patch("urllib.request.urlopen", return_value=Resp()):
+            out = ai_analyst.analyze(report)
+        self.assertEqual(out["recommendations"], ["Avoid entering passwords until verified."])
+        self.assertIn("not configured", out["limitations"])  # honest gaps stay in limitations
+
+    def test_all_operator_advice_falls_back_to_rule_based_actions(self):
+        report = run_engine("https://totally-unknown-example-site.com/home")
+        body = json.dumps({"choices": [{"message": {"content": json.dumps({
+            "headline": "h", "summary": "s", "key_findings": [],
+            "recommendations": ["Configure the API keys."], "limitations": "l"})}}]}).encode()
+
+        class Resp:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self, n=-1): return body
+
+        with mock.patch.object(settings, "GROQ_API_KEY", "k"), mock.patch("urllib.request.urlopen", return_value=Resp()):
+            out = ai_analyst.analyze(report)
+        self.assertTrue(out["recommendations"])
+        self.assertFalse(any(ai_analyst._OPERATOR_ADVICE.search(r) for r in out["recommendations"]))
+
+    def test_rule_based_actions_are_user_facing_for_every_verdict(self):
+        for v in ("DANGEROUS", "SUSPICIOUS", "SAFE", "UNVERIFIED"):
+            rb = ai_analyst.rule_based({"verdict": v, "score": 10, "confidence": {"label": "LOW"}, "reasons": [], "limitations": []})
+            self.assertFalse(any(ai_analyst._OPERATOR_ADVICE.search(r) for r in rb["recommendations"]), v)
 
 
 if __name__ == "__main__":
