@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import './styles/console-dark.css'
 import App from './App.jsx'
+import { AuthProvider } from './lib/AuthContext'
 import { initSmoothScroll } from './lib/smoothScroll'
 import { initClickSounds } from './lib/sound'
 
@@ -11,6 +12,8 @@ initClickSounds()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </StrictMode>,
 )

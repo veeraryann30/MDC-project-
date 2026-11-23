@@ -16,6 +16,9 @@ from backend.app.security.auth import (
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+# Verified against when the email is unknown, so unknown and wrong-password logins take the same time.
+_DUMMY_HASH = hash_password("not-a-real-password")
+
 
 @router.post("/register", response_model=TokenResponse)
 def register(payload: UserRegisterRequest, db: Session = Depends(get_db)):
@@ -60,7 +63,8 @@ def register(payload: UserRegisterRequest, db: Session = Depends(get_db)):
 def login(payload: UserLoginRequest, db: Session = Depends(get_db)):
     clean_email = payload.email.strip().lower()
     user = db.query(User).filter(User.email == clean_email).first()
-    if not user or not verify_password(payload.password, user.hashed_password):
+    password_ok = verify_password(payload.password, user.hashed_password if user else _DUMMY_HASH)
+    if not user or not password_ok or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password."

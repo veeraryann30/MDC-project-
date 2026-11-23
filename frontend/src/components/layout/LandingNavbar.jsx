@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import ThemeToggle from '../common/ThemeToggle';
 import Logo from '../common/Logo';
+import AuthButtons from '../common/AuthButtons';
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Home', action: 'home', active: ['home'] },
@@ -132,6 +133,7 @@ export default function LandingNavbar({
             ==================================================================== */}
         <div className="hidden md:flex items-center gap-2.5">
           {toggleTheme && <ThemeToggle theme={theme} toggleTheme={toggleTheme} size={34} />}
+          <AuthButtons quietSignup />
 
           <button
             type="button"
@@ -180,6 +182,9 @@ export default function LandingNavbar({
             className="md:hidden overflow-hidden border-t border-ctp-border"
           >
             <div className="px-4 py-4 space-y-1">
+              <div className="pb-3 mb-2 border-b border-ctp-border flex">
+                <AuthButtons quietSignup compact onNavigate={() => setMobileMenuOpen(false)} />
+              </div>
               {NAV_ITEMS.map((item, i) => (
                 <motion.button
                   key={item.id}

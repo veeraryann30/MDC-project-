@@ -42,5 +42,35 @@ class TestAuthSecurity(unittest.TestCase):
             decode_access_token(token)
 
 
+class TestAuthValidation(unittest.TestCase):
+    def test_registration_rules(self):
+        from pydantic import ValidationError
+        from backend.app.schemas.auth import UserRegisterRequest
+
+        ok = UserRegisterRequest(email="  Person@Example.COM ", password="a-long-enough-pass", full_name=" Veer\x07 ")
+        self.assertEqual(ok.email, "person@example.com")      # trimmed + lower-cased
+        self.assertEqual(ok.full_name, "Veer")                # control characters stripped
+        for bad in (
+            dict(email="not-an-email", password="a-long-enough-pass"),
+            dict(email="a@b.co", password="short"),            # under 8 characters
+            dict(email="a@b.co", password=" " * 12),           # only spaces
+            dict(email="a@b.co", password="x" * 129),          # bounded (PBKDF2 cost grows with input)
+            dict(email="a@b.co", password="a-long-enough-pass", full_name="n" * 81),
+        ):
+            with self.assertRaises(ValidationError, msg=str(bad)[:40]):
+                UserRegisterRequest(**bad)
+
+    def test_login_input_is_bounded_but_not_policy_checked(self):
+        from pydantic import ValidationError
+        from backend.app.schemas.auth import UserLoginRequest
+
+        # Existing accounts may have older, shorter passwords: login must not apply the signup policy.
+        self.assertEqual(UserLoginRequest(email=" A@B.CO ", password="abc").email, "a@b.co")
+        with self.assertRaises(ValidationError):
+            UserLoginRequest(email="a@b.co", password="x" * 129)
+        with self.assertRaises(ValidationError):
+            UserLoginRequest(email="", password="abc")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, CheckCircle2, Shield, ArrowRight } from 'lucide-react';
 import ThemeToggle from '../common/ThemeToggle';
+import AuthButtons from '../common/AuthButtons';
 import { api } from '../../services/api';
 
 export default function TopNavbar({ 
@@ -89,7 +90,9 @@ export default function TopNavbar({
           </span>
         </div>
 
-        {toggleTheme && <ThemeToggle theme={theme} toggleTheme={toggleTheme} size={34} />}
+        {/* On phones the theme toggle lives in the sidebar; dropping it here leaves room for the title and account buttons. */}
+        {toggleTheme && <span className="hidden sm:inline-flex"><ThemeToggle theme={theme} toggleTheme={toggleTheme} size={34} /></span>}
+        <AuthButtons compact />
       </div>
     </header>
   );
