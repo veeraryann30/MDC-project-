@@ -9,7 +9,7 @@ const COLORS = { safe: 'var(--ctp-safe)', suspicious: 'var(--ctp-warn)', danger:
  * Plain-English "why" + "what to do next" for non-technical readers.
  * Built only from the real scan result (see lib/explain.js).
  */
-export default function WhyRiskyPanel({ result }) {
+export default function WhyRiskyPanel({ result, showSteps = true }) {
   const reduced = useReducedMotion();
   const info = explainResult(result);
   if (!info) return null;
@@ -20,7 +20,7 @@ export default function WhyRiskyPanel({ result }) {
       aria-labelledby="why-risky-heading"
       className="ctp-dark relative overflow-hidden rounded-3xl border border-ctp-border bg-ctp-bg-2 text-ctp-text"
     >
-      <div className="grid grid-cols-1 gap-0 lg:grid-cols-[1.15fr_1fr]">
+      <div className={`grid grid-cols-1 gap-0 ${showSteps ? "lg:grid-cols-[1.15fr_1fr]" : ""}`}>
         {/* Reasons */}
         <div className="p-6 sm:p-8">
           <h2 id="why-risky-heading" className="ctp-display text-xl sm:text-2xl">{info.heading}</h2>
@@ -54,6 +54,7 @@ export default function WhyRiskyPanel({ result }) {
         </div>
 
         {/* Next steps */}
+        {showSteps && (
         <div className="border-t border-ctp-border bg-ctp-surface/60 p-6 sm:p-8 lg:border-l lg:border-t-0">
           <h2 className="text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color }}>What to do next</h2>
           <ul className="mt-4 space-y-4">
@@ -68,6 +69,7 @@ export default function WhyRiskyPanel({ result }) {
             ))}
           </ul>
         </div>
+        )}
       </div>
     </section>
   );

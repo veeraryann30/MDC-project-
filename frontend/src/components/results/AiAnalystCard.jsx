@@ -8,7 +8,7 @@ const EASE = [0.16, 1, 0.3, 1];
  * AI Security Analyst. Shows the explanation the backend produced from the scan evidence and says
  * plainly who wrote it: Groq (Llama) or the deterministic rule-based fallback. It never alters the score.
  */
-export default function AiAnalystCard({ analysis }) {
+export default function AiAnalystCard({ analysis, compact = false }) {
   const reduced = useReducedMotion();
   if (!analysis) return null;
 
@@ -44,10 +44,10 @@ export default function AiAnalystCard({ analysis }) {
         </p>
       )}
 
-      <h4 className="mt-4 text-lg font-bold leading-snug text-[#111827]">{analysis.headline}</h4>
+      {!compact && <h4 className="mt-4 text-lg font-bold leading-snug text-[#111827]">{analysis.headline}</h4>}
       <p className="mt-2 text-[13.5px] leading-relaxed text-[#475569]">{analysis.summary}</p>
 
-      <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className={`mt-5 grid grid-cols-1 gap-4 ${compact ? "" : "md:grid-cols-2"}`}>
         {analysis.key_findings?.length > 0 && (
           <div className="rounded-xl border border-[#E2E8F0] bg-white p-4">
             <h5 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#64748B]"><Crosshair className="h-3.5 w-3.5" /> What the evidence shows</h5>
@@ -65,7 +65,7 @@ export default function AiAnalystCard({ analysis }) {
             )}
           </div>
         )}
-        {analysis.recommendations?.length > 0 && (
+        {!compact && analysis.recommendations?.length > 0 && (
           <div className="rounded-xl border border-[#E2E8F0] bg-white p-4">
             <h5 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#64748B]"><ListChecks className="h-3.5 w-3.5" /> What to do</h5>
             <ol className="mt-2 space-y-2 text-[12.5px] leading-relaxed text-[#475569]">

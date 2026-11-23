@@ -5,7 +5,7 @@ import { Lock, LockOpen } from 'lucide-react';
 const EASE = [0.16, 1, 0.3, 1];
 
 /** Three distinct states. Colours are theme tokens, so contrast holds in light and dark. */
-const STATES = {
+export const STATES = {
   safe: { label: 'Low risk', color: 'var(--ctp-safe)', pulses: 1 },
   suspicious: { label: 'Suspicious', color: 'var(--ctp-warn)', pulses: 1 },
   danger: { label: 'Dangerous', color: 'var(--ctp-danger)', pulses: 2 },
@@ -17,7 +17,7 @@ const R = 64;
 const C = 2 * Math.PI * R;
 
 /** Animated state glyph: shield + check (safe), triangle (suspicious), shield + bang (dangerous). */
-function StateGlyph({ state, color, size = 18 }) {
+export function StateGlyph({ state, color, size = 18 }) {
   const reduced = useReducedMotion();
   const draw = reduced ? { pathLength: 1 } : { pathLength: [0, 1] };
   const common = { fill: 'none', stroke: color, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
@@ -42,7 +42,7 @@ function StateGlyph({ state, color, size = 18 }) {
   );
 }
 
-function ScoreRing({ score, color, pulses, state }) {
+export function ScoreRing({ score, color, pulses, state }) {
   const reduced = useReducedMotion();
   const offset = C - (score / 100) * C;
   return (

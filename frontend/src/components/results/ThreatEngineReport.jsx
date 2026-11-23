@@ -311,8 +311,13 @@ export default function ThreatEngineReport({ result }) {
           <ShieldCheck className="h-3.5 w-3.5" /> Threat intelligence sources
         </h4>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {sourceEntries.map(([name, s], i) => <SourceCard key={name} name={name} s={s} index={i} />)}
+          {sourceEntries.filter(([, s]) => s.status !== 'not_configured').map(([name, s], i) => <SourceCard key={name} name={name} s={s} index={i} />)}
         </div>
+        {sourceEntries.some(([, s]) => s.status === 'not_configured') && (
+          <p className="mt-3 rounded-lg border border-dashed border-[#E2E8F0] px-3 py-2 text-[12px] text-[#94A3B8]">
+            Not connected: {sourceEntries.filter(([, s]) => s.status === 'not_configured').map(([n]) => n).join(', ')}. Add the API keys on the server to enable them.
+          </p>
+        )}
       </div>
 
       <RedirectChain redirect={engine.redirect || result.redirect} />
