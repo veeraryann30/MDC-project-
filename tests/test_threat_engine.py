@@ -239,6 +239,113 @@ class TestAnalyst(unittest.TestCase):
         self.assertIn("unavailable", out["note"])
 
 
+class _Resp:
+    def __init__(self, content):
+        self._body = json.dumps({"choices": [{"message": {"content": json.dumps(content)}}]}).encode()
+
+    def __enter__(self): return self
+    def __exit__(self, *a): return False
+    def read(self, n=-1): return self._body
+
+
+def _opinion(p, c=1.0):
+    return {"status": "ok", "probability": p, "confidence": c, "evidence_for": [], "evidence_against": [], "reasoning": "r"}
+
+
+class TestReviewAgent(unittest.TestCase):
+    def setUp(self):
+        from backend.app.services import ai_agent
+        self.agent = ai_agent
+        self.unknown = run_engine("https://totally-unknown-example-site.com/home")   # UNVERIFIED, low score
+
+    def test_agent_can_raise_score_within_the_cap(self):
+        rev = self.agent.decide(self.unknown, _opinion(100, 1.0))
+        self.assertTrue(rev["applied"])
+        self.assertLessEqual(rev["adjustment"], self.agent.MAX_ADJUSTMENT)
+        self.assertGreater(rev["final_score"], self.unknown["score"])
+
+    def test_adjustment_is_scaled_by_confidence_and_ignores_noise(self):
+        base = self.unknown["score"]
+        self.assertEqual(self.agent.decide(self.unknown, _opinion(base + 3, 1.0))["adjustment"], 0.0)   # inside noise
+        self.assertEqual(self.agent.decide(self.unknown, _opinion(100, 0.0))["adjustment"], 0.0)        # no confidence, no move
+        hi = self.agent.decide(self.unknown, _opinion(base + 20, 1.0))["adjustment"]   # gap small enough to stay under the cap
+        lo = self.agent.decide(self.unknown, _opinion(base + 20, 0.4))["adjustment"]
+        self.assertEqual((hi, lo), (10.0, 4.0))
+
+    def test_agent_cannot_lower_a_reputation_flagged_score(self):
+        intel = missing()
+        intel["Google Web Risk"] = make_result("Google Web Risk", "ok", "malicious", 92, "Listed as phishing.")
+        flagged = run_engine("https://totally-unknown-example-site.com/home", intel)
+        rev = self.agent.decide(flagged, _opinion(0, 1.0))
+        self.assertFalse(rev["applied"])
+        self.assertEqual(rev["final_score"], flagged["score"])
+        self.assertIn("reputation source", rev["note"])
+
+    def test_agent_never_touches_official_domains(self):
+        official = run_engine("https://www.google.com/search?q=cybersecurity")
+        rev = self.agent.decide(official, _opinion(100, 1.0))
+        self.assertFalse(rev["applied"])
+        self.assertEqual(rev["final_score"], official["score"])
+
+    def test_failed_agent_leaves_the_engine_score_alone(self):
+        for status in ("not_configured", "rate_limited", "error"):
+            rev = self.agent.decide(self.unknown, {"status": status, "note": "x"})
+            self.assertFalse(rev["applied"])
+            self.assertEqual(rev["final_score"], self.unknown["score"])
+
+    def test_malformed_model_output_is_rejected(self):
+        for bad in ({}, {"probability": "high", "confidence": 1}, {"probability": float("nan"), "confidence": 1},
+                    {"probability": True, "confidence": 1}, {"probability": 50}):
+            with self.assertRaises(ValueError):
+                self.agent._parse_opinion(bad)
+        ok = self.agent._parse_opinion({"probability": 999, "confidence": 5, "reasoning": "<b>x</b>"})
+        self.assertEqual((ok["probability"], ok["confidence"], ok["reasoning"]), (100.0, 1.0, "x"))
+
+    def test_case_hides_engine_score_and_verdict(self):
+        report = run_engine("http://paypa1-account-verification.xyz/login.php")
+        ex = extract_features(report["url"])
+        threats, _s, _r = RuleEngineService.evaluate(ex["features"], ex["details"])
+        case = json.dumps(self.agent.build_case(report, threats, ex["features"], ex["details"]))
+        self.assertNotIn('"score"', case)
+        self.assertNotIn(report["verdict"], case)
+        self.assertIn("paypa1", case)
+
+    def test_consult_calls_groq_and_parses(self):
+        out = {"probability": 85, "confidence": 0.8, "evidence_for": ["Brand mimic"], "evidence_against": [], "reasoning": "Looks like PayPal."}
+        with mock.patch.object(settings, "GROQ_API_KEY", "k"), mock.patch.object(self.agent._budget, "allow", return_value=True), \
+                mock.patch("urllib.request.urlopen", return_value=_Resp(out)):
+            res = self.agent.consult({"url": "http://x.example"})
+        self.assertEqual((res["status"], res["probability"], res["confidence"]), ("ok", 85.0, 0.8))
+
+    def test_consult_without_key_or_on_failure_is_not_ok(self):
+        with mock.patch.object(settings, "GROQ_API_KEY", ""):
+            self.assertEqual(self.agent.consult({})["status"], "not_configured")
+        with mock.patch.object(settings, "GROQ_API_KEY", "k"), mock.patch.object(self.agent._budget, "allow", return_value=True), \
+                mock.patch("urllib.request.urlopen", side_effect=TimeoutError()):
+            self.assertEqual(self.agent.consult({})["status"], "error")
+
+    def test_applied_review_updates_verdict_and_is_audited(self):
+        from backend.app.services.threat_engine import apply_agent_review
+        report = run_engine("https://totally-unknown-example-site.com/home")
+        before = report["score"]
+        review = self.agent.decide(report, _opinion(100, 1.0))
+        apply_agent_review(report, review)
+        self.assertTrue(report["ai_influences_score"])
+        self.assertEqual(report["engine_score"], before)
+        self.assertEqual(report["score"], review["final_score"])
+        self.assertEqual(report["agent_review"]["adjustment"], review["adjustment"])
+        self.assertEqual(report["score_path"][-1]["value"], report["score"])
+
+    def test_unapplied_review_changes_nothing_but_is_attached(self):
+        from backend.app.services.threat_engine import apply_agent_review
+        report = run_engine("https://totally-unknown-example-site.com/home")
+        snapshot = (report["score"], report["verdict"])
+        apply_agent_review(report, self.agent.decide(report, {"status": "error", "note": "x"}))
+        self.assertEqual((report["score"], report["verdict"]), snapshot)
+        self.assertFalse(report["ai_influences_score"])
+        self.assertIn("agent_review", report)
+
+
 class TestSecretHandling(unittest.TestCase):
     def setUp(self):
         for p in _unlimited_budgets():

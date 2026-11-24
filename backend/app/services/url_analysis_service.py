@@ -21,13 +21,13 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.config import settings
 from backend.app.database.models import ScanRecord
-from backend.app.services import ai_analyst, intel_clients, net_safety
+from backend.app.services import ai_agent, ai_analyst, intel_clients, net_safety
 from backend.app.services.intel_common import MALICIOUS, OK, SUSPICIOUS, make_result, ERROR
 from backend.app.services.ml_service import MLService
 from backend.app.services.rule_engine import RuleEngineService
 from backend.app.services.scorer import ScorerService
 from backend.app.services.ssl_inspector import SSLInspectorService
-from backend.app.services.threat_engine import LEGACY_CLASSIFICATION, evaluate
+from backend.app.services.threat_engine import LEGACY_CLASSIFICATION, apply_agent_review, evaluate
 from ml.features.extractor import extract_features
 
 logger = logging.getLogger(__name__)
@@ -172,6 +172,10 @@ class UrlAnalysisService:
                     "how_attackers_use_it": "New phishing pages are often unlisted for hours, so this is supporting evidence only.",
                     "what_to_do": "Still verify the address before entering credentials.",
                 })
+
+        # ---- AI review agent: independent, bounded second opinion on the score (runs before the explanation)
+        if external and _depth == 0:
+            apply_agent_review(report, ai_agent.review(report, all_threats, features, details))
 
         # ---- AI analyst (explains; never scores)
         if external and _depth == 0:

@@ -258,7 +258,7 @@ export default function ThreatEngineReport({ result }) {
             <Layers className="h-4 w-4 text-[#2563EB]" /> Unified Threat Engine
           </h3>
           <p className="mt-1 max-w-xl text-[12px] text-[#64748B]">
-            Machine learning, heuristics and reputation sources combined with unequal weights. The AI analyst only explains this result; it never changes the score.
+            Machine learning, heuristics and reputation sources combined with unequal weights. An AI review agent gives an independent second opinion that can nudge the score by at most 15 points and can never lower a score that threat intelligence flagged. The AI analyst only explains the result.
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -287,6 +287,20 @@ export default function ThreatEngineReport({ result }) {
             </li>
           ))}
         </ul>
+        {engine.agent_review && (
+          <div className="mt-4 rounded-lg border border-[#E2E8F0] bg-white p-3 text-[12px]">
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-semibold text-[#111827]">AI review agent</span>
+              <span className="font-mono text-[11px] text-[#475569]">
+                {engine.agent_review.status === 'ok'
+                  ? `estimates ${engine.agent_review.agent_probability}% · ${engine.agent_review.applied ? `adjusted ${engine.agent_review.adjustment > 0 ? '+' : ''}${engine.agent_review.adjustment}` : 'no change'}`
+                  : 'unavailable · score unchanged'}
+              </span>
+            </div>
+            {engine.agent_review.reasoning && <p className="mt-1.5 text-[#475569]">{engine.agent_review.reasoning}</p>}
+            {engine.agent_review.note && <p className="mt-1.5 text-[11px] text-[#94A3B8]">{engine.agent_review.note}</p>}
+          </div>
+        )}
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           {[
             ['Random Forest', models.random_forest, 'Primary classifier'],

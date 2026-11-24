@@ -17,7 +17,9 @@ Design principles (so the number means something):
   brand-new phishing page; the higher-risk local evidence is kept and confidence is reduced.
 * Missing data is never "clean". Unconfigured/failed sources are listed as limitations and a
   low-risk URL with no independent confirmation is reported as UNVERIFIED, not SAFE.
-* The AI analyst explains this result; it has no influence on the score.
+* The AI analyst explains the result and never scores. A separate AI review agent (ai_agent.py) may nudge the
+  score by a bounded amount afterwards; it can never lower a reputation-flagged score, and every adjustment is
+  recorded in ``agent_review`` (``ai_influences_score`` is True only when one was applied).
 """
 
 from datetime import datetime
@@ -297,3 +299,29 @@ def evaluate(
         "sources_total": len(intel),
     }
     return {"report": report, "extra_threats": extra_threats, "effective_rule_score": eff_rule, "local": local}
+
+
+def apply_agent_review(report: Dict[str, Any], review: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Fold an already-guarded AI agent review (see ai_agent.decide) into the report.
+    The review is always attached for auditing; the score, verdict and score path change only when it was applied.
+    """
+    report["agent_review"] = review
+    if not review.get("applied"):
+        return report
+
+    report["engine_score"] = report["score"]
+    report["score"] = review["final_score"]
+    verdict = band(report["score"])
+    if verdict == "SAFE" and not report.get("verified"):
+        verdict = "UNVERIFIED"
+    report["verdict"] = verdict
+    report["legacy_classification"] = LEGACY_CLASSIFICATION[verdict]
+    report["ai_influences_score"] = True
+
+    direction = "raised" if review["adjustment"] > 0 else "lowered"
+    path = report["score_path"]
+    path.append({"step": f"AI review agent {direction} the score by {abs(review['adjustment'])} (bounded, evidence-checked)",
+                 "value": report["score"]})
+    report["reasons"] = (report["reasons"] + [f"AI review agent: {review['reasoning']}"] if review.get("reasoning") else report["reasons"])[:13]
+    return report
